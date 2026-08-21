@@ -1,0 +1,37 @@
+body {
+    margin: 0;
+}
+
+.layout {
+    width: 100%;
+    display: grid;
+    grid-template-areas: "sidebar main";
+    grid-template-columns: 200px auto;
+}
+
+.sidebar {
+    grid-area: sidebar;
+    height: 100vh;
+    background-color: rgb(1, 127, 199);
+}
+
+.products {
+    grid-area: main;
+    height: 100vh;
+    background-color: whitesmoke;
+    padding: 20px;
+
+}
+
+.product-grid {
+
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+
+}
+
+.product {
+    background-color: white;
+    padding: 20px;
+}
