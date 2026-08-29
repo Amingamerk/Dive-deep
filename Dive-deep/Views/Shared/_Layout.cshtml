@@ -1,47 +1,83 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="da" data-bs-theme="dark">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Dive_deep</title>
-    <script type="importmap"></script>
+    <title>@ViewData["Title"] - Dive Deep</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;500;700;800&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Dive_deep.styles.css" asp-append-version="true" />
+    @* Vi har placeret vores "divedeep.css" til sidst, ellers bliver den overskrevet af bootstrap *@
+    <link rel="stylesheet" href="~/css/divedeep.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Dive Deep</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Hjem</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Index">Udlejning</a>
-                        </li>
+    <nav class="navbar navbar-expand-lg bg-transparent position-absolute top-0 start-0 w-100 z-3 py-3">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="/" style="letter-spacing:.14em; font-size:.85rem">
+                <svg width="26" height="26" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                    <circle cx="11" cy="20" r="8" stroke="#fff" stroke-width="1.6" />
+                    <circle cx="23" cy="10" r="4" stroke="#FFC93C" stroke-width="1.6" />
+                    <circle cx="27" cy="21" r="2" stroke="#fff" stroke-width="1.4" />
+                </svg>
+                DIVE DEEP
+            </a>
+
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#hovedmenu" aria-controls="hovedmenu" aria-expanded="false" aria-label="Åbn menu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse justify-content-end" id="hovedmenu">
+                <ul class="navbar-nav align-items-lg-center gap-lg-4">
+                    <li class="nav-item"><a class="nav-link" href="/Produkter">Udstyr</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Pakker">Pakker</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/FAQ">FAQ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Home/OmOs">Om os</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Home/Kontakt">Kontakt</a></li>
+                    <li class="nav-item ms-lg-2 mt-3 mt-lg-0">
+                        <a class="btn btn-warning btn-sm px-4 py-2" href="/Pakker">Lej udstyr</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main role="main">
+        @RenderBody()
+    </main>
+
+    <footer class="border-top pt-5 pb-4 mt-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <h4 class="h6 fw-bold mb-3" style="letter-spacing:.04em">DIVE DEEP</h4>
+                    <p class="text-secondary mb-1">Dykkervej 10<br />5000 Odense C</p>
+                    <p class="text-secondary mb-0">CVR: 81828384</p>
+                </div>
+                <div class="col-md-4">
+                    <h4 class="h6 fw-bold mb-3" style="letter-spacing:.04em">KONTAKT</h4>
+                    <p class="mb-1"><a class="text-secondary text-decoration-none" href="tel:+4560708090">+45 60 70 80 90</a></p>
+                    <p class="mb-0"><a class="text-secondary text-decoration-none" href="mailto:info@divedeep.dk">info@divedeep.dk</a></p>
+                </div>
+                <div class="col-md-4">
+                    <h4 class="h6 fw-bold mb-3" style="letter-spacing:.04em">ÅBNINGSTIDER</h4>
+                    <ul class="list-unstyled text-secondary mb-0">
+                        <li>Mandag–fredag: 10:00–17:30</li>
+                        <li>Lørdag: 10:00–14:00</li>
+                        <li>Søndag: lukket</li>
                     </ul>
                 </div>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
-
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - Dive_deep - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privatlivspolitik</a>
+            <p class="border-top mt-5 pt-3 text-secondary small mb-0">
+                © @DateTime.Now.Year Dive Deep – udlejning af dykkerudstyr i Odense.
+            </p>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
