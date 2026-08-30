@@ -1,129 +1,89 @@
 ﻿@{
-    ViewData["Title"] = "Dive Deep – udlejning af dykkerudstyr i Odense";
+    ViewData["Title"] = "Forside";
 }
 
-@* ---------- Hero ---------- *@
-<section class="hero position-relative overflow-hidden d-flex align-items-center">
-    <div class="hero-media"></div>
-    <div class="hero-scrim"></div>
+@* ---------- Hero ----------
+   .hero giver billede, slør og højde. Teksten er sat op
+   med Bootstrap-klasser. *@
+<section class="hero position-relative d-flex align-items-center">
 
-    <div class="container position-relative py-5" style="z-index:2">
-        <div class="row pt-5">
+    <div class="container position-relative py-5">
+        <div class="row">
             <div class="col-lg-7 offset-lg-5 text-center text-lg-end">
-                <p class="fs-4 fw-light mb-1 text-white-50">Udlejning af dykkerudstyr</p>
-                <h1 class="display-1 fw-bold lh-1 text-glow mb-2">DIVE DEEP</h1>
-                <p class="fs-5 fw-light mb-0">Fra maske til komplet sæt – klar til dit næste dyk</p>
-            </div>
-        </div>
-
-        <div class="row mt-5 pt-lg-5">
-            <div class="col-lg-5 offset-lg-6 text-center">
-                <p class="text-secondary">
-                    Vi udlejer BCD'er, dragter, tanke, regulatorsæt, finner og masker i alle størrelser.
-                    Vælg dine dage, vælg din størrelse, og hent udstyret på Dykkervej i Odense.
-                </p>
-                <a class="btn btn-warning mt-3" href="/Produkter">Se udstyret</a>
+                <p class="fs-4 fw-light mb-1">Udlejning af dykkerudstyr</p>
+                <h1 class="display-1 fw-bold">DIVE DEEP</h1>
+                <p class="fs-5 fw-light">Fra maske til komplet sæt - klar til dit næste dyk</p>
+                <a class="btn btn-warning btn-lg rounded-4 mt-3 px-4" href="/Produkter">Se udstyret</a>
             </div>
         </div>
     </div>
 </section>
 
-@* ---------- Tal-blok ---------- *@
-<section class="py-5 my-5">
-    <div class="container">
-        <h2 class="text-center display-6 fw-light mb-5">Vi kender vandet</h2>
+@* ---------- Tre nøgletal ---------- *@
+<section class="container py-5 my-5">
+    <h2 class="text-center display-6 fw-light mb-5">Vi kender vandet</h2>
 
-        <div class="row row-cols-1 row-cols-md-3 g-5">
-            <div class="col">
-                <p class="display-2 fw-bold lh-1 mb-2">7<span class="fs-4 fw-light ms-2">kategorier</span></p>
-                <p class="text-secondary">BCD, dragter, tanke, regulatorsæt, masker, snorkler og finner.</p>
-                <svg class="fish" viewBox="0 0 64 32" fill="#FFC93C" aria-hidden="true">
-                    <path d="M2 16c9-11 27-13 39-7 4 2 7 4 9 7-2 3-5 5-9 7-12 6-30 4-39-7z" />
-                    <path d="M62 5 51 16l11 11z" fill="#2E86C8" />
-                    <circle cx="16" cy="13" r="2" fill="#04182F" />
-                </svg>
-            </div>
-            <div class="col">
-                <p class="display-2 fw-bold lh-1 mb-2">50<span class="fs-4 fw-light ms-2">kr/dag</span></p>
-                <p class="text-secondary">Priserne starter her – du betaler kun for de dage, du har udstyret.</p>
-                <svg class="fish" viewBox="0 0 64 32" fill="#2E86C8" aria-hidden="true">
-                    <path d="M2 16c9-11 27-13 39-7 4 2 7 4 9 7-2 3-5 5-9 7-12 6-30 4-39-7z" />
-                    <path d="M62 5 51 16l11 11z" fill="#FFC93C" />
-                    <circle cx="16" cy="13" r="2" fill="#04182F" />
-                </svg>
-            </div>
-            <div class="col">
-                <p class="display-2 fw-bold lh-1 mb-2">20<span class="fs-4 fw-light ms-2">% på pakker</span></p>
-                <p class="text-secondary">Lej et komplet dykker- eller snorkelsæt og spar i forhold til enkeltdele.</p>
-                <svg class="fish" viewBox="0 0 64 32" fill="#DCEBF8" aria-hidden="true">
-                    <path d="M2 16c9-11 27-13 39-7 4 2 7 4 9 7-2 3-5 5-9 7-12 6-30 4-39-7z" />
-                    <path d="M62 5 51 16l11 11z" fill="#2E86C8" />
-                    <circle cx="16" cy="13" r="2" fill="#04182F" />
-                </svg>
-            </div>
+    <div class="row row-cols-1 row-cols-md-3 g-4 text-center">
+        <div class="col">
+            <p class="display-3 fw-bold mb-1">7</p>
+            <p class="text-white-50">produktkategorier at vælge imellem</p>
+        </div>
+        <div class="col">
+            <p class="display-3 fw-bold mb-1">50 kr</p>
+            <p class="text-white-50">er vores laveste dagspris</p>
+        </div>
+        <div class="col">
+            <p class="display-3 fw-bold mb-1">20 %</p>
+            <p class="text-white-50">rabat når du lejer en samlet pakke</p>
         </div>
     </div>
 </section>
 
-@* ---------- Pakkeløsninger (Bootstrap card + badge + ratio) ---------- *@
-<section class="py-5 my-5">
-    <div class="container">
-        <h2 class="text-center display-6 fw-light mb-5">Pakkeløsninger</h2>
+@* ---------- Pakkeløsninger ---------- *@
+<section class="container py-5 my-5">
+    <h2 class="text-center display-6 fw-light mb-5">Pakkeløsninger</h2>
 
-        <div class="row row-cols-1 row-cols-md-3 g-4">
-            @* Skift til: @foreach (var pakke in Model.Pakker) { ... } når repo'et er på plads *@
-            <div class="col">
-                <div class="card h-100 card-hover overflow-hidden">
-                    <div class="ratio ratio-16x9 card-media position-relative">
-                        <span class="badge text-bg-warning rounded-pill position-absolute top-0 start-0 m-3 fw-bold"
-                              style="width:auto;height:auto">&minus;20 %</span>
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <h3 class="card-title h5 fw-bold">Komplet dykkersæt</h3>
-                        <p class="fw-bold mb-3" style="color:var(--dd-amber)">
-                            fra 520 kr/dag <s class="text-secondary fw-light ms-2">650 kr</s>
-                        </p>
-                        <p class="card-text text-secondary small">
-                            BCD, dykkerdragt, regulatorsæt, tank, finner, maske og snorkel.
-                            Vælg størrelse og periode, så står det klar.
-                        </p>
-                        <a class="btn btn-warning align-self-start mt-auto" href="/Pakker/Dykkersaet">Vælg pakke</a>
-                    </div>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="col">
+            <div class="card h-100 bg-white bg-opacity-10 border-0 rounded-4">
+                <div class="card-body p-4 d-flex flex-column">
+                    <span class="badge text-bg-warning rounded-pill align-self-start mb-3">-20 %</span>
+                    <h3 class="card-title h5 fw-bold">Komplet dykkersæt</h3>
+                    <p class="text-warning fw-bold">fra 520 kr/dag</p>
+                    <p class="card-text text-white-50">
+                        BCD, dykkerdragt, regulatorsæt, tank, finner, maske og snorkel.
+                        Vælg størrelse og periode, så står det klar.
+                    </p>
+                    <a class="btn btn-warning rounded-4 align-self-start mt-auto px-4" href="/Pakker">Vælg pakke</a>
                 </div>
             </div>
+        </div>
 
-            <div class="col">
-                <div class="card h-100 card-hover overflow-hidden">
-                    <div class="ratio ratio-16x9 card-media position-relative">
-                        <span class="badge text-bg-warning rounded-pill position-absolute top-0 start-0 m-3 fw-bold"
-                              style="width:auto;height:auto">&minus;20 %</span>
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <h3 class="card-title h5 fw-bold">Komplet snorkelsæt</h3>
-                        <p class="fw-bold mb-3" style="color:var(--dd-amber)">
-                            fra 140 kr/dag <s class="text-secondary fw-light ms-2">175 kr</s>
-                        </p>
-                        <p class="card-text text-secondary small">
-                            Maske, snorkel og finner. Det letteste sted at starte,
-                            hvis du bare vil se, hvad der er dernede.
-                        </p>
-                        <a class="btn btn-warning align-self-start mt-auto" href="/Pakker/Snorkelsaet">Vælg pakke</a>
-                    </div>
+        <div class="col">
+            <div class="card h-100 bg-white bg-opacity-10 border-0 rounded-4">
+                <div class="card-body p-4 d-flex flex-column">
+                    <span class="badge text-bg-warning rounded-pill align-self-start mb-3">-20 %</span>
+                    <h3 class="card-title h5 fw-bold">Komplet snorkelsæt</h3>
+                    <p class="text-warning fw-bold">fra 140 kr/dag</p>
+                    <p class="card-text text-white-50">
+                        Maske, snorkel og finner. Det letteste sted at starte,
+                        hvis du bare vil se, hvad der er dernede.
+                    </p>
+                    <a class="btn btn-warning rounded-4 align-self-start mt-auto px-4" href="/Pakker">Vælg pakke</a>
                 </div>
             </div>
+        </div>
 
-            <div class="col">
-                <div class="card h-100 card-hover overflow-hidden">
-                    <div class="ratio ratio-16x9 card-media"></div>
-                    <div class="card-body d-flex flex-column">
-                        <h3 class="card-title h5 fw-bold">Sæt det selv sammen</h3>
-                        <p class="fw-bold mb-3" style="color:var(--dd-amber)">fra 50 kr/dag</p>
-                        <p class="card-text text-secondary small">
-                            Mangler du kun en tank eller et par finner? Lej de enkelte dele
-                            i præcis den periode, du skal bruge dem.
-                        </p>
-                        <a class="btn btn-outline-light align-self-start mt-auto" href="/Produkter">Se alle kategorier</a>
-                    </div>
+        <div class="col">
+            <div class="card h-100 bg-white bg-opacity-10 border-0 rounded-4">
+                <div class="card-body p-4 d-flex flex-column">
+                    <h3 class="card-title h5 fw-bold mt-5 pt-2">Sæt det selv sammen</h3>
+                    <p class="text-warning fw-bold">fra 50 kr/dag</p>
+                    <p class="card-text text-white-50">
+                        Mangler du kun en tank eller et par finner? Lej de enkelte dele
+                        i præcis den periode, du skal bruge dem.
+                    </p>
+                    <a class="btn btn-outline-light rounded-4 align-self-start mt-auto px-4" href="/Produkter">Se kategorier</a>
                 </div>
             </div>
         </div>
@@ -131,19 +91,57 @@
 </section>
 
 @* ---------- Kategorier ---------- *@
-<section class="py-5 my-5">
-    <div class="container">
-        <h2 class="text-center display-6 fw-light mb-5">Udstyr</h2>
+<section class="container py-5 my-5">
+    <h2 class="text-center display-6 fw-light mb-5">Udstyr</h2>
 
-        <div class="row row-cols-2 row-cols-md-4 g-3">
-            <div class="col"><a class="tile d-block text-center text-decoration-none border rounded p-4 h-100" href="/Produkter/BCD"><strong class="d-block">BCD</strong><span class="text-secondary small">4 modeller</span></a></div>
-            <div class="col"><a class="tile d-block text-center text-decoration-none border rounded p-4 h-100" href="/Produkter/Dragter"><strong class="d-block">Dykkerdragter</strong><span class="text-secondary small">8 modeller</span></a></div>
-            <div class="col"><a class="tile d-block text-center text-decoration-none border rounded p-4 h-100" href="/Produkter/Tanke"><strong class="d-block">Tanke</strong><span class="text-secondary small">5–15 liter</span></a></div>
-            <div class="col"><a class="tile d-block text-center text-decoration-none border rounded p-4 h-100" href="/Produkter/Regulatorer"><strong class="d-block">Regulatorsæt</strong><span class="text-secondary small">3 modeller</span></a></div>
-            <div class="col"><a class="tile d-block text-center text-decoration-none border rounded p-4 h-100" href="/Produkter/Masker"><strong class="d-block">Maske &amp; snorkel</strong><span class="text-secondary small">7 modeller</span></a></div>
-            <div class="col"><a class="tile d-block text-center text-decoration-none border rounded p-4 h-100" href="/Produkter/Finner"><strong class="d-block">Finner</strong><span class="text-secondary small">7 modeller</span></a></div>
-            <div class="col"><a class="tile d-block text-center text-decoration-none border rounded p-4 h-100" href="/Pakker"><strong class="d-block">Pakker</strong><span class="text-secondary small">Spar 20 %</span></a></div>
-            <div class="col"><a class="tile d-block text-center text-decoration-none border rounded p-4 h-100" href="/FAQ"><strong class="d-block">Størrelsesguide</strong><span class="text-secondary small">FAQ</span></a></div>
+    <div class="row row-cols-2 row-cols-md-4 g-3">
+        <div class="col">
+            <a class="d-block p-4 h-100 text-center text-decoration-none bg-white bg-opacity-10 rounded-4" href="/Produkter/BCD">
+                <span class="d-block fw-bold">BCD</span>
+                <span class="text-white-50 small">4 modeller</span>
+            </a>
+        </div>
+        <div class="col">
+            <a class="d-block p-4 h-100 text-center text-decoration-none bg-white bg-opacity-10 rounded-4" href="/Produkter/Dragter">
+                <span class="d-block fw-bold">Dykkerdragter</span>
+                <span class="text-white-50 small">8 modeller</span>
+            </a>
+        </div>
+        <div class="col">
+            <a class="d-block p-4 h-100 text-center text-decoration-none bg-white bg-opacity-10 rounded-4" href="/Produkter/Tanke">
+                <span class="d-block fw-bold">Tanke</span>
+                <span class="text-white-50 small">5-15 liter</span>
+            </a>
+        </div>
+        <div class="col">
+            <a class="d-block p-4 h-100 text-center text-decoration-none bg-white bg-opacity-10 rounded-4" href="/Produkter/Regulatorer">
+                <span class="d-block fw-bold">Regulatorsæt</span>
+                <span class="text-white-50 small">3 modeller</span>
+            </a>
+        </div>
+        <div class="col">
+            <a class="d-block p-4 h-100 text-center text-decoration-none bg-white bg-opacity-10 rounded-4" href="/Produkter/Masker">
+                <span class="d-block fw-bold">Maske &amp; snorkel</span>
+                <span class="text-white-50 small">7 modeller</span>
+            </a>
+        </div>
+        <div class="col">
+            <a class="d-block p-4 h-100 text-center text-decoration-none bg-white bg-opacity-10 rounded-4" href="/Produkter/Finner">
+                <span class="d-block fw-bold">Finner</span>
+                <span class="text-white-50 small">7 modeller</span>
+            </a>
+        </div>
+        <div class="col">
+            <a class="d-block p-4 h-100 text-center text-decoration-none bg-white bg-opacity-10 rounded-4" href="/Pakker">
+                <span class="d-block fw-bold">Pakker</span>
+                <span class="text-white-50 small">Spar 20 %</span>
+            </a>
+        </div>
+        <div class="col">
+            <a class="d-block p-4 h-100 text-center text-decoration-none bg-white bg-opacity-10 rounded-4" href="/FAQ">
+                <span class="d-block fw-bold">Størrelsesguide</span>
+                <span class="text-white-50 small">FAQ</span>
+            </a>
         </div>
     </div>
 </section>
