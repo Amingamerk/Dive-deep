@@ -2,5 +2,9 @@
 {
     public class Enums
     {
+        public enum ProductCategory
+        {
+            
+        }
     }
 }
