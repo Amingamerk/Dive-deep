@@ -1,4 +1,6 @@
-﻿@{
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
     ViewData["Title"] = "Forside";
 }
 
@@ -12,7 +14,7 @@
                 <p class="fs-4 fw-light mb-1">Udlejning af dykkerudstyr</p>
                 <h1 class="display-1 fw-bold">DIVE DEEP</h1>
                 <p class="fs-5 fw-light">Fra maske til komplet sæt - klar til dit næste dyk</p>
-                <a class="btn btn-warning btn-lg rounded-4 mt-3 px-4" href="/Produkter">Se udstyret</a>
+                <a class="btn btn-warning btn-lg rounded-4 mt-3 px-4" asp-controller="Products" asp-action="Index">Se udstyret</a>
             </div>
         </div>
     </div>
@@ -82,7 +84,7 @@
                         Mangler du kun en tank eller et par finner? Lej de enkelte dele
                         i præcis den periode, du skal bruge dem.
                     </p>
-                    <a class="btn btn-outline-light rounded-4 align-self-start mt-auto px-4" href="/Produkter">Se kategorier</a>
+                    <a class="btn btn-outline-light rounded-4 align-self-start mt-auto px-4" asp-controller="Products" asp-action="Index">Se kategorier</a>
                 </div>
             </div>
         </div>

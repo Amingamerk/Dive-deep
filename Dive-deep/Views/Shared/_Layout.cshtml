@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+
+<!DOCTYPE html>
 <html lang="da" data-bs-theme="dark">
 <head>
     <meta charset="utf-8" />
@@ -14,7 +17,7 @@
 <body>
     <nav class="navbar navbar-expand-lg position-absolute top-0 w-100 z-3 py-3">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="/">DIVE DEEP</a>
+            <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">DIVE DEEP</a>
 
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
                 <span class="navbar-toggler-icon"></span>
@@ -22,13 +25,13 @@
 
             <div class="collapse navbar-collapse justify-content-end" id="menu">
                 <ul class="navbar-nav align-items-lg-center gap-lg-3">
-                    <li class="nav-item"><a class="nav-link" href="/Produkter">Udstyr</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Pakker">Pakker</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/FAQ">FAQ</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Home/OmOs">Om os</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Home/Kontakt">Kontakt</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Products" asp-action="Index">Udstyr</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Bundels" asp-action="Index">Pakker</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="FAQ" asp-action="Index">FAQ</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="AboutUs" asp-action="Index">Om os</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Contact" asp-action="Index">Kontakt</a></li>
                     <li class="nav-item ms-lg-3 mt-3 mt-lg-0">
-                        <a class="btn btn-warning rounded-4 px-4" href="/Pakker">Lej udstyr</a>
+                        <a class="btn btn-warning rounded-4 px-4" asp-controller="Bundels" asp-action="Index">Lej udstyr</a>
                     </li>
                 </ul>
             </div>
@@ -64,7 +67,7 @@
 
             <div class="border-top border-light border-opacity-10 mt-5 pt-3 d-flex flex-column flex-md-row justify-content-between text-white-50 small">
                 <p class="mb-0">© @DateTime.Now.Year Dive Deep.</p>
-                <p class="mb-0"><a class="text-white-50" href="/Home/Privacy">Privatlivspolitik</a></p>
+                <p class="mb-0"><a class="text-white-50" asp-controller="Privacy" asp-action="Index">Privatlivspolitik</a></p>
             </div>
         </div>
     </footer>
