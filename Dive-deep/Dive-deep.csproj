@@ -8,7 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Models\Domain\" />
+    <Compile Remove="Models\Domain\**" />
+    <Content Remove="Models\Domain\**" />
+    <EmbeddedResource Remove="Models\Domain\**" />
+    <None Remove="Models\Domain\**" />
   </ItemGroup>
 
 </Project>
