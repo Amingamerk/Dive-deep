@@ -8,6 +8,7 @@ namespace Dive_deep.Controllers
     {
         public IActionResult Index()
         {
+
             return View();
         }
     }

@@ -1,5 +1,6 @@
 ﻿using Dive_deep.Models;
 using static Dive_deep.Models.Enums;
+using System.Linq;
 
 namespace DiveDeep.Persistence
 {
@@ -194,6 +195,12 @@ namespace DiveDeep.Persistence
         public static List<Product> GetAll() => products;
         public static Product? GetById(int id) => products.FirstOrDefault(product => product.Id == id);
         public static List<Product> GetByCategory(ProductCategory category) => products.Where(p => p.Category == category).ToList();
+
+        // Get all distinct productcategories
+        public static List<ProductCategory> GetProductCategories()
+        {
+            return GetAll().Select(p => p.Category).Distinct().ToList();
+        }
 
         public static void Add(Product product)
         {

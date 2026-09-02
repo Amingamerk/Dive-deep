@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Dive_deep.Models;
+using static Dive_deep.Models.Enums;
+using DiveDeep.Persistence;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Dive_deep.Controllers
 {
@@ -6,7 +9,8 @@ namespace Dive_deep.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            List<ProductCategory> categories = ProductRepository.GetProductCategories();
+            return View(categories);
         }
     }
 }

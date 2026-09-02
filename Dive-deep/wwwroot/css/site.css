@@ -9,3 +9,12 @@ body {
     background-position: center;
     background-image: linear-gradient(to bottom, rgba(46, 25, 101, .70) 0%, rgba(46, 25, 101, .30) 20%, rgba(46, 25, 101, 0) 42%, rgba(46, 25, 101, .08) 55%, rgba(46, 25, 101, .22) 65%, rgba(46, 25, 101, .42) 74%, rgba(46, 25, 101, .64) 83%, rgba(46, 25, 101, .85) 91%, rgba(46, 25, 101, 1) 99%), url('../images/hero-diver.jpg');
 }
+
+.category-card img {
+    filter: drop-shadow(0 8px 12px rgba(0, 0, 0, .15));
+    transition: transform .2s ease;
+}
+
+.category-card:hover img {
+    transform: translateY(-4px) scale(1.03);
+}
