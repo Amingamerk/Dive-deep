@@ -27,9 +27,9 @@
                 <ul class="navbar-nav align-items-lg-center gap-lg-3">
                     <li class="nav-item"><a class="nav-link" asp-controller="Products" asp-action="Index">Udstyr</a></li>
                     <li class="nav-item"><a class="nav-link" asp-controller="Bundels" asp-action="Index">Pakker</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="FAQ" asp-action="Index">FAQ</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="AboutUs" asp-action="Index">Om os</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Contact" asp-action="Index">Kontakt</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="FAQ">FAQ</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="AboutUs">Om os</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Contact">Kontakt</a></li>
                     <li class="nav-item ms-lg-3 mt-3 mt-lg-0">
                         <a class="btn btn-warning rounded-4 px-4" asp-controller="Bundels" asp-action="Index">Lej udstyr</a>
                     </li>
@@ -67,7 +67,7 @@
 
             <div class="border-top border-light border-opacity-10 mt-5 pt-3 d-flex flex-column flex-md-row justify-content-between text-white-50 small">
                 <p class="mb-0">© @DateTime.Now.Year Dive Deep.</p>
-                <p class="mb-0"><a class="text-white-50" asp-controller="Privacy" asp-action="Index">Privatlivspolitik</a></p>
+                <p class="mb-0"><a class="text-white-50" asp-controller="Home" asp-action="Privacy">Privatlivspolitik</a></p>
             </div>
         </div>
     </footer>
