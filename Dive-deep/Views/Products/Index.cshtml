@@ -1,20 +1,20 @@
-﻿@using static Dive_deep.Models.Enums;
-@model List<ProductCategory>
-@{
-    <div class="col-6 col-md-4 col-lg-3">
-        @foreach (ProductCategory productCategory in Model)
-        {
-            <div class="card h-50 border-0 shadow-sm rounded-4 position-relative category-card">
+@model List<CategoryCardViewModel>
+
+<div class="row row-cols-auto row-cols-md-3">
+    @foreach (CategoryCardViewModel category in Model)
+    {
+        <div class="col">
+            <div class="card h-100 g-4 p-5 border-0 shadow-sm rounded-4 position-relative category-card bg-transparent">
                 <div class="ratio ratio-1x1">
-                    <img src="~/images/products/categories/tank.png" class="object-fit-contain p-4" alt="Dykkertank">
+                    <img src="@category.ImagePath" class="object-fit-contain p-1" alt="@category.AltText">
                 </div>
                 <div class="card-body text-center">
                     <h3 class="card-title h6 mb-0">
-                        <a asp-controller="Category" asp-action="Index" asp-route-id="tanke"
-                            class="stretched-link text-decoration-none">Dykkertanke</a>
+                        <a asp-controller="Products" asp-action="Category" asp-route-id="@category.RouteId"
+                            class="stretched-link text-decoration-none">@category.Title</a>
                     </h3>
                 </div>
             </div>
-        }
-    </div>
-}
+        </div>
+    }
+</div>

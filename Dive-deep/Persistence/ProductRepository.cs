@@ -1,6 +1,5 @@
 ﻿using Dive_deep.Models;
 using static Dive_deep.Models.Enums;
-using System.Linq;
 
 namespace DiveDeep.Persistence
 {
@@ -9,18 +8,18 @@ namespace DiveDeep.Persistence
         private static readonly List<Product> products = new()
         {
             // ===== BCD =====
-            new Bcd { Id = 1, Category = ProductCategory.Bdc, Brand = "Scubapro", Model = "Navigator Lite BCD", Sizes = new() { Size.Small }, PricePerDay = 125 },
-            new Bcd { Id = 2, Category = ProductCategory.Bdc, Brand = "Scubapro", Model = "Navigator Lite BCD", Sizes = new() { Size.Medium }, PricePerDay = 125 },
-            new Bcd { Id = 3, Category = ProductCategory.Bdc, Brand = "Scubapro", Model = "Navigator Lite BCD", Sizes = new() { Size.Large }, PricePerDay = 125 },
-            new Bcd { Id = 4, Category = ProductCategory.Bdc, Brand = "Scubapro", Model = "BCD Glide", Sizes = new() { Size.Small }, PricePerDay = 140 },
-            new Bcd { Id = 5, Category = ProductCategory.Bdc, Brand = "Scubapro", Model = "BCD Glide", Sizes = new() { Size.Medium }, PricePerDay = 140 },
-            new Bcd { Id = 6, Category = ProductCategory.Bdc, Brand = "Scubapro", Model = "BCD Glide", Sizes = new() { Size.Large }, PricePerDay = 140 },
-            new Bcd { Id = 7, Category = ProductCategory.Bdc, Brand = "Scubapro", Model = "BCD Hydros Pro", Sizes = new() { Size.Small }, PricePerDay = 200 },
-            new Bcd { Id = 8, Category = ProductCategory.Bdc, Brand = "Scubapro", Model = "BCD Hydros Pro", Sizes = new() { Size.Medium }, PricePerDay = 200 },
-            new Bcd { Id = 9, Category = ProductCategory.Bdc, Brand = "Scubapro", Model = "BCD Hydros Pro", Sizes = new() { Size.Large }, PricePerDay = 200 },
-            new Bcd { Id = 10, Category = ProductCategory.Bdc, Brand = "Seac", Model = "BCD Modular", Sizes = new() { Size.Small }, PricePerDay = 145 },
-            new Bcd { Id = 11, Category = ProductCategory.Bdc, Brand = "Seac", Model = "BCD Modular", Sizes = new() { Size.Medium }, PricePerDay = 145 },
-            new Bcd { Id = 12, Category = ProductCategory.Bdc, Brand = "Seac", Model = "BCD Modular", Sizes = new() { Size.Large }, PricePerDay = 145 },
+            new BCD { Id = 1, Category = ProductCategory.BCD, Brand = "Scubapro", Model = "Navigator Lite BCD", Sizes = new() { Size.Small }, PricePerDay = 125 },
+            new BCD { Id = 2, Category = ProductCategory.BCD, Brand = "Scubapro", Model = "Navigator Lite BCD", Sizes = new() { Size.Medium }, PricePerDay = 125 },
+            new BCD { Id = 3, Category = ProductCategory.BCD, Brand = "Scubapro", Model = "Navigator Lite BCD", Sizes = new() { Size.Large }, PricePerDay = 125 },
+            new BCD { Id = 4, Category = ProductCategory.BCD, Brand = "Scubapro", Model = "BCD Glide", Sizes = new() { Size.Small }, PricePerDay = 140 },
+            new BCD { Id = 5, Category = ProductCategory.BCD, Brand = "Scubapro", Model = "BCD Glide", Sizes = new() { Size.Medium }, PricePerDay = 140 },
+            new BCD { Id = 6, Category = ProductCategory.BCD, Brand = "Scubapro", Model = "BCD Glide", Sizes = new() { Size.Large }, PricePerDay = 140 },
+            new BCD { Id = 7, Category = ProductCategory.BCD, Brand = "Scubapro", Model = "BCD Hydros Pro", Sizes = new() { Size.Small }, PricePerDay = 200 },
+            new BCD { Id = 8, Category = ProductCategory.BCD, Brand = "Scubapro", Model = "BCD Hydros Pro", Sizes = new() { Size.Medium }, PricePerDay = 200 },
+            new BCD { Id = 9, Category = ProductCategory.BCD, Brand = "Scubapro", Model = "BCD Hydros Pro", Sizes = new() { Size.Large }, PricePerDay = 200 },
+            new BCD { Id = 10, Category = ProductCategory.BCD, Brand = "Seac", Model = "BCD Modular", Sizes = new() { Size.Small }, PricePerDay = 145 },
+            new BCD { Id = 11, Category = ProductCategory.BCD, Brand = "Seac", Model = "BCD Modular", Sizes = new() { Size.Medium }, PricePerDay = 145 },
+            new BCD { Id = 12, Category = ProductCategory.BCD, Brand = "Seac", Model = "BCD Modular", Sizes = new() { Size.Large }, PricePerDay = 145 },
 
             // ===== DYKKERDRAGTER - DEFINITION 3MM =====
             // Herre

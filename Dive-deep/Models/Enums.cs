@@ -5,7 +5,7 @@
         public enum ProductCategory
         {
             //Ved ikke om det er tanken
-            Bdc,
+            BCD,
             DiveSuit,
             Fins,
             MaskSnorkel,
