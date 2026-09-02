@@ -1,5 +1,5 @@
-﻿using Dive_deep.Models;
-using static Dive_deep.Models.Enums;
+using DiveDeep.Models;
+using static DiveDeep.Models.Enums;
 
 namespace DiveDeep.Persistence
 {

@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using DiveDeep.Persistence;
-using Dive_deep.Models;
+using DiveDeep.Models;
 
-namespace Dive_deep.Controllers
+namespace DiveDeep.Controllers
 {
     public class BundlesController : Controller
     {

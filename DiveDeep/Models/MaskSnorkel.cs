@@ -1,5 +1,5 @@
-﻿using static Dive_deep.Models.Enums;
-namespace Dive_deep.Models
+using static DiveDeep.Models.Enums;
+namespace DiveDeep.Models
 {
     public class MaskSnorkel : Product
     {

@@ -1,6 +1,6 @@
-﻿using Dive_deep.Models;
-using static Dive_deep.Models.Enums;
-namespace Dive_deep.Models
+using DiveDeep.Models;
+using static DiveDeep.Models.Enums;
+namespace DiveDeep.Models
 {
     public class DiveSuit : Product
     {

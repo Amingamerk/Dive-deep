@@ -1,4 +1,4 @@
-namespace Dive_deep
+namespace DiveDeep
 {
     public class Program
     {

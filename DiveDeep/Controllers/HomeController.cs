@@ -1,8 +1,8 @@
-using Dive_deep.Models;
+using DiveDeep.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
-namespace Dive_deep.Controllers
+namespace DiveDeep.Controllers
 {
     public class HomeController : Controller
     {

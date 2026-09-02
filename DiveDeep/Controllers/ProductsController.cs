@@ -1,9 +1,9 @@
-using Dive_deep.ViewModels;
-using static Dive_deep.Models.Enums;
+using DiveDeep.ViewModels;
+using static DiveDeep.Models.Enums;
 using DiveDeep.Persistence;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Dive_deep.Controllers
+namespace DiveDeep.Controllers
 {
     public class ProductsController : Controller
     {

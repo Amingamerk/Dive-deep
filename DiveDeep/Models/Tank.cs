@@ -1,9 +1,11 @@
-﻿using static Dive_deep.Models.Enums;
-namespace Dive_deep.Models
+using static DiveDeep.Models.Enums;
+namespace DiveDeep.Models
 {
-    public class Fins : Product
+    public class Tank : Product
     {
         public List<Size> Sizes { get; set; } = new();
         public override IEnumerable<string> SizeOptions => Sizes.Select(s => s.ToString());
+
+        public override string SizeLabel => "Volume";
     }
 }

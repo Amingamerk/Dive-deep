@@ -1,6 +1,6 @@
-﻿using static Dive_deep.Models.Enums;
+using static DiveDeep.Models.Enums;
 
-namespace Dive_deep.Models
+namespace DiveDeep.Models
   
     
 {
