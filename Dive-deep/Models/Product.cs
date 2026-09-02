@@ -14,6 +14,7 @@ namespace Dive_deep.Models
        
 
         public virtual IEnumerable<string> SizeOptions => Enumerable.Empty<string>();
+        public virtual IEnumerable<string> SuitTypeOptions => Enumerable.Empty<string>();
         public virtual string SizeLabel => "Størrelse"; 
 
     }
