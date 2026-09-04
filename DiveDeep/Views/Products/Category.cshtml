@@ -1,0 +1,38 @@
+﻿@model List<Product>
+@{
+    Layout = "_Layout";
+}
+
+<div class="row">
+
+    @foreach (var product in Model)
+    {
+        <div class="col-md-4 mb-4">
+
+            <div class="card">
+
+                <div class="card-body">
+
+                    <h5>@product.Brand</h5>
+
+                    <h6>@product.Model</h6>
+
+                    <p>
+                        Fra @product.PricePerDay kr./dag
+                    </p>
+
+                    <a asp-controller="Products"
+                           asp-action="Details"
+                           asp-route-id="@product.Id"
+                           class="btn btn-primary">
+                        Se produkt
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+
+</div>

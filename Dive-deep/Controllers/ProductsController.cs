@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DiveDeep.Persistence;
+using Microsoft.AspNetCore.Mvc;
+using static Dive_deep.Models.Enums;
 
 namespace Dive_deep.Controllers
 {
@@ -6,7 +8,22 @@ namespace Dive_deep.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            var categories = Enum.GetValues<ProductCategory>();
+            return View(categories);
+        }
+        public IActionResult Categories()
+        {
+            var categories = Enum.GetValues<ProductCategory>();
+            return View(categories);
+        }
+
+      
+            public IActionResult Category(ProductCategory category)
+            {
+                var products = ProductRepository.GetByCategory(category);
+
+                return View(products);
+            }
         }
     }
-}
+
