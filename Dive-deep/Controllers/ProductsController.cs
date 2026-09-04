@@ -17,34 +17,13 @@ namespace Dive_deep.Controllers
             return View(categories);
         }
 
-        public IActionResult Category(ProductCategory category)
-        {
-            var products = ProductRepository.GetByCategory(category)
-                .GroupBy(p => new
-                {
-                    p.Brand,
-                    p.Model
-                })
-                .Select(g => g.First())
-                .ToList();
-
-            return View(products);
-        }
-
-        public IActionResult Details(int id)
-        {
-            var product = ProductRepository.GetById(id);
-
-            if (product == null)
+      
+            public IActionResult Category(ProductCategory category)
             {
-                return NotFound();
+                var products = ProductRepository.GetByCategory(category);
+
+                return View(products);
             }
-
-            var variants = ProductRepository
-                .GetVariants(product.Brand, product.Model);
-
-            return View(variants);
         }
     }
-}
 

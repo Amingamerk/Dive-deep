@@ -1,39 +1,23 @@
 ﻿@using Dive_deep.Models
 @model List<Product>
-@{
-    Layout = "_Layout";
-}
 
-<div class="row">
+<h1>Produkter</h1>
 
-    @foreach (var product in Model)
-    {
-        <div class="col-md-4 mb-4">
+@foreach (var product in Model)
+{
+    <div class="card mb-3">
+        <div class="card-body">
 
-            <div class="card">
+            <h5>@product.Brand</h5>
 
-                <div class="card-body">
+            <p>
+                Model: @product.Model
+            </p>
 
-                    <h5>@product.Brand</h5>
-
-                    <h6>@product.Model</h6>
-
-                    <p>
-                        Fra @product.PricePerDay kr./dag
-                    </p>
-
-                    <a asp-controller="Products"
-                           asp-action="Details"
-                           asp-route-id="@product.Id"
-                           class="btn btn-primary">
-                        Se produkt
-                    </a>
-
-                </div>
-
-            </div>
+            <p>
+                Pris pr. dag: @product.PricePerDay kr.
+            </p>
 
         </div>
-    }
-
-</div>
+    </div>
+}
