@@ -1,0 +1,41 @@
+﻿@using static Dive_deep.Models.Enums;
+@model ProductCategory[]
+@{
+
+    // ViewData["Title"] = "Forside";
+}
+<div class="row row-cols-auto gap-3">
+
+    @foreach (var Productcategory in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+
+                    <h5 class="card-title">@Productcategory</h5>
+
+                    <h6 class="card-subtitle mb-2 text-muted">
+                        Tilføj tekst her
+                    </h6>
+
+                    <p class="card-text">
+                        Se alle produkter i kategorien @Productcategory
+                    </p>
+
+                    <a asp-controller="Products"
+                           asp-action="Category"
+                           asp-route-category="@Productcategory"
+                           class="btn btn-primary">
+                        Lej her
+                    </a>
+
+                </div>
+            </div>
+        </div>
+    }
+
+</div>
+
+
+
+

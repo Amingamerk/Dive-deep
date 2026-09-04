@@ -218,5 +218,14 @@ namespace DiveDeep.Persistence
             existing.Model = product.Model;
             existing.PricePerDay = product.PricePerDay;
         }
+        public static List<Product> GetVariants(string brand, string model)
+        {
+            return products
+                .Where(p =>
+                    p.Brand == brand &&
+                    p.Model == model)
+                .ToList();
+        }
+
     }
 }
