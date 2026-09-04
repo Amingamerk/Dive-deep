@@ -194,6 +194,12 @@ namespace DiveDeep.Persistence
         public static Product? GetById(int id) => products.FirstOrDefault(product => product.Id == id);
         public static List<Product> GetByCategory(ProductCategory category) => products.Where(p => p.Category == category).ToList();
 
+        // Get all distinct productcategories
+        public static List<ProductCategory> GetProductCategories()
+        {
+            return GetAll().Select(p => p.Category).Distinct().ToList();
+        }
+
         public static void Add(Product product)
         {
             if (product == null) return;
