@@ -190,16 +190,9 @@ namespace DiveDeep.Persistence
             new Fins { Id = 140, Category = ProductCategory.Fins, Brand = "Fourth Element", Model = "Rec Fin", Sizes = new() { Size.Large }, PricePerDay = 80 },
             new Fins { Id = 141, Category = ProductCategory.Fins, Brand = "Fourth Element", Model = "Rec Fin", Sizes = new() { Size.XtraLarge }, PricePerDay = 80 }
         };
-
         public static List<Product> GetAll() => products;
         public static Product? GetById(int id) => products.FirstOrDefault(product => product.Id == id);
         public static List<Product> GetByCategory(ProductCategory category) => products.Where(p => p.Category == category).ToList();
-
-        // Get all distinct productcategories
-        public static List<ProductCategory> GetProductCategories()
-        {
-            return GetAll().Select(p => p.Category).Distinct().ToList();
-        }
 
         public static void Add(Product product)
         {
@@ -218,5 +211,14 @@ namespace DiveDeep.Persistence
             existing.Model = product.Model;
             existing.PricePerDay = product.PricePerDay;
         }
+        public static List<Product> GetVariants(string brand, string model)
+        {
+            return products
+                .Where(p =>
+                    p.Brand == brand &&
+                    p.Model == model)
+                .ToList();
+        }
+
     }
 }

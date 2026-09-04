@@ -19,23 +19,43 @@ namespace DiveDeep.Controllers
 
         public IActionResult Index()
         {
-            List<ProductCategory> categories = ProductRepository.GetProductCategories();
-            List<CategoryCardViewModel> viewModel = new();
+            var categories = Enum.GetValues<ProductCategory>();
+            return View(categories);
+        }
+        public IActionResult Categories()
+        {
+            var categories = Enum.GetValues<ProductCategory>();
+            return View(categories);
+        }
 
-            foreach (ProductCategory category in categories)
-            {
-                (string title, string imageFile, string altText) = categoryInfo[category];
-
-                viewModel.Add(new CategoryCardViewModel
+        public IActionResult Category(ProductCategory category)
+        {
+            var products = ProductRepository.GetByCategory(category)
+                .GroupBy(p => new
                 {
-                    Title = title,
-                    ImagePath = $"/images/products/categories/{imageFile}",
-                    AltText = altText,
-                    RouteId = category.ToString()
-                });
+                    p.Brand,
+                    p.Model
+                })
+                .Select(g => g.First())
+                .ToList();
+
+            return View(products);
+        }
+
+        public IActionResult Details(int id)
+        {
+            var product = ProductRepository.GetById(id);
+
+            if (product == null)
+            {
+                return NotFound();
             }
 
-            return View(viewModel);
+            var variants = ProductRepository
+                .GetVariants(product.Brand, product.Model);
+
+            return View(variants);
         }
     }
+
 }
