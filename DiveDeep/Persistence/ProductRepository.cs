@@ -140,9 +140,9 @@ namespace DiveDeep.Persistence
             new Tank { Id = 96, Category = ProductCategory.Tank, Brand = "Scubapro", Model = "15 liter tank", Sizes = new() { Size.XtraLarge }, PricePerDay = 180 },
 
             // ===== REGULATORSÆT =====
-            new RegulatorSet { Id = 97, Category = ProductCategory.RegulatorSet, Brand = "Scubapro", Model = "MK25EVO / S600", FirstStep = "MK25EVO", SecondStep = "S600", Octopus = "R105", PricePerDay = 125 },
-            new RegulatorSet { Id = 98, Category = ProductCategory.RegulatorSet, Brand = "Scubapro", Model = "MK17EVO / C370", FirstStep = "MK17EVO", SecondStep = "C370", Octopus = "R095", PricePerDay = 100 },
-            new RegulatorSet { Id = 99, Category = ProductCategory.RegulatorSet, Brand = "Scubapro", Model = "MK25EVO BT / A700 Carbon BT", FirstStep = "MK25EVO BT", SecondStep = "A700 Carbon BT", Octopus = "S270", PricePerDay = 150 },
+            new RegulatorSet { Id = 97, Category = ProductCategory.RegulatorSet, Brand = "Scubapro", Model = "", FirstStep = "MK25EVO", SecondStep = "S600", Octopus = "R105", PricePerDay = 125 },
+            new RegulatorSet { Id = 98, Category = ProductCategory.RegulatorSet, Brand = "Scubapro", Model = "", FirstStep = "MK17EVO", SecondStep = "C370", Octopus = "R095", PricePerDay = 100 },
+            new RegulatorSet { Id = 99, Category = ProductCategory.RegulatorSet, Brand = "Scubapro", Model = "", FirstStep = "MK25EVO BT", SecondStep = "A700 Carbon BT", Octopus = "S270", PricePerDay = 150 },
 
             // ===== MASKE/SNORKEL =====
             new MaskSnorkel { Id = 100, Category = ProductCategory.MaskSnorkel, Brand = "Scubapro", Model = "Ghost", Sizes = new() { Size.Small }, PricePerDay = 50 },
