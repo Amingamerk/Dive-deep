@@ -70,7 +70,9 @@ namespace DiveDeep.Controllers
             var variants = ProductRepository
                 .GetVariants(product.Brand, product.Model);
 
-            return View(variants);
+            ViewBag.Variants = variants;
+
+            return View(product);
         }
     }
 
