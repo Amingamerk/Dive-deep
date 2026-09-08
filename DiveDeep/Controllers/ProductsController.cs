@@ -19,7 +19,7 @@ namespace DiveDeep.Controllers
 
         public IActionResult Index()
         {
-            List<ProductCategory> categories = ProductRepository.GetProductCategories();
+            List<ProductCategory> categories = InMemoryProductRepository.GetProductCategories();
             List<CategoryCardViewModel> viewModel = new();
 
             foreach (ProductCategory category in categories)
@@ -46,7 +46,7 @@ namespace DiveDeep.Controllers
 
         public IActionResult Category(ProductCategory category)
         {
-            var products = ProductRepository.GetByCategory(category)
+            var products = InMemoryProductRepository.GetByCategory(category)
                 .GroupBy(p => new
                 {
                     p.Brand,
@@ -60,14 +60,14 @@ namespace DiveDeep.Controllers
 
         public IActionResult Details(int id)
         {
-            var product = ProductRepository.GetById(id);
+            var product = InMemoryProductRepository.GetById(id);
 
             if (product == null)
             {
                 return NotFound();
             }
 
-            var variants = ProductRepository
+            var variants = InMemoryProductRepository
                 .GetVariants(product.Brand, product.Model);
 
             ViewBag.Variants = variants;
