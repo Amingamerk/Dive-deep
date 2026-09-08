@@ -27,6 +27,49 @@ namespace DiveDeep.Data
                 .HasOne(b => b.Product)
                 .WithMany(p => p.Bookings)
                 .HasForeignKey(b => b.ProductId);
+
+
+
+            //modelBuilder.Entity<Product>(r =>
+            //{
+            //    r.HasData(InMemoryProductRepository.GetAll());
+            //});
+
+            modelBuilder.Entity<Product>(p =>
+            {
+                p.UseTptMappingStrategy();
+                p.ToTable("Products");
+            });
+            modelBuilder.Entity<BCD>(p =>
+            {
+                p.ToTable("BCDs");
+            });
+            modelBuilder.Entity<DiveSuit>(p =>
+            {
+                p.ToTable("DiveSuits");
+            });
+            modelBuilder.Entity<Fins>(p =>
+            {
+                p.ToTable("Fins");
+            });
+            modelBuilder.Entity<MaskSnorkel>(p =>
+            {
+                p.ToTable("MAskSnorkels");
+            });
+            modelBuilder.Entity<RegulatorSet>(p =>
+            {
+                p.ToTable("RegulatorSets");
+            });
+            modelBuilder.Entity<Tank>(p =>
+            {
+                p.ToTable("Tanks");
+            });
+
+
+            base.OnModelCreating(modelBuilder);
+
         }
+
+
     }
 }
