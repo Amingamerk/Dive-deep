@@ -24,9 +24,9 @@ namespace DiveDeep.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Booking>()
-                .HasOne<Product>(b => b.Product)
-                .WithMany(b => b.Product)
-                .HasForeignKey(p => p.ProductId);
+                .HasOne(b => b.Product)
+                .WithMany(p => p.Bookings)
+                .HasForeignKey(b => b.ProductId);
         }
     }
 }
