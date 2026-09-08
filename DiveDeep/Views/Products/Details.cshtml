@@ -4,4 +4,93 @@
     <h1>@Model.Brand</h1>
     <h1>@Model.Model</h1>
     <p>Fra @Model.PricePerDay kr./dag</p>
+     
+    <form id="bookingForm">
+        <div class="input-daterange input-group" id="datepicker">
+            <input type="text" class="form-control" placeholder="Start dato" name="start" id="startDate" required />
+            <span class="input-group-text">til</span>
+            <input type="text" class="form-control" placeholder="Slut dato" name="end" id="endDate" required />
+        </div>
+    </form>
+
+    <div id="availabilityMessage" class="mt-3"></div>
+    <div id="blockedDatesMessage" class="mt-3"></div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            var $startDate = $('#startDate');
+            var $endDate = $('#endDate');
+            var $availabilityMessage = $('#availabilityMessage');
+            var $blockedDatesMessage = $('#blockedDatesMessage');
+            var productId = @Model.Id;
+
+            function checkAvailability() {
+                var startDate = $startDate.val();
+                var endDate = $endDate.val();
+
+                // Ryd tidligere beskeder
+                $availabilityMessage.empty();
+                $blockedDatesMessage.empty();
+
+                if (!startDate || !endDate) {
+                    return;
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("CheckAvailability", "Products")',
+                    data: {
+                        productId: productId,
+                        startDate: startDate,
+                        endDate: endDate
+                    },
+                    success: function(response) {
+                        if (response.isAvailable) {
+                            $availabilityMessage
+                                .html('<div class="alert alert-success"><i class="bi bi-check-circle"></i> ✓ Produktet er tilgængeligt for de valgte datoer!</div>')
+                                .show();
+                        } else {
+                            $availabilityMessage
+                                .html('<div class="alert alert-danger"><i class="bi bi-exclamation-circle"></i> ✗ ' + response.message + '</div>')
+                                .show();
+                            
+                            if (response.blockedDates && response.blockedDates.length > 0) {
+                                var blockedHtml = '<div class="alert alert-warning"><strong>Produktet er booket på følgende datoer:</strong><ul>';
+                                response.blockedDates.forEach(function(dateRange) {
+                                    blockedHtml += '<li>' + dateRange + '</li>';
+                                });
+                                blockedHtml += '</ul></div>';
+                                $blockedDatesMessage.html(blockedHtml).show();
+                            }
+                        }
+                    },
+                    error: function() {
+                        $availabilityMessage
+                            .html('<div class="alert alert-danger"><i class="bi bi-exclamation-triangle"></i> Der opstod en fejl ved check af tilgængelighed</div>')
+                            .show();
+                    }
+                });
+            }
+
+            $startDate.datepicker({
+                format: 'dd/mm/yyyy',
+                startDate: new Date(),
+                todayHighlight: true
+            }).on('changeDate', function() {
+                var selectedStartDate = $startDate.datepicker('getDate');
+                $endDate.datepicker('setStartDate', selectedStartDate);
+                checkAvailability();
+            });
+
+            $endDate.datepicker({
+                format: 'dd/mm/yyyy',
+                startDate: new Date(),
+                todayHighlight: true
+            }).on('changeDate', function() {
+                checkAvailability();
+            });
+        });
+    </script>
+}
