@@ -67,10 +67,17 @@ namespace DiveDeep.Controllers
                 return NotFound();
             }
 
-            var variants = InMemoryProductRepository
-                .GetVariants(product.Brand, product.Model);
+            var variants = InMemoryProductRepository.GetVariants(product.Brand, product.Model);
 
+            // Extract unique sizes from variants using the virtual SizeOptions property
+            var sizeOptions = variants
+                .SelectMany(v => v.SizeOptions)
+                .Distinct()
+                .ToList();
+
+            // Store in ViewBag for the view
             ViewBag.Variants = variants;
+            ViewBag.SizeOptions = sizeOptions;
 
             return View(product);
         }
