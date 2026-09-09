@@ -31,17 +31,17 @@ namespace DiveDeep
 
                 context.Database.EnsureCreated();
 
-                //if (!context.Products.Any())
-                //{
-                //    var products = ProductRepository.GetAll();
-                //    // Clear ProductId values to allow database to auto-generate them
-                //    foreach (var product in products)
-                //    {
-                //        product.ProductId = 0;
-                //    }
-                //    context.Products.AddRange(products);
-                //    context.SaveChanges();
-                //}
+                if (!context.Products.Any())
+                {
+                    var products = InMemoryProductRepository.GetAll();
+                    // Clear ProductId values to allow database to auto-generate them
+                    foreach (var product in products)
+                    {
+                        product.ProductId = 0;
+                    }
+                    context.Products.AddRange(products);
+                    context.SaveChanges();
+                }
             }
 
             // Configure the HTTP request pipeline.

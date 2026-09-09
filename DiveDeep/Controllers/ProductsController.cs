@@ -98,8 +98,8 @@ namespace DiveDeep.Controllers
                 return Json(new { isAvailable = false, message = "Ugyldig datoformat" });
             }
 
-            var isAvailable = ProductRepository.IsProductAvailable(productId, parsedStartDate, parsedEndDate);
-            var blockedDates = ProductRepository.GetBlockedDates(productId, parsedStartDate, parsedEndDate);
+            var isAvailable = _productRepository.IsProductAvailable(productId, parsedStartDate, parsedEndDate);
+            var blockedDates = _productRepository.GetBlockedDates(productId, parsedStartDate, parsedEndDate);
 
             return Json(new
             {

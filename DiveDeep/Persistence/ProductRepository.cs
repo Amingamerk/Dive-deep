@@ -25,11 +25,19 @@ namespace DiveDeep.Persistence
         {
             _diveDeepContext.Database.EnsureCreated();
 
-        public static void Delete(int id) => products.RemoveAll(p => p.Id == id);
-        
-        public static Booking? FindOverlappingBooking(int productId, DateTime startTime, DateTime endTime, int? excludedBookingId = null)
+            var product = _diveDeepContext.Products.FirstOrDefault(p => p.ProductId == id);
+            if (product == null)
+            {
+                //TODO
+            }
+            return product;
+        }
+
+        public  void Delete(int id) => GetAll().RemoveAll(p => p.ProductId == id);
+
+        public Booking? FindOverlappingBooking(int productId, DateTime startTime, DateTime endTime, int? excludedBookingId = null)
         {
-            return BookingRepository.GetAll()
+            return _diveDeepContext.Bookings
                 .FirstOrDefault(x =>
                     x.ProductId == productId &&
                     x.StartTime < endTime &&
@@ -38,27 +46,27 @@ namespace DiveDeep.Persistence
                 );
         }
 
-        public static bool IsProductAvailable(int productId, DateTime startDate, DateTime endDate, int requestedQuantity = 1)
+        public bool IsProductAvailable(int productId, DateTime startDate, DateTime endDate, int requestedQuantity = 1)
         {
             var booking = FindOverlappingBooking(productId, startDate, endDate);
             return booking == null;
         }
 
-        public static List<Product> GetAvailableProducts(ProductCategory category, DateTime startDate, DateTime endDate)
+        public List<Product> GetAvailableProducts(ProductCategory category, DateTime startDate, DateTime endDate)
         {
             return GetByCategory(category)
-                .Where(p => !BookingRepository.GetAll().Any(b => 
-                    b.ProductId == p.Id &&
+                .Where(p => !_diveDeepContext.Bookings.Any(b =>
+                    b.ProductId == p.ProductId &&
                     b.StartTime < endDate &&
                     b.EndTime > startDate
                 ))
                 .ToList();
         }
-        
-        public static int GetAvailableCount(int productId, DateTime startDate, DateTime endDate)
+
+        public  int GetAvailableCount(int productId, DateTime startDate, DateTime endDate)
         {
-            return 1 - (BookingRepository.GetAll()
-                .Where(b => 
+            return 1 - (_diveDeepContext.Bookings
+                .Where(b =>
                     b.ProductId == productId &&
                     b.StartTime < endDate &&
                     b.EndTime > startDate
@@ -67,11 +75,11 @@ namespace DiveDeep.Persistence
             );
         }
 
-        public static List<string> GetBlockedDates(int productId, DateTime startDate, DateTime endDate)
+        public List<string> GetBlockedDates(int productId, DateTime startDate, DateTime endDate)
         {
             var blockedDates = new List<string>();
-            var bookings = BookingRepository.GetAll()
-                .Where(b => 
+            var bookings = _diveDeepContext.Bookings
+                .Where(b =>
                     b.ProductId == productId &&
                     b.StartTime < endDate &&
                     b.EndTime > startDate
@@ -82,19 +90,20 @@ namespace DiveDeep.Persistence
             {
                 var blockStart = booking.StartTime > startDate ? booking.StartTime : startDate;
                 var blockEnd = booking.EndTime < endDate ? booking.EndTime : endDate;
-                
+
                 blockedDates.Add($"{blockStart:dd/MM/yyyy} - {blockEnd:dd/MM/yyyy}");
             }
 
             return blockedDates;
         }
-        public static void Update(int id, Product product)
-            var product = _diveDeepContext.Products.FirstOrDefault(p => p.ProductId == id);
-            if (product == null)
-            {
-                //TODO
-            }
-            return product;
+        public void Update(int id, Product product) {
+
+            //var product = _diveDeepContext.Products.FirstOrDefault(p => p.ProductId == id);
+            //if (product == null)
+            //{
+            //    TODO
+            ////}
+            //return product;
 
         }
         

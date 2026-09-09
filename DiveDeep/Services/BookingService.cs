@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using DiveDeep.Models;
 using DiveDeep.Persistence;
 
@@ -5,6 +8,13 @@ namespace DiveDeep.Services
 {
     public class BookingService
     {
+        private readonly IProductRepository _productRepository;
+
+        public BookingService(IProductRepository productRepository)
+        {
+            _productRepository = productRepository;
+        }
+
         public BookingValidationResult ValidateBooking(Booking booking)
         {
             var result = new BookingValidationResult();
@@ -30,7 +40,7 @@ namespace DiveDeep.Services
             }
 
             // Krav 3: Produktet skal være tilgængeligt i hele perioden
-            var isAvailable = ProductRepository.IsProductAvailable(
+            var isAvailable = _productRepository.IsProductAvailable(
                 booking.ProductId,
                 startTime,
                 endTime,
@@ -50,10 +60,10 @@ namespace DiveDeep.Services
 
         public List<Product> GetAvailableProducts(int categoryId, DateTime startDate, DateTime endDate)
         {
-            var products = ProductRepository.GetAll();
+            var products = _productRepository.GetAll();
             return products
                 .Where(p => p.Category == (Enums.ProductCategory)categoryId)
-                .Where(p => ProductRepository.IsProductAvailable(p.Id, startDate, endDate))
+                .Where(p => _productRepository.IsProductAvailable(p.ProductId, startDate, endDate))
                 .ToList();
         }
     }
