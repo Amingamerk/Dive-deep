@@ -88,6 +88,26 @@ namespace DiveDeep.Controllers
 
             return View(product);
         }
+
+        [HttpPost]
+        public IActionResult CheckAvailability(int productId, string startDate, string endDate)
+        {
+            if (!DateTime.TryParseExact(startDate, "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out var parsedStartDate) ||
+                !DateTime.TryParseExact(endDate, "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out var parsedEndDate))
+            {
+                return Json(new { isAvailable = false, message = "Ugyldig datoformat" });
+            }
+
+            var isAvailable = ProductRepository.IsProductAvailable(productId, parsedStartDate, parsedEndDate);
+            var blockedDates = ProductRepository.GetBlockedDates(productId, parsedStartDate, parsedEndDate);
+
+            return Json(new
+            {
+                isAvailable = isAvailable,
+                message = isAvailable ? "Produktet er tilgængeligt" : "Produktet er desværre ikke tilgængeligt for de valgte datoer",
+                blockedDates = blockedDates
+            });
+        }
     }
 
 }
