@@ -1,23 +1,6 @@
 ﻿@model DiveDeep.Models.Product
 
-@* <div class="card-body">
-    <h1>@Model.Brand</h1>
-    <h1>@Model.Model</h1>
-    <p>Fra @Model.PricePerDay kr./dag</p>
-     
-    <form id="bookingForm">
-        <div class="input-daterange input-group" id="datepicker">
-            <input type="text" class="form-control" placeholder="Start dato" name="start" id="startDate" required />
-            <span class="input-group-text">til</span>
-            <input type="text" class="form-control" placeholder="Slut dato" name="end" id="endDate" required />
-        </div>
-    </form>
 
-    <div id="availabilityMessage" class="mt-3"></div>
-    <div id="blockedDatesMessage" class="mt-3"></div>
-</div>
-
-} *@
 
 <div class="container mt-4" style="max-width: 600px;">
 
@@ -126,7 +109,7 @@
             $startDate.datepicker({
                 format: 'dd/mm/yyyy',
                 startDate: new Date(),
-                todayHighlight: true
+                
             }).on('changeDate', function() {
                 var selectedStartDate = $startDate.datepicker('getDate');
                 $endDate.datepicker('setStartDate', selectedStartDate);
@@ -136,7 +119,7 @@
             $endDate.datepicker({
                 format: 'dd/mm/yyyy',
                 startDate: new Date(),
-                todayHighlight: true
+                
             }).on('changeDate', function() {
                 checkAvailability();
             });
