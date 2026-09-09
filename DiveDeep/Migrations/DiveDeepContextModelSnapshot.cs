@@ -61,11 +61,6 @@ namespace DiveDeep.Migrations
                     b.Property<int>("Category")
                         .HasColumnType("int");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(13)
-                        .HasColumnType("nvarchar(13)");
-
                     b.Property<string>("Model")
                         .HasColumnType("nvarchar(max)");
 
@@ -74,11 +69,9 @@ namespace DiveDeep.Migrations
 
                     b.HasKey("ProductId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
 
-                    b.HasDiscriminator<string>("Discriminator").HasValue("Product");
-
-                    b.UseTphMappingStrategy();
+                    b.UseTptMappingStrategy();
                 });
 
             modelBuilder.Entity("DiveDeep.Models.BCD", b =>
@@ -89,13 +82,7 @@ namespace DiveDeep.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("Products", t =>
-                        {
-                            t.Property("Sizes")
-                                .HasColumnName("BCD_Sizes");
-                        });
-
-                    b.HasDiscriminator().HasValue("BCD");
+                    b.ToTable("BCDs", (string)null);
                 });
 
             modelBuilder.Entity("DiveDeep.Models.DiveSuit", b =>
@@ -117,13 +104,7 @@ namespace DiveDeep.Migrations
                     b.Property<string>("Thickness")
                         .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("Products", t =>
-                        {
-                            t.Property("Sizes")
-                                .HasColumnName("DiveSuit_Sizes");
-                        });
-
-                    b.HasDiscriminator().HasValue("DiveSuit");
+                    b.ToTable("DiveSuits", (string)null);
                 });
 
             modelBuilder.Entity("DiveDeep.Models.Fins", b =>
@@ -134,13 +115,7 @@ namespace DiveDeep.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("Products", t =>
-                        {
-                            t.Property("Sizes")
-                                .HasColumnName("Fins_Sizes");
-                        });
-
-                    b.HasDiscriminator().HasValue("Fins");
+                    b.ToTable("Fins", (string)null);
                 });
 
             modelBuilder.Entity("DiveDeep.Models.MaskSnorkel", b =>
@@ -151,7 +126,7 @@ namespace DiveDeep.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasDiscriminator().HasValue("MaskSnorkel");
+                    b.ToTable("MAskSnorkels", (string)null);
                 });
 
             modelBuilder.Entity("DiveDeep.Models.RegulatorSet", b =>
@@ -167,7 +142,7 @@ namespace DiveDeep.Migrations
                     b.Property<string>("SecondStep")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasDiscriminator().HasValue("RegulatorSet");
+                    b.ToTable("RegulatorSets", (string)null);
                 });
 
             modelBuilder.Entity("DiveDeep.Models.Tank", b =>
@@ -178,13 +153,7 @@ namespace DiveDeep.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("Products", t =>
-                        {
-                            t.Property("Sizes")
-                                .HasColumnName("Tank_Sizes");
-                        });
-
-                    b.HasDiscriminator().HasValue("Tank");
+                    b.ToTable("Tanks", (string)null);
                 });
 
             modelBuilder.Entity("DiveDeep.Models.Booking", b =>
@@ -196,6 +165,60 @@ namespace DiveDeep.Migrations
                         .IsRequired();
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("DiveDeep.Models.BCD", b =>
+                {
+                    b.HasOne("DiveDeep.Models.Product", null)
+                        .WithOne()
+                        .HasForeignKey("DiveDeep.Models.BCD", "ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DiveDeep.Models.DiveSuit", b =>
+                {
+                    b.HasOne("DiveDeep.Models.Product", null)
+                        .WithOne()
+                        .HasForeignKey("DiveDeep.Models.DiveSuit", "ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DiveDeep.Models.Fins", b =>
+                {
+                    b.HasOne("DiveDeep.Models.Product", null)
+                        .WithOne()
+                        .HasForeignKey("DiveDeep.Models.Fins", "ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DiveDeep.Models.MaskSnorkel", b =>
+                {
+                    b.HasOne("DiveDeep.Models.Product", null)
+                        .WithOne()
+                        .HasForeignKey("DiveDeep.Models.MaskSnorkel", "ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DiveDeep.Models.RegulatorSet", b =>
+                {
+                    b.HasOne("DiveDeep.Models.Product", null)
+                        .WithOne()
+                        .HasForeignKey("DiveDeep.Models.RegulatorSet", "ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DiveDeep.Models.Tank", b =>
+                {
+                    b.HasOne("DiveDeep.Models.Product", null)
+                        .WithOne()
+                        .HasForeignKey("DiveDeep.Models.Tank", "ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DiveDeep.Models.Product", b =>

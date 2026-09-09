@@ -1,4 +1,5 @@
 using DiveDeep.Data;
+using DiveDeep.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace DiveDeep
@@ -7,6 +8,8 @@ namespace DiveDeep
     {
         public static void Main(string[] args)
         {
+
+
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
@@ -17,7 +20,29 @@ namespace DiveDeep
                 options.UseSqlServer(builder.Configuration.GetConnectionString("default"));
             });
 
+            builder.Services.AddScoped<IProductRepository, ProductRepository>();
+
             var app = builder.Build();
+
+            // Opret database og seed data
+            using (var scope = app.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<DiveDeepContext>();
+
+                context.Database.EnsureCreated();
+
+                //if (!context.Products.Any())
+                //{
+                //    var products = ProductRepository.GetAll();
+                //    // Clear ProductId values to allow database to auto-generate them
+                //    foreach (var product in products)
+                //    {
+                //        product.ProductId = 0;
+                //    }
+                //    context.Products.AddRange(products);
+                //    context.SaveChanges();
+                //}
+            }
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
