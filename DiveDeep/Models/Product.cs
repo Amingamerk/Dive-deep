@@ -1,21 +1,20 @@
-using static DiveDeep.Models.Enums;
+using System.Collections.Generic;
+using DiveDeep.Models;
 
 namespace DiveDeep.Models
-  
-    
 {
     public abstract class Product
     {
-        public int Id { get; set; }
+        public int ProductId { get; set; }
         public string Brand { get; set; } = "";
         public string? Model { get; set; } = "";
         public float PricePerDay { get; set; }
-        public ProductCategory Category { get; set; }
-       
+        public Enums.ProductCategory Category { get; set; }
+        public virtual IEnumerable<string> SizeOptions { get; }
+        public virtual IEnumerable<string> SuitTypeOptions { get; }
+        public virtual string SizeLabel { get; }
 
-        public virtual IEnumerable<string> SizeOptions => Enumerable.Empty<string>();
-        public virtual IEnumerable<string> SuitTypeOptions => Enumerable.Empty<string>();
-        public virtual string SizeLabel => "Størrelse"; 
-
+        // Navigation: collection of bookings that reference this product
+        public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
     }
 }
