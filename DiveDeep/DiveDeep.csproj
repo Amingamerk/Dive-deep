@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>DiveDeep</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Models\Domain\**" />
+    <Content Remove="Models\Domain\**" />
+    <EmbeddedResource Remove="Models\Domain\**" />
+    <None Remove="Models\Domain\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\images\products\categories\" />
+  </ItemGroup>
+
+</Project>

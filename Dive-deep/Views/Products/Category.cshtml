@@ -1,0 +1,23 @@
+﻿@using Dive_deep.Models
+@model List<Product>
+
+<h1>Produkter</h1>
+
+@foreach (var product in Model)
+{
+    <div class="card mb-3">
+        <div class="card-body">
+
+            <h5>@product.Brand</h5>
+
+            <p>
+                Model: @product.Model
+            </p>
+
+            <p>
+                Pris pr. dag: @product.PricePerDay kr.
+            </p>
+
+        </div>
+    </div>
+}
