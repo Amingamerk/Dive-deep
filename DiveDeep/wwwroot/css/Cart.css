@@ -1,0 +1,416 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+.kurv-wrapper {
+    min-height: 100vh;
+    background: linear-gradient(160deg, #1e1152 0%, #2a1469 60%, #1a0e4a 100%);
+    font-family: 'Inter', sans-serif;
+    padding: 60px 16px;
+}
+
+.kurv-container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.kurv-heading {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+    .kurv-heading h1 {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0 0 6px;
+    }
+
+.kurv-subtitle {
+    color: rgba(255,255,255,0.45);
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.kurv-layout {
+    display: flex;
+    gap: 32px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.kurv-items {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* --- Cards --- */
+.kurv-card {
+    background: rgba(42,26,110,0.7);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 18px;
+    padding: 20px;
+}
+
+/* Lejeperiode */
+.periode-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    background: rgba(255,255,255,0.06);
+}
+
+.label {
+    color: rgba(255,255,255,0.4);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin: 0 0 8px;
+}
+
+.periode-inputs {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.dato-input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    font-size: 0.9rem;
+    font-family: 'Inter', sans-serif;
+    padding: 4px 0;
+    outline: none;
+}
+
+    .dato-input:focus {
+        border-bottom-color: rgba(255,255,255,0.5);
+    }
+
+.pil {
+    color: rgba(255,255,255,0.3);
+}
+
+.dage-badge {
+    background: rgba(245,197,24,0.15);
+    color: #f5c518;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 6px 16px;
+    border-radius: 99px;
+}
+
+/* Vare */
+.vare-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.vare-ikon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.07);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.vare-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.vare-titel-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.vare-navn {
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.88rem;
+    margin: 0;
+}
+
+.rabat-badge {
+    background: rgba(245,197,24,0.18);
+    color: #f5c518;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 99px;
+}
+
+.vare-meta {
+    color: rgba(255,255,255,0.35);
+    font-size: 0.75rem;
+    margin: 3px 0 0;
+}
+
+.vare-enhed {
+    color: rgba(255,255,255,0.35);
+    font-size: 0.75rem;
+    margin: 3px 0 0;
+}
+
+/* Antal */
+.antal-kontrol {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.antal-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.5);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, color 0.15s;
+}
+
+    .antal-btn:hover {
+        background: rgba(255,255,255,0.1);
+        color: #fff;
+    }
+
+.antal-vaerdi {
+    color: #fff;
+    font-size: 0.88rem;
+    font-weight: 500;
+    width: 20px;
+    text-align: center;
+}
+
+/* Pris */
+.vare-pris {
+    text-align: right;
+    flex-shrink: 0;
+    min-width: 70px;
+}
+
+.pris-original {
+    color: rgba(255,255,255,0.3);
+    font-size: 0.75rem;
+    text-decoration: line-through;
+    margin: 0;
+}
+
+.pris-rabat {
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.88rem;
+    margin: 0;
+}
+
+.pris-dage {
+    color: rgba(255,255,255,0.3);
+    font-size: 0.72rem;
+    margin: 2px 0 0;
+}
+
+/* Fjern-knap */
+.fjern-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.2);
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: background 0.15s, color 0.15s;
+    flex-shrink: 0;
+}
+
+    .fjern-btn:hover {
+        background: rgba(220,50,50,0.12);
+        color: #f87171;
+    }
+
+.tilbage-link {
+    color: rgba(255,255,255,0.35);
+    text-decoration: none;
+    font-size: 0.85rem;
+    margin-top: 8px;
+    display: inline-block;
+    transition: color 0.15s;
+}
+
+    .tilbage-link:hover {
+        color: rgba(255,255,255,0.65);
+    }
+
+/* --- Ordreoversigt --- */
+.kurv-summary {
+    width: 300px;
+    flex-shrink: 0;
+    background: rgba(42,26,110,0.8);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 18px;
+    padding: 24px;
+    position: sticky;
+    top: 24px;
+}
+
+    .kurv-summary h2 {
+        color: #fff;
+        font-size: 1rem;
+        font-weight: 700;
+        margin: 0 0 24px;
+    }
+
+.summary-linjer {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-size: 0.88rem;
+}
+
+.summary-linje {
+    display: flex;
+    justify-content: space-between;
+}
+
+.summary-label {
+    color: rgba(255,255,255,0.45);
+}
+
+.summary-vaerdi {
+    color: #fff;
+}
+
+.gul {
+    color: #f5c518 !important;
+}
+
+.summary-total {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 14px;
+    margin-top: 4px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+/* Rabatkode */
+.rabatkode-sektion {
+    margin-top: 24px;
+}
+
+.rabatkode-input-row {
+    display: flex;
+    gap: 8px;
+}
+
+.rabatkode-input {
+    flex: 1;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 8px 12px;
+    color: #fff;
+    font-size: 0.85rem;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+    .rabatkode-input::placeholder {
+        color: rgba(255,255,255,0.2);
+    }
+
+    .rabatkode-input:focus {
+        border-color: rgba(255,255,255,0.3);
+    }
+
+.rabatkode-btn {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 8px 14px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: background 0.15s;
+}
+
+    .rabatkode-btn:hover {
+        background: rgba(255,255,255,0.18);
+    }
+
+/* Betal-knap */
+.betal-btn {
+    width: 100%;
+    margin-top: 24px;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    background: #f5c518;
+    color: #000;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: filter 0.15s;
+}
+
+    .betal-btn:hover {
+        filter: brightness(1.08);
+    }
+
+.summary-note {
+    color: rgba(255,255,255,0.25);
+    font-size: 0.72rem;
+    text-align: center;
+    margin: 14px 0 0;
+}
+
+/* Trust badges */
+.trust-badges {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 16px;
+    margin-top: 16px;
+}
+
+.trust-badge {
+    color: rgba(255,255,255,0.28);
+    font-size: 0.7rem;
+    text-align: center;
+}
+
+/* Responsiv */
+@media (max-width: 900px) {
+    .kurv-layout {
+        flex-direction: column;
+    }
+
+    .kurv-summary {
+        width: 100%;
+        position: static;
+    }
+}
