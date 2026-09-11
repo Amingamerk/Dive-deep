@@ -25,9 +25,9 @@
                 <ul class="navbar-nav align-items-lg-center gap-lg-3">
                     <li class="nav-item"><a class="nav-link" asp-controller="Products" asp-action="Index">Udstyr</a></li>
                     <li class="nav-item"><a class="nav-link" asp-controller="Bundles" asp-action="Index">Pakker</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="FAQ">FAQ</a></li>
                     <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="AboutUs">Om os</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Contact">Kontakt</a></li>
+                    @*<li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="FAQ">FAQ</a></li> *@
+                    @*<li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Contact">Kontakt</a></li> *@
                     <li class="nav-item ms-lg-3 mt-3 mt-lg-0">
                         <a class="btn btn-warning rounded-4 px-4" asp-controller="Bundles" asp-action="Index">Lej udstyr</a>
                     </li>
@@ -52,6 +52,7 @@
                     <h2 class="h6 fw-bold mb-3">KONTAKT</h2>
                     <p class="mb-1"><a class="text-white-50" href="tel:+4560708090">+45 60 70 80 90</a></p>
                     <p class="mb-0"><a class="text-white-50" href="mailto:info@divedeep.dk">info@divedeep.dk</a></p>
+                    <p class="mb-0"><a class="text-white-50" asp-controller="Home" asp-action="FAQ">FAQ</a></p>
                 </div>
                 <div class="col-md-4">
                     <h2 class="h6 fw-bold mb-3">ÅBNINGSTIDER</h2>

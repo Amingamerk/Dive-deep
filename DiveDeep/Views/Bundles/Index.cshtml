@@ -1,5 +1,50 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@* ---------- Pakkeløsninger ---------- *@
+<section class="container py-5 my-5">
+    <h2 class="text-center display-6 fw-light mb-5">Pakkeløsninger</h2>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="col">
+            <div class="card h-100 bg-white bg-opacity-10 border-0 rounded-4">
+                <div class="card-body p-4 d-flex flex-column">
+                    <span class="badge text-bg-warning rounded-pill align-self-start mb-3">-20 %</span>
+                    <h3 class="card-title h5 fw-bold">Komplet dykkersæt</h3>
+                    <p class="text-warning fw-bold">fra 520 kr/dag</p>
+                    <p class="card-text text-white-50">
+                        BCD, dykkerdragt, regulatorsæt, tank, finner, maske og snorkel.
+                        Vælg størrelse og periode, så står det klar.
+                    </p>
+                    <a class="btn btn-warning rounded-4 align-self-start mt-auto px-4" href="/Pakker">Vælg pakke</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card h-100 bg-white bg-opacity-10 border-0 rounded-4">
+                <div class="card-body p-4 d-flex flex-column">
+                    <span class="badge text-bg-warning rounded-pill align-self-start mb-3">-20 %</span>
+                    <h3 class="card-title h5 fw-bold">Komplet snorkelsæt</h3>
+                    <p class="text-warning fw-bold">fra 140 kr/dag</p>
+                    <p class="card-text text-white-50">
+                        Maske, snorkel og finner. Det letteste sted at starte,
+                        hvis du bare vil se, hvad der er dernede.
+                    </p>
+                    <a class="btn btn-warning rounded-4 align-self-start mt-auto px-4" href="/Pakker">Vælg pakke</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card h-100 bg-white bg-opacity-10 border-0 rounded-4">
+                <div class="card-body p-4 d-flex flex-column">
+                    <h3 class="card-title h5 fw-bold mt-5 pt-2">Sæt det selv sammen</h3>
+                    <p class="text-warning fw-bold">fra 50 kr/dag</p>
+                    <p class="card-text text-white-50">
+                        Mangler du kun en tank eller et par finner? Lej de enkelte dele
+                        i præcis den periode, du skal bruge dem.
+                    </p>
+                    <a class="btn btn-outline-light rounded-4 align-self-start mt-auto px-4" asp-controller="Products" asp-action="Index">Se kategorier</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
