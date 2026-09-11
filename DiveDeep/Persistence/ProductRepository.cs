@@ -63,17 +63,17 @@ namespace DiveDeep.Persistence
                 .ToList();
         }
 
-        public  int GetAvailableCount(int productId, DateTime startDate, DateTime endDate)
-        {
-            return 1 - (_diveDeepContext.Bookings
-                .Where(b =>
-                    b.ProductId == productId &&
-                    b.StartTime < endDate &&
-                    b.EndTime > startDate
-                )
-                .Sum(b => b.Quantity)
-            );
-        }
+        //public int getavailablecount(int productid, datetime startdate, datetime enddate)
+        //{
+        //    return 1 - (_divedeepcontext.bookings
+        //        .where(b =>
+        //            b.productid == productid &&
+        //            b.starttime < enddate &&
+        //            b.endtime > startdate
+        //        )
+        //        .sum(b => b.quantity)
+        //    );
+        //}
 
         public List<string> GetBlockedDates(int productId, DateTime startDate, DateTime endDate)
         {

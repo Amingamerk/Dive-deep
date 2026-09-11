@@ -43,8 +43,8 @@ namespace DiveDeep.Services
             var isAvailable = _productRepository.IsProductAvailable(
                 booking.ProductId,
                 startTime,
-                endTime,
-                booking.Quantity
+                endTime
+                //booking.Quantity
             );
 
             if (!isAvailable)
