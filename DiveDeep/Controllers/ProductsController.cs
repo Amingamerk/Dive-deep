@@ -45,11 +45,11 @@ namespace DiveDeep.Controllers
             return View(viewModel);
         }
 
-        public IActionResult Categories()
-        {
-            var categories = Enum.GetValues<ProductCategory>();
-            return View(categories);
-        }
+        //public IActionResult Categories()
+        //{
+        //    var categories = Enum.GetValues<ProductCategory>();
+        //    return View(categories);
+        //}
 
         public IActionResult Category(ProductCategory category)
         {

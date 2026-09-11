@@ -3,9 +3,13 @@
 
 
 <div class="container mt-4" style="max-width: 600px;">
+    <form asp-controller="Bookings"
+          asp-action="Add"
+          method="post"
+          class="card p-4 shadow-sm">
 
+        <input type="hidden" name="ProductId" value="@Model.ProductId" />
 
-    <form method="post" class="card p-4 shadow-sm">
         <div class="mb-3">
             <h3 class="form-label">Mærke: @Model.Brand</h3>
         </div>
@@ -14,6 +18,9 @@
             <h3 class="form-label">Model: @Model.Model</h3>
         </div>
 
+
+        @* This is the part that probably should be looked at, to get the correct ProductId reference *@
+        @* Is this also possibly the correct spot to choose male or female for diving suits? *@
         @if (Model.SizeOptions?.Any() == true)
         {
             <div class="mb-3">
@@ -27,25 +34,38 @@
             </div>
         }
 
-        <div>
-            
-            <form id="bookingForm">
-                <div class="input-daterange input-group" id="datepicker">
-                    <input type="text" class="form-control" placeholder="Start dato" name="start" id="startDate" required />
-                    <span class="input-group-text">til</span>
-                    <input type="text" class="form-control" placeholder="Slut dato" name="end" id="endDate" required />
-                </div>
-            </form>
+        <div class="input-daterange input-group" id="datepicker">
+            <input type="text"
+                   class="form-control"
+                   placeholder="Start dato"
+                   name="StartTime"
+                   id="startDate"
+                   required />
 
-            <div id="availabilityMessage" class="mt-3"></div>
-            <div id="blockedDatesMessage" class="mt-3"></div>
-         
-            <div class="d-flex justify-content-between">
-                <a asp-controller="Products" asp-action="Index" class="btn btn-danger">Cancel</a>
-                <a asp-controller="Bookings" asp-action="Add"  class="btn btn-primary">Book</a>
-            </div>
+            <span class="input-group-text">til</span>
+
+            <input type="text"
+                   class="form-control"
+                   placeholder="Slut dato"
+                   name="EndTime"
+                   id="endDate"
+                   required />
         </div>
-        
+
+        <div id="availabilityMessage" class="mt-3"></div>
+        <div id="blockedDatesMessage" class="mt-3"></div>
+
+        <div class="d-flex justify-content-between">
+            <a asp-controller="Products"
+               asp-action="Index"
+               class="btn btn-danger">
+                Cancel
+            </a>
+
+            <button type="submit" class="btn btn-primary">
+                Book
+            </button>
+        </div>
     </form>
 </div>
 
@@ -87,7 +107,7 @@
                             $availabilityMessage
                                 .html('<div class="alert alert-danger"><i class="bi bi-exclamation-circle"></i> ✗ ' + response.message + '</div>')
                                 .show();
-                            
+
                             if (response.blockedDates && response.blockedDates.length > 0) {
                                 var blockedHtml = '<div class="alert alert-warning"><strong>Produktet er booket på følgende datoer:</strong><ul>';
                                 response.blockedDates.forEach(function(dateRange) {
@@ -109,7 +129,7 @@
             $startDate.datepicker({
                 format: 'dd/mm/yyyy',
                 startDate: new Date(),
-                
+
             }).on('changeDate', function() {
                 var selectedStartDate = $startDate.datepicker('getDate');
                 $endDate.datepicker('setStartDate', selectedStartDate);
@@ -119,7 +139,7 @@
             $endDate.datepicker({
                 format: 'dd/mm/yyyy',
                 startDate: new Date(),
-                
+
             }).on('changeDate', function() {
                 checkAvailability();
             });
