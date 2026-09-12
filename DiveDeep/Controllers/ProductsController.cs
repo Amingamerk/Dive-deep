@@ -1,7 +1,8 @@
-using DiveDeep.ViewModels;
-using static DiveDeep.Models.Enums;
+using DiveDeep.Models;
 using DiveDeep.Persistence;
+using DiveDeep.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using static DiveDeep.Models.Enums;
 
 namespace DiveDeep.Controllers
 {
@@ -74,19 +75,61 @@ namespace DiveDeep.Controllers
                 return NotFound();
             }
 
-            var variants = _productRepository.GetVariants(product.Brand, product.Model);
+            List<Product> variants = 
+                _productRepository.GetVariants(product.Brand, product.Model)
+                    .OrderBy(v => v.ProductId)
+                    .ToList();
 
-            // Extract unique sizes from variants using the virtual SizeOptions property
-            var sizeOptions = variants
-                .SelectMany(v => v.SizeOptions)
-                .Distinct()
-                .ToList();
+            // create productviewmodel
+            ProductViewModel pvm = new();
 
-            // Store in ViewBag for the view
-            ViewBag.Variants = variants;
-            ViewBag.SizeOptions = sizeOptions;
+            pvm.Brand = product.Brand;
+            pvm.Model = product.Model;
+            pvm.PricePerDay = product.PricePerDay;
+            pvm.SizeLabel = product.SizeLabel ?? "Størrelse";
+            pvm.SelectedProductId = product.ProductId;
 
-            return View(product);
+            foreach (Product p in variants)
+            {
+                ProductVariantViewModel pvvm = new();
+
+                pvvm.ProductId = p.ProductId;
+                pvvm.Group = p.VariantGroup;
+
+                // cool version:
+                //pvvm.Label = p.SizeOptions != null ? string.Join(", ", p.SizeOptions) : (p.Model ?? "");
+
+                // boring version:
+                if (p.SizeOptions != null)
+                {
+                    pvvm.Label = string.Join(", ", p.SizeOptions);
+                }
+                else
+                {
+                    if (p.Model != null)
+                    {
+                        pvvm.Label = p.Model;
+                    }
+                    else
+                    {
+                        pvvm.Label = "";
+                    }
+                }
+                pvm.Variants.Add(pvvm);
+            }
+
+            return View(pvm);
+
+
+            //// Extract unique sizes from variants using the virtual SizeOptions property
+            //var sizeOptions = variants
+            //    .SelectMany(v => v.SizeOptions)
+            //    .Distinct()
+            //    .ToList();
+
+            //// Store in ViewBag for the view
+            //ViewBag.Variants = variants;
+            //ViewBag.SizeOptions = sizeOptions;
         }
 
         [HttpPost]

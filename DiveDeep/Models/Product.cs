@@ -13,6 +13,7 @@ namespace DiveDeep.Models
         public virtual IEnumerable<string> SizeOptions { get; }
         public virtual IEnumerable<string> SuitTypeOptions { get; }
         public virtual string SizeLabel { get; }
+        public virtual string? VariantGroup { get; } = null;
 
         // Navigation: collection of bookings that reference this product
         public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();

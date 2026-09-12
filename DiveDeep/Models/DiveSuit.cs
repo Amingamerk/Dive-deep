@@ -13,6 +13,8 @@ namespace DiveDeep.Models
 
         public List<SuitType> SuitTypes { get; set; } = new();
         public override IEnumerable<string> SuitTypeOptions => SuitTypes.Select(st => st.ToString());
+
+        public override string? VariantGroup => Thickness == null ? Gender : $"{Gender} – {Thickness}";
     }
 }
 

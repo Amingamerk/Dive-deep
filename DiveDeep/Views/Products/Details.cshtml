@@ -1,4 +1,6 @@
-﻿@model DiveDeep.Models.Product
+﻿@model DiveDeep.ViewModels.ProductViewModel
+
+
 
 
 
@@ -7,8 +9,6 @@
           asp-action="Add"
           method="post"
           class="card p-4 shadow-sm">
-
-        <input type="hidden" name="ProductId" value="@Model.ProductId" />
 
         <div class="mb-3">
             <h3 class="form-label">Mærke: @Model.Brand</h3>
@@ -21,17 +21,36 @@
 
         @* This is the part that probably should be looked at, to get the correct ProductId reference *@
         @* Is this also possibly the correct spot to choose male or female for diving suits? *@
-        @if (Model.SizeOptions?.Any() == true)
+        @if (Model.Variants.Count > 1)
         {
             <div class="mb-3">
                 <label class="form-label">@Model.SizeLabel</label>
-                <select class="form-select" name="Size">
-                    @foreach (var size in ViewBag.SizeOptions)
+                <select class="form-select" name="ProductId">
+                    @foreach (var group in Model.Variants.GroupBy(v => v.Group))
                     {
-                        <option>@size</option>
+                        if (group.Key != null)
+                        {
+                            <optgroup label="@group.Key">
+                                @foreach (var variant in group)
+                                {
+                                    <option value="@variant.ProductId" selected="@(variant.ProductId == Model.SelectedProductId)">@variant.Label</option>
+                                }
+                            </optgroup>
+                        }
+                        else
+                        {
+                            foreach (var variant in group)
+                            {
+                                <option value="@variant.ProductId" selected="@(variant.ProductId == Model.SelectedProductId)">@variant.Label</option>
+                            }
+                        }
                     }
                 </select>
             </div>
+        }
+        else
+        {
+            <input type="hidden" name="ProductId" value="@Model.SelectedProductId" />
         }
 
         <div class="input-daterange input-group" id="datepicker">
@@ -76,9 +95,9 @@
             var $endDate = $('#endDate');
             var $availabilityMessage = $('#availabilityMessage');
             var $blockedDatesMessage = $('#blockedDatesMessage');
-            var productId = @Model.ProductId;
 
             function checkAvailability() {
+                var productId = $('[name="ProductId"]').val();
                 var startDate = $startDate.val();
                 var endDate = $endDate.val();
 
@@ -142,6 +161,7 @@
 
             }).on('changeDate', function() {
                 checkAvailability();
+                $('select[name="ProductId"]').on('change', checkAvailability);
             });
         });
     </script>
