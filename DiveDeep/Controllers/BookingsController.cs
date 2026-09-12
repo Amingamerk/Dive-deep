@@ -2,6 +2,7 @@
 using DiveDeep.Persistence;
 using DiveDeep.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
 
 namespace DiveDeep.Controllers
 {
@@ -9,25 +10,37 @@ namespace DiveDeep.Controllers
     {
         private readonly IBookingRepository _bookingRepository;
 
-
         public BookingsController(IBookingRepository bookingRepository)
         {
             _bookingRepository = bookingRepository;
         }
 
-        //public IActionResult Index()
-        //{
-        //    var bookings = _bookingRepository.GetAll();
-        //    return View();
-        //}
-
-
         [HttpPost]
-        public IActionResult Add(Booking booking)
+        public IActionResult Add(int productId, string dateRange)
         {
-            _bookingRepository.Add(booking);
-            return RedirectToAction("Details", "Products", new { id = booking.ProductId });
+            string[] parts = dateRange.Split(" til ");
 
+            DateTime startTime = DateTime.ParseExact(parts[0], "dd/MM/yyyy", CultureInfo.InvariantCulture);
+            DateTime endTime;
+
+            if (parts.Length == 2)
+            {
+                endTime = DateTime.ParseExact(parts[1], "dd/MM/yyyy", CultureInfo.InvariantCulture);
+            }
+            else
+            {
+                // Hvis der kun er valgt en dag regner vi med at lejen slutter dagen efter.
+                // Leje er minimum 24 timer, ellers kan vi ikke markere en dag som optaget
+                endTime = startTime.AddDays(1);
+            }
+
+            Booking booking = new();
+            booking.ProductId = productId;
+            booking.StartTime = startTime;
+            booking.EndTime = endTime;
+
+            _bookingRepository.Add(booking);
+            return RedirectToAction("Details", "Products", new { id = productId });
         }
     }
 }

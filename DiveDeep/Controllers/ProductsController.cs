@@ -45,12 +45,6 @@ namespace DiveDeep.Controllers
             return View(viewModel);
         }
 
-        //public IActionResult Categories()
-        //{
-        //    var categories = Enum.GetValues<ProductCategory>();
-        //    return View(categories);
-        //}
-
         public IActionResult Category(ProductCategory category)
         {
             var products = _productRepository.GetByCategory(category)
@@ -97,38 +91,17 @@ namespace DiveDeep.Controllers
                 pvm.Variants.Add(variant);
             }
 
-            return View(pvm);
+            DateTime fromDate = DateTime.Today;
+            DateTime toDate = fromDate.AddMonths(12);
 
+            List<DateTime> bookedDates = _productRepository.GetBookedDates(product.ProductId, fromDate, toDate);
 
-            //// Extract unique sizes from variants using the virtual SizeOptions property
-            //var sizeOptions = variants
-            //    .SelectMany(v => v.SizeOptions)
-            //    .Distinct()
-            //    .ToList();
-
-            //// Store in ViewBag for the view
-            //ViewBag.Variants = variants;
-            //ViewBag.SizeOptions = sizeOptions;
-        }
-
-        [HttpPost]
-        public IActionResult CheckAvailability(int productId, string startDate, string endDate)
-        {
-            if (!DateTime.TryParseExact(startDate, "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out var parsedStartDate) ||
-                !DateTime.TryParseExact(endDate, "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out var parsedEndDate))
+            foreach (DateTime date in bookedDates)
             {
-                return Json(new { isAvailable = false, message = "Ugyldig datoformat" });
+                pvm.BookedDates.Add(date.ToString("dd/MM/yyyy"));
             }
 
-            var isAvailable = _productRepository.IsProductAvailable(productId, parsedStartDate, parsedEndDate);
-            var blockedDates = _productRepository.GetBlockedDates(productId, parsedStartDate, parsedEndDate);
-
-            return Json(new
-            {
-                isAvailable = isAvailable,
-                message = isAvailable ? "Produktet er tilgængeligt" : "Produktet er desværre ikke tilgængeligt for de valgte datoer",
-                blockedDates = blockedDates
-            });
+            return View(pvm);
         }
     }
 

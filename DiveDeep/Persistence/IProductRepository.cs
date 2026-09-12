@@ -13,9 +13,11 @@ namespace DiveDeep.Persistence
         List<Product> GetByCategory(ProductCategory category);
         List<ProductCategory> GetProductCategories();
 
+        List<DateTime> GetBookedDates(int productId, DateTime fromDate, DateTime toDate);
+
         // Availability helpers used by controller
         bool IsProductAvailable(int productId, DateTime startDate, DateTime endDate, int requestedQuantity = 1);
-        List<string> GetBlockedDates(int productId, DateTime startDate, DateTime endDate);
+        //List<string> GetBlockedDates(int productId, DateTime startDate, DateTime endDate);
 
         //void Update
     }
