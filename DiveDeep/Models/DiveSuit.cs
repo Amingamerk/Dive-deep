@@ -1,37 +1,30 @@
-using DiveDeep.Models;
-using static DiveDeep.Models.Enums;
 namespace DiveDeep.Models
 {
     public class DiveSuit : Product
     {
-        
-        public string Gender { get; set; } = " ";
+        public Size Size { get; set; }
+        public SuitType SuitType { get; set; }
+        public string Gender { get; set; } = "";
+
+        public override string VariantLabel => Size.ToString();
+
+        // Kun våddragter har en tykkelse. Tørdragter har ingen, derfor må string gerne være null 
         public string? Thickness { get; set; }
 
-        public List<Size> Sizes { get; set; } = new();
-        public override IEnumerable<string> SizeOptions => Sizes.Select(s => s.ToString());
+        public override ProductCategory Category => ProductCategory.DiveSuit;
 
-        public List<SuitType> SuitTypes { get; set; } = new();
-        public override IEnumerable<string> SuitTypeOptions => SuitTypes.Select(st => st.ToString());
-
-        public override string? VariantGroup => Thickness == null ? Gender : $"{Gender} – {Thickness}";
+        // Dragter findes i både herre og dameudgave, så hver størrelse hører til en gruppe i dropdown
+        public override string? VariantGroup
+        {
+            get
+            {
+                if (SuitType == SuitType.Drysuit)
+                {
+                    return Gender;
+                }
+                // f.eks. "Herre – 5 mm".
+                return $"{Gender} – {Thickness}";
+            }
+        }
     }
 }
-
-//Dette kunn være en løsning istedet? virker bedrel, men ved ikke om det er for teknisk til vores krav.
-
-//public class DiveSuit : Product
-//{
-//    public List<Size> AvailableSizes { get; set; } = new();  // Hvad der FÅES
-//    public Size? SelectedSize { get; set; }  // Hvad customer VALGTE
-
-//    public override IEnumerable<string> SizeOptions =>
-//        AvailableSizes.Select(s => s.ToString());
-//}
-//// I repository:
-//new DiveSuit
-//{
-//    Id = 5,
-//    AvailableSizes = new() { Size.XSmall, Size.Small, Size.Medium, Size.Large, Size.XLarge },
-//    SelectedSize = null  // Vælges når man booker
-//}

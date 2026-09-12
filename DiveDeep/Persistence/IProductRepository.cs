@@ -1,6 +1,5 @@
 ﻿using System;
 using DiveDeep.Models;
-using static DiveDeep.Models.Enums;
 
 namespace DiveDeep.Persistence
 {

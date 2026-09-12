@@ -24,7 +24,7 @@
         @if (Model.Variants.Count > 1)
         {
             <div class="mb-3">
-                <label class="form-label">@Model.SizeLabel</label>
+                <label class="form-label">@Model.VariantHeading</label>
                 <select class="form-select" name="ProductId">
                     @foreach (var group in Model.Variants.GroupBy(v => v.Group))
                     {

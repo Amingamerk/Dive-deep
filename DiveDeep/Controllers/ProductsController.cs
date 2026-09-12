@@ -2,7 +2,6 @@ using DiveDeep.Models;
 using DiveDeep.Persistence;
 using DiveDeep.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using static DiveDeep.Models.Enums;
 
 namespace DiveDeep.Controllers
 {
@@ -86,36 +85,16 @@ namespace DiveDeep.Controllers
             pvm.Brand = product.Brand;
             pvm.Model = product.Model;
             pvm.PricePerDay = product.PricePerDay;
-            pvm.SizeLabel = product.SizeLabel ?? "Størrelse";
+            pvm.VariantHeading = product.VariantHeading;
             pvm.SelectedProductId = product.ProductId;
 
             foreach (Product p in variants)
             {
-                ProductVariantViewModel pvvm = new();
-
-                pvvm.ProductId = p.ProductId;
-                pvvm.Group = p.VariantGroup;
-
-                // cool version:
-                //pvvm.Label = p.SizeOptions != null ? string.Join(", ", p.SizeOptions) : (p.Model ?? "");
-
-                // boring version:
-                if (p.SizeOptions != null)
-                {
-                    pvvm.Label = string.Join(", ", p.SizeOptions);
-                }
-                else
-                {
-                    if (p.Model != null)
-                    {
-                        pvvm.Label = p.Model;
-                    }
-                    else
-                    {
-                        pvvm.Label = "";
-                    }
-                }
-                pvm.Variants.Add(pvvm);
+                ProductVariantViewModel variant = new();
+                variant.ProductId = p.ProductId;
+                variant.Label = p.VariantLabel;
+                variant.Group = p.VariantGroup;
+                pvm.Variants.Add(variant);
             }
 
             return View(pvm);

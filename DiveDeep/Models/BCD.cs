@@ -1,11 +1,11 @@
-using static DiveDeep.Models.Enums;
 namespace DiveDeep.Models
 
 {
 
-public class BCD : Product
-{
-    public List<Size> Sizes { get; set; } = new();
-    public override IEnumerable<string> SizeOptions => Sizes.Select(s => s.ToString());
-}
+    public class BCD : Product
+    {
+        public Size Size { get; set; }
+        public override ProductCategory Category => ProductCategory.BCD;
+        public override string VariantLabel => Size.ToString();
+    }
 }

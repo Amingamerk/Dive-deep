@@ -30,7 +30,7 @@ namespace DiveDeep
             {
                 var context = scope.ServiceProvider.GetRequiredService<DiveDeepContext>();
 
-                context.Database.EnsureCreated();
+                context.Database.Migrate();
 
                 if (!context.Products.Any())
                 {

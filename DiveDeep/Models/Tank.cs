@@ -1,11 +1,10 @@
-using static DiveDeep.Models.Enums;
 namespace DiveDeep.Models
 {
     public class Tank : Product
     {
-        public List<Size> Sizes { get; set; } = new();
-        public override IEnumerable<string> SizeOptions => Sizes.Select(s => s.ToString());
-
-        public override string SizeLabel => "Volume";
+        public int VolumeLiters { get; set; }
+        public override string VariantLabel => $"{VolumeLiters} liter";
+        public override ProductCategory Category => ProductCategory.Tank;
+        public override string VariantHeading => "Volumen";
     }
 }
