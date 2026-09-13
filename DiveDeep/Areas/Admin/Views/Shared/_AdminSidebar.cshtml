@@ -1,5 +1,5 @@
 ﻿<div class="flex-shrink-0 p-3 vh-100 sticky-top" style="width: 280px">
-    <a href="/"
+    <a asp-area="Admin" asp-controller="Home" asp-action="Index"
         class="d-flex align-items-center pb-3 mb-3 link-body-emphasis text-decoration-none border-bottom">
         <span class="fs-5 fw-semibold">DIVE DEEP ADMIN</span>
     </a>
@@ -14,7 +14,7 @@
             <div class="collapse show" id="home-collapse">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                     <li>
-                        <a asp-controller="Admin" asp-action="Index"
+                        <a asp-area="Admin" asp-controller="Home" asp-action="Index"
                             class="link-body-emphasis d-inline-flex text-decoration-none rounded">Overblik</a>
                     </li>
                 </ul>
@@ -30,7 +30,7 @@
             <div class="collapse" id="bookings-collapse">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                     <li>
-                        <a asp-controller="Admin" asp-action="Overview"
+                        <a asp-area="Admin" asp-controller="Bookings" asp-action="Index"
                            class="link-body-emphasis d-inline-flex text-decoration-none rounded">Oversigt</a>
                     </li>
                 </ul>
@@ -46,7 +46,7 @@
             <div class="collapse" id="products-collapse">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                     <li>
-                        <a asp-controller="Admin" asp-action="Overview"
+                        <a asp-area="Admin" asp-controller="Products" asp-action="Index"
                            class="link-body-emphasis d-inline-flex text-decoration-none rounded">Oversigt</a>
                     </li>
                 </ul>
@@ -80,6 +80,13 @@
                     </li>
                 </ul>
             </div>
+        </li>
+        <li class="border-top my-3"></li>
+        <li class="mb-1">
+            <a asp-area="" asp-controller="Home" asp-action="Index"
+               class="btn btn-warning fw-semibold d-inline-flex align-items-center">
+               Forlad adminpanelet
+           </a>
         </li>
     </ul>
 </div>

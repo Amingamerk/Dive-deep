@@ -1,13 +1,14 @@
 ﻿using DiveDeep.Persistence;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DiveDeep.Controllers
+namespace DiveDeep.Areas.Admin.Controllers
 {
-    public class AdminController : Controller
+    [Area("Admin")]
+    public class HomeController : Controller
     {
         private readonly IProductRepository _productRepository;
 
-        public AdminController(IProductRepository productRepository)
+        public HomeController(IProductRepository productRepository)
         {
             _productRepository = productRepository;
         }
