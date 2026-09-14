@@ -19,8 +19,7 @@ namespace DiveDeep.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Brand = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Model = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PricePerDay = table.Column<float>(type: "real", nullable: false),
-                    Category = table.Column<int>(type: "int", nullable: false)
+                    PricePerDay = table.Column<float>(type: "real", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -32,7 +31,7 @@ namespace DiveDeep.Migrations
                 columns: table => new
                 {
                     ProductId = table.Column<int>(type: "int", nullable: false),
-                    Sizes = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Size = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -71,10 +70,10 @@ namespace DiveDeep.Migrations
                 columns: table => new
                 {
                     ProductId = table.Column<int>(type: "int", nullable: false),
+                    Size = table.Column<int>(type: "int", nullable: false),
+                    SuitType = table.Column<int>(type: "int", nullable: false),
                     Gender = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Thickness = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Sizes = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SuitTypes = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Thickness = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -92,7 +91,7 @@ namespace DiveDeep.Migrations
                 columns: table => new
                 {
                     ProductId = table.Column<int>(type: "int", nullable: false),
-                    Sizes = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Size = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -109,8 +108,7 @@ namespace DiveDeep.Migrations
                 name: "MAskSnorkels",
                 columns: table => new
                 {
-                    ProductId = table.Column<int>(type: "int", nullable: false),
-                    Sizes = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    ProductId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -128,9 +126,9 @@ namespace DiveDeep.Migrations
                 columns: table => new
                 {
                     ProductId = table.Column<int>(type: "int", nullable: false),
-                    FirstStep = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SecondStep = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Octopus = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    FirstStep = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SecondStep = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Octopus = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -148,7 +146,7 @@ namespace DiveDeep.Migrations
                 columns: table => new
                 {
                     ProductId = table.Column<int>(type: "int", nullable: false),
-                    Sizes = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    VolumeLiters = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {

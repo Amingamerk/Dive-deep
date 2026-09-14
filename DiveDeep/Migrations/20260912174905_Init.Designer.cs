@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DiveDeep.Migrations
 {
     [DbContext(typeof(DiveDeepContext))]
-    [Migration("20260908124055_Init")]
+    [Migration("20260912174905_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -61,9 +61,6 @@ namespace DiveDeep.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Category")
-                        .HasColumnType("int");
-
                     b.Property<string>("Model")
                         .HasColumnType("nvarchar(max)");
 
@@ -81,9 +78,8 @@ namespace DiveDeep.Migrations
                 {
                     b.HasBaseType("DiveDeep.Models.Product");
 
-                    b.PrimitiveCollection<string>("Sizes")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Size")
+                        .HasColumnType("int");
 
                     b.ToTable("BCDs", (string)null);
                 });
@@ -96,13 +92,11 @@ namespace DiveDeep.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.PrimitiveCollection<string>("Sizes")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Size")
+                        .HasColumnType("int");
 
-                    b.PrimitiveCollection<string>("SuitTypes")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("SuitType")
+                        .HasColumnType("int");
 
                     b.Property<string>("Thickness")
                         .HasColumnType("nvarchar(max)");
@@ -114,9 +108,8 @@ namespace DiveDeep.Migrations
                 {
                     b.HasBaseType("DiveDeep.Models.Product");
 
-                    b.PrimitiveCollection<string>("Sizes")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Size")
+                        .HasColumnType("int");
 
                     b.ToTable("Fins", (string)null);
                 });
@@ -124,10 +117,6 @@ namespace DiveDeep.Migrations
             modelBuilder.Entity("DiveDeep.Models.MaskSnorkel", b =>
                 {
                     b.HasBaseType("DiveDeep.Models.Product");
-
-                    b.PrimitiveCollection<string>("Sizes")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.ToTable("MAskSnorkels", (string)null);
                 });
@@ -137,12 +126,15 @@ namespace DiveDeep.Migrations
                     b.HasBaseType("DiveDeep.Models.Product");
 
                     b.Property<string>("FirstStep")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Octopus")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecondStep")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.ToTable("RegulatorSets", (string)null);
@@ -152,9 +144,8 @@ namespace DiveDeep.Migrations
                 {
                     b.HasBaseType("DiveDeep.Models.Product");
 
-                    b.PrimitiveCollection<string>("Sizes")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("VolumeLiters")
+                        .HasColumnType("int");
 
                     b.ToTable("Tanks", (string)null);
                 });

@@ -1,7 +1,5 @@
 namespace DiveDeep.Models
 {
-    public class Enums
-    {
         public enum ProductCategory
         {
             //Ved ikke om det er tanken
@@ -23,7 +21,6 @@ namespace DiveDeep.Models
         public enum SuitType
         {
             Wetsuit,
-            drysuit
+            Drysuit
         }
-    }
 }

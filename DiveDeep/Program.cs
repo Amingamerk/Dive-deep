@@ -21,6 +21,7 @@ namespace DiveDeep
             });
 
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 
             var app = builder.Build();
 
@@ -29,7 +30,7 @@ namespace DiveDeep
             {
                 var context = scope.ServiceProvider.GetRequiredService<DiveDeepContext>();
 
-                context.Database.EnsureCreated();
+                context.Database.Migrate();
 
                 if (!context.Products.Any())
                 {
@@ -58,6 +59,12 @@ namespace DiveDeep
             app.UseAuthorization();
 
             app.MapStaticAssets();
+
+            app.MapControllerRoute(
+                name: "areas",
+                pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}")
+                .WithStaticAssets();
+
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}")

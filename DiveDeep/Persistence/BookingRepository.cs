@@ -16,7 +16,6 @@ namespace DiveDeep.Persistence
 
         public void Add(Booking booking)
         {
-            _diveDeepContext.Database.EnsureCreated();
             _diveDeepContext.Add<Booking>(booking);
 
             _diveDeepContext.SaveChanges();
@@ -24,7 +23,6 @@ namespace DiveDeep.Persistence
 
         public void Delete(int id)
         {
-            _diveDeepContext.Database.EnsureCreated();
             _diveDeepContext.Bookings.Remove(GetById(id));
 
             _diveDeepContext.SaveChanges();
@@ -32,7 +30,6 @@ namespace DiveDeep.Persistence
 
         public List<Booking> GetAll()
         {
-            _diveDeepContext.Database.EnsureCreated();
             return _diveDeepContext.Bookings
                 .Include(b => b.Product)
                 .ToList();
@@ -40,8 +37,6 @@ namespace DiveDeep.Persistence
 
         public Booking? GetById(int id)
         {
-            _diveDeepContext.Database.EnsureCreated();
-
             var booking = _diveDeepContext.Bookings
                 .Include(b => b.Product)
                 .FirstOrDefault(x => x.BookingId == id);
@@ -50,8 +45,6 @@ namespace DiveDeep.Persistence
 
         public Booking? FindOverlappingBooking(int productId, DateTime startTime, DateTime endTime, int? excludedBookingId)
         {
-            _diveDeepContext.Database.EnsureCreated();
-
             var booking = _diveDeepContext.Bookings
                 .Include(b => b.Product)
                 .FirstOrDefault(x =>
@@ -67,7 +60,6 @@ namespace DiveDeep.Persistence
         {
             //Wait
 
-            //_diveDeepContext.Database.EnsureCreated();
             //var bookingToUpdate = GetById(booking.BookingId);
             //if (bookingToUpdate != null)
             //{

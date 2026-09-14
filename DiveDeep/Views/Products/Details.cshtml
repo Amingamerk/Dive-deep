@@ -1,11 +1,11 @@
-﻿@model DiveDeep.Models.Product
-
-
+﻿@model DiveDeep.ViewModels.ProductViewModel
 
 <div class="container mt-4" style="max-width: 600px;">
+    <form asp-controller="Bookings"
+          asp-action="Add"
+          method="post"
+          class="card p-4 shadow-sm">
 
-
-    <form method="post" class="card p-4 shadow-sm">
         <div class="mb-3">
             <h3 class="form-label">Mærke: @Model.Brand</h3>
         </div>
@@ -14,115 +14,76 @@
             <h3 class="form-label">Model: @Model.Model</h3>
         </div>
 
-        @if (Model.SizeOptions?.Any() == true)
+        @if (Model.Variants.Count > 1)
         {
             <div class="mb-3">
-                <label class="form-label">@Model.SizeLabel</label>
-                <select class="form-select" name="Size">
-                    @foreach (var size in ViewBag.SizeOptions)
+                <label class="form-label">@Model.VariantHeading</label>
+                <select class="form-select" name="ProductId">
+                    @foreach (var group in Model.Variants.GroupBy(v => v.Group))
                     {
-                        <option>@size</option>
+                        if (group.Key != null)
+                        {
+                            <optgroup label="@group.Key">
+                                @foreach (var variant in group)
+                                {
+                                    <option value="@variant.ProductId" selected="@(variant.ProductId == Model.SelectedProductId)">@variant.Label</option>
+                                }
+                            </optgroup>
+                        }
+                        else
+                        {
+                            foreach (var variant in group)
+                            {
+                                <option value="@variant.ProductId" selected="@(variant.ProductId == Model.SelectedProductId)">@variant.Label</option>
+                            }
+                        }
                     }
                 </select>
             </div>
         }
+        else
+        {
+            <input type="hidden" name="ProductId" value="@Model.SelectedProductId" />
+        }
 
-        <div>
-            
-            <form id="bookingForm">
-                <div class="input-daterange input-group" id="datepicker">
-                    <input type="text" class="form-control" placeholder="Start dato" name="start" id="startDate" required />
-                    <span class="input-group-text">til</span>
-                    <input type="text" class="form-control" placeholder="Slut dato" name="end" id="endDate" required />
-                </div>
-            </form>
+        <input type="text"
+               class="form-control"
+               placeholder="Vælg datoer"
+               name="DateRange"
+               id="dateRange"
+               required />
 
-            <div id="availabilityMessage" class="mt-3"></div>
-            <div id="blockedDatesMessage" class="mt-3"></div>
-         
-        <div class="d-flex justify-content-between">
-            <a asp-controller="Products" asp-action="Index" class="btn btn-danger">Cancel</a>
-            <button type="submit" class="btn btn-primary">Book</button>
+        <div class="py-3 d-flex justify-content-between">
+
+            <button type="submit" class="btn btn-primary">
+                Book
+            </button>
+
+            <a asp-controller="Products"
+               asp-action="Index"
+               class="btn btn-danger">
+                Afbryd
+            </a>
         </div>
-        </div>
-        
     </form>
 </div>
 
 @section Scripts {
     <script>
-        $(document).ready(function() {
-            var $startDate = $('#startDate');
-            var $endDate = $('#endDate');
-            var $availabilityMessage = $('#availabilityMessage');
-            var $blockedDatesMessage = $('#blockedDatesMessage');
-            var productId = @Model.ProductId;
-
-            function checkAvailability() {
-                var startDate = $startDate.val();
-                var endDate = $endDate.val();
-
-                // Ryd tidligere beskeder
-                $availabilityMessage.empty();
-                $blockedDatesMessage.empty();
-
-                if (!startDate || !endDate) {
-                    return;
-                }
-
-                $.ajax({
-                    type: 'POST',
-                    url: '@Url.Action("CheckAvailability", "Products")',
-                    data: {
-                        productId: productId,
-                        startDate: startDate,
-                        endDate: endDate
-                    },
-                    success: function(response) {
-                        if (response.isAvailable) {
-                            $availabilityMessage
-                                .html('<div class="alert alert-success"><i class="bi bi-check-circle"></i> ✓ Produktet er tilgængeligt for de valgte datoer!</div>')
-                                .show();
-                        } else {
-                            $availabilityMessage
-                                .html('<div class="alert alert-danger"><i class="bi bi-exclamation-circle"></i> ✗ ' + response.message + '</div>')
-                                .show();
-                            
-                            if (response.blockedDates && response.blockedDates.length > 0) {
-                                var blockedHtml = '<div class="alert alert-warning"><strong>Produktet er booket på følgende datoer:</strong><ul>';
-                                response.blockedDates.forEach(function(dateRange) {
-                                    blockedHtml += '<li>' + dateRange + '</li>';
-                                });
-                                blockedHtml += '</ul></div>';
-                                $blockedDatesMessage.html(blockedHtml).show();
-                            }
-                        }
-                    },
-                    error: function() {
-                        $availabilityMessage
-                            .html('<div class="alert alert-danger"><i class="bi bi-exclamation-triangle"></i> Der opstod en fejl ved check af tilgængelighed</div>')
-                            .show();
-                    }
-                });
-            }
-
-            $startDate.datepicker({
-                format: 'dd/mm/yyyy',
-                startDate: new Date(),
-                
-            }).on('changeDate', function() {
-                var selectedStartDate = $startDate.datepicker('getDate');
-                $endDate.datepicker('setStartDate', selectedStartDate);
-                checkAvailability();
-            });
-
-            $endDate.datepicker({
-                format: 'dd/mm/yyyy',
-                startDate: new Date(),
-                
-            }).on('changeDate', function() {
-                checkAvailability();
-            });
+            flatpickr('#dateRange', {
+            mode: 'range',
+            dateFormat: 'd/m/Y',
+            minDate: 'today',
+            locale: 'da',
+            disable: @Html.Raw(Json.Serialize(Model.BookedDates))
         });
+
+        var variantSelect = document.querySelector('select[name="ProductId"]');
+
+        if (variantSelect !== null) {
+            variantSelect.addEventListener('change', function () {
+                window.location = '/Products/Details/' + this.value;
+            });
+        }
     </script>
-    }
+}

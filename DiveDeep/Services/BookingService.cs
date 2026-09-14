@@ -43,8 +43,8 @@ namespace DiveDeep.Services
             var isAvailable = _productRepository.IsProductAvailable(
                 booking.ProductId,
                 startTime,
-                endTime,
-                booking.Quantity
+                endTime
+                //booking.Quantity
             );
 
             if (!isAvailable)
@@ -62,7 +62,7 @@ namespace DiveDeep.Services
         {
             var products = _productRepository.GetAll();
             return products
-                .Where(p => p.Category == (Enums.ProductCategory)categoryId)
+                .Where(p => p.Category == (ProductCategory)categoryId)
                 .Where(p => _productRepository.IsProductAvailable(p.ProductId, startDate, endDate))
                 .ToList();
         }

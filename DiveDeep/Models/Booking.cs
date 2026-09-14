@@ -21,6 +21,6 @@ namespace DiveDeep.Models
         [ValidateNever]
         [BindNever]
         public Product Product { get; set; } = null!;
-        public int Quantity { get; set; }
+        //public int Quantity { get; set; }
     }
 }
