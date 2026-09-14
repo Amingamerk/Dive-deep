@@ -11,7 +11,7 @@
                     <div class="card-body p-4 d-flex flex-column">
                         <span class="badge text-bg-warning rounded-pill align-self-start mb-3">-@viewModel.DiscountPercent%</span>
                         <h3 class="card-title h5 fw-bold">@viewModel.Name</h3>
-                        <p class="text-warning fw-bold">fra @viewModel.FromPricePerDay kr/dag</p>
+                        <p class="text-warning fw-bold">fra @viewModel.FromPricePerDay.ToString("0") kr/dag</p>
                         <p class="card-text text-white-50">
                             @viewModel.Description
                             Vælg størrelse og periode, så står det klar.

@@ -1,6 +1,12 @@
 ﻿@model DiveDeep.ViewModels.ProductViewModel
 
 <div class="container mt-4" style="max-width: 600px;">
+    @* Fejlbesked fra BookingsController, fx hvis datoerne ikke kunne læses *@
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
     <form asp-controller="Bookings"
           asp-action="Add"
           method="post"

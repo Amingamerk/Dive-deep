@@ -1,5 +1,52 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+@model List<Product>
 @{
+    ViewData["Title"] = "Produkter";
+}
+
+@* Hurtig og simpel oversigt over alle produkter *@
+<h1 class="h3 mb-4">Produkter <span class="text-body-secondary fs-6">(@Model.Count stk.)</span></h1>
+
+@if (Model.Count == 0)
+{
+    <p class="text-body-secondary">Der er ingen produkter endnu.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Kategori</th>
+                    <th>Mærke</th>
+                    <th>Model</th>
+                    <th>Variant</th>
+                    <th class="text-end">Pris/dag</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Product product in Model)
+                {
+                    <tr>
+                        <td>@product.ProductId</td>
+                        <td>@CategoryInfo.Categories[product.Category].Title</td>
+                        <td>@product.Brand</td>
+                        <td>@product.Model</td>
+                        <td>
+                            @* Dragter har også køn og tykkelse, fx "Herre – 5 mm" *@
+                            @if (product.VariantGroup != null)
+                            {
+                                @($"{product.VariantGroup} - {product.VariantLabel}")
+                            }
+                            else
+                            {
+                                @product.VariantLabel
+                            }
+                        </td>
+                        <td class="text-end">@product.PricePerDay.ToString("0") kr</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }

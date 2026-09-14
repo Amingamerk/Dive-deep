@@ -10,5 +10,7 @@ namespace DiveDeep.Persistence
         Booking? GetById(int id);
         Booking? FindOverlappingBooking(int productId, DateTime startTime, DateTime endTime, int? excludedBookingId);
         void Update(Booking booking);
+        void AddBundleBooking(BundleBooking bundleBooking);
+        BundleBooking? GetBundleBookingById(int id);
     }
 }

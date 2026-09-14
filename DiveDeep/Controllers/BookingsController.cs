@@ -28,8 +28,10 @@ namespace DiveDeep.Controllers
             }
             else
             {
-                ModelState.AddModelError("DateRange", "Vælg en gyldig periode");
-                return View();
+                // Datoerne kunne ikke læses. Der findes ikke et Add-view, så kunden sendes
+                // tilbage til produktet. TempData bruges, fordi ModelState forsvinder ved en redirect
+                TempData["Error"] = "Vælg en gyldig periode";
+                return RedirectToAction("Details", "Products", new { id = productId });
             }
 
             _bookingRepository.Add(booking);
