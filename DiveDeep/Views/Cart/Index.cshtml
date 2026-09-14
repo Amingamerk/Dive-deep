@@ -1,188 +1,130 @@
-﻿@{
-    ViewData["Title"] = "Din kurv";
-    Layout = "_Layout";
-}
+﻿@model CartViewModel
+<div class="container py-5">
 
-<link rel="stylesheet" href="~/css/Cart.css" />
+    <h1>Din kurv</h1>
 
-<div class="kurv-wrapper">
-    <div class="kurv-container">
+    <div class="row">
 
-        <div class="kurv-heading">
-            <h1>Din kurv</h1>
-            <p class="kurv-subtitle">5 produkter valgt</p>
+        <div class="col-lg-8">
+
+            @if (Model.Items.Count == 0)
+            {
+                <div class="alert alert-info">
+                    Din kurv er tom. <a asp-controller="Products" asp-action="Index">Gå til produkter</a>
+                </div>
+            }
+            else
+            {
+                @foreach (var item in Model.Items)
+                {
+                    <div class="card mb-4 bg-dark border-secondary">
+
+                        <div class="card-body">
+
+                            <div class="row align-items-center">
+
+                                @* <div class="col-md-2">
+                                    @if (!string.IsNullOrEmpty(item.ImagePath))
+                                    {
+                                        <img src="@item.ImagePath" alt="@item.Brand @item.Model" class="img-fluid" style="max-height: 150px; object-fit: contain;">
+                                    }
+                                </div> *@
+
+                                <div class="col-md-6">
+
+                                    <h5>
+                                        @item.Brand @item.Model
+                                    </h5>
+
+                                    <small class="text-muted d-block">
+                                        @if (!string.IsNullOrEmpty(item.SelectedSize))
+                                        {
+                                            <span>Størrelse: @item.SelectedSize</span>
+                                        }
+                                        @if (!string.IsNullOrEmpty(item.SelectedGender))
+                                        {
+                                            <span> | Køn: @item.SelectedGender</span>
+                                        }
+                                    </small>
+
+                                </div>
+
+                                <div class="col-md-2 text-end">
+
+                                    <h6>
+                                        @item.PricePerDay kr./dag
+                                    </h6>
+
+                                </div>
+
+                                <div class="col-md-2 text-end">
+                                    <form method="post" asp-action="RemoveFromCart" style="display: inline;">
+                                        <input type="hidden" name="id" value="@item.ProductId" />
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="bi bi-trash"></i> Slet
+                                        </button>
+                                    </form>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                }
+            }
+
         </div>
 
-        <div class="kurv-layout">
+        <div class="col-lg-4">
 
-            <!-- Venstre: varer -->
-            <div class="kurv-items">
+            <div class="card bg-dark border-secondary">
 
-                <!-- Lejeperiode -->
-                <div class="kurv-card periode-card">
-                    <div>
-                        <p class="label">Lejeperiode</p>
-                        <div class="periode-inputs">
-                            <input type="date" value="2026-09-18" class="dato-input" />
-                            <span class="pil">→</span>
-                            <input type="date" value="2026-09-21" class="dato-input" />
+                <div class="card-body">
+
+                    <h3>Ordreoversigt</h3>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+                        <span>Udstyr (@Model.Items.Count)</span>
+                        <span>@Model.Total kr.</span>
+                    </div>
+
+                    @if (Model.Discount > 0)
+                    {
+                        <div class="d-flex justify-content-between">
+                            <span>Rabat</span>
+                            <span>-@Model.Discount kr.</span>
                         </div>
+                    }
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between mb-3">
+                        <strong>I alt</strong>
+                        <strong>@(Model.Total - Model.Discount) kr.</strong>
                     </div>
-                    <div class="dage-badge">3 dage</div>
+
+                    @if (Model.Items.Count > 0)
+                    {
+                        <a class="btn btn-warning w-100 mb-2">
+                            Gå til checkout
+                        </a>
+                    }
+
+                    <form method="post" asp-action="ClearCart">
+                        <button type="submit" class="btn btn-outline-danger w-100">
+                            Tøm kurven
+                        </button>
+                    </form>
+
                 </div>
 
-                <!-- Vare -->
-                <div class="kurv-card vare-card">
-                    <div class="vare-ikon">🤿</div>
-                    <div class="vare-info">
-                        <div class="vare-titel-row">
-                            <p class="vare-navn">BCD – Scubapro Hydros Pro</p>
-                            <span class="rabat-badge">-20%</span>
-                        </div>
-                        <p class="vare-meta">Komplet dykkersæt · Str. M</p>
-                        <p class="vare-enhed">120 kr / dag</p>
-                    </div>
-                    <div class="antal-kontrol">
-                        <button class="antal-btn" onclick="justerAntal(this, -1)">−</button>
-                        <span class="antal-vaerdi">3</span>
-                        <button class="antal-btn" onclick="justerAntal(this, 1)">+</button>
-                    </div>
-                    <div class="vare-pris">
-                        <p class="pris-original">360 kr</p>
-                        <p class="pris-rabat">288 kr</p>
-                        <p class="pris-dage">3 dage</p>
-                    </div>
-                    <button class="fjern-btn" title="Fjern">✕</button>
-                </div>
-
-                <!-- Vare -->
-                <div class="kurv-card vare-card">
-                    <div class="vare-ikon">🤿</div>
-                    <div class="vare-info">
-                        <div class="vare-titel-row">
-                            <p class="vare-navn">Dykkerdragtens tørdragt</p>
-                            <span class="rabat-badge">-20%</span>
-                        </div>
-                        <p class="vare-meta">Dykkerdragter · Str. L</p>
-                        <p class="vare-enhed">95 kr / dag</p>
-                    </div>
-                    <div class="antal-kontrol">
-                        <button class="antal-btn" onclick="justerAntal(this, -1)">−</button>
-                        <span class="antal-vaerdi">3</span>
-                        <button class="antal-btn" onclick="justerAntal(this, 1)">+</button>
-                    </div>
-                    <div class="vare-pris">
-                        <p class="pris-original">285 kr</p>
-                        <p class="pris-rabat">228 kr</p>
-                        <p class="pris-dage">3 dage</p>
-                    </div>
-                    <button class="fjern-btn" title="Fjern">✕</button>
-                </div>
-
-                <!-- Vare -->
-                <div class="kurv-card vare-card">
-                    <div class="vare-ikon">🤿</div>
-                    <div class="vare-info">
-                        <div class="vare-titel-row">
-                            <p class="vare-navn">Regulatorsæt – Apeks XTX50</p>
-                            <span class="rabat-badge">-20%</span>
-                        </div>
-                        <p class="vare-meta">Regulatorsæt</p>
-                        <p class="vare-enhed">75 kr / dag</p>
-                    </div>
-                    <div class="antal-kontrol">
-                        <button class="antal-btn" onclick="justerAntal(this, -1)">−</button>
-                        <span class="antal-vaerdi">3</span>
-                        <button class="antal-btn" onclick="justerAntal(this, 1)">+</button>
-                    </div>
-                    <div class="vare-pris">
-                        <p class="pris-original">225 kr</p>
-                        <p class="pris-rabat">180 kr</p>
-                        <p class="pris-dage">3 dage</p>
-                    </div>
-                    <button class="fjern-btn" title="Fjern">✕</button>
-                </div>
-
-                <!-- Vare (ingen rabat) -->
-                <div class="kurv-card vare-card">
-                    <div class="vare-ikon">🤿</div>
-                    <div class="vare-info">
-                        <div class="vare-titel-row">
-                            <p class="vare-navn">Maske & snorkel</p>
-                        </div>
-                        <p class="vare-meta">Maske & snorkel · Universalstørrelse</p>
-                        <p class="vare-enhed">30 kr / dag</p>
-                    </div>
-                    <div class="antal-kontrol">
-                        <button class="antal-btn" onclick="justerAntal(this, -1)">−</button>
-                        <span class="antal-vaerdi">3</span>
-                        <button class="antal-btn" onclick="justerAntal(this, 1)">+</button>
-                    </div>
-                    <div class="vare-pris">
-                        <p class="pris-rabat">90 kr</p>
-                        <p class="pris-dage">3 dage</p>
-                    </div>
-                    <button class="fjern-btn" title="Fjern">✕</button>
-                </div>
-
-                <a href="#" class="tilbage-link">← Fortsæt med at handle</a>
-            </div>
-
-            <!-- Højre: ordreoversigt -->
-            <div class="kurv-summary">
-                <h2>Ordreoversigt</h2>
-
-                <div class="summary-linjer">
-                    <div class="summary-linje">
-                        <span class="summary-label">Subtotal</span>
-                        <span class="summary-vaerdi">1.275 kr</span>
-                    </div>
-                    <div class="summary-linje">
-                        <span class="summary-label gul">Pakkerabat (−20%)</span>
-                        <span class="summary-vaerdi gul">−204 kr</span>
-                    </div>
-                    <div class="summary-total">
-                        <span>I alt</span>
-                        <span>1.071 kr</span>
-                    </div>
-                </div>
-
-                <!-- Rabatkode -->
-                <div class="rabatkode-sektion">
-                    <p class="label">Rabatkode</p>
-                    <div class="rabatkode-input-row">
-                        <input type="text" placeholder="DYKKER10" class="rabatkode-input" />
-                        <button class="rabatkode-btn">Brug</button>
-                    </div>
-                </div>
-
-                <button class="betal-btn">Gå til betaling</button>
-
-                <p class="summary-note">Gratis aflevering i butikken · Ingen binding</p>
-
-                <div class="trust-badges">
-                    <div class="trust-badge">15 års erfaring</div>
-                    <div class="trust-badge">3473 kunder</div>
-                    <div class="trust-badge">Fri afmelding</div>
-                </div>
             </div>
 
         </div>
+
     </div>
+
 </div>
-
-<script>
-    function justerAntal(btn, delta) {
-        const row = btn.closest('.antal-kontrol');
-        const span = row.querySelector('.antal-vaerdi');
-        let val = parseInt(span.textContent);
-        val = Math.max(1, val + delta);
-        span.textContent = val;
-    }
-
-    document.querySelectorAll('.fjern-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            btn.closest('.vare-card').remove();
-        });
-    });
-</script>

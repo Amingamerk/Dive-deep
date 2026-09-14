@@ -1,83 +1,63 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using DiveDeep.Models;
+using DiveDeep.Persistence;
+using DiveDeep.ViewModels;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DiveDeep.Controllers
 {
     public class CartController : Controller
     {
-        // GET: BasketsController
-        public ActionResult Index()
+        private readonly ICartService _cartService;
+        private readonly IProductRepository _productRepository;
+
+        public CartController(ICartService cartService, IProductRepository productRepository)
         {
-            return View();
+            _cartService = cartService;
+            _productRepository = productRepository;
         }
 
-        // GET: BasketsController/Details/5
-        public ActionResult Details(int id)
+        public IActionResult Index()
         {
-            return View();
+            Cart cart = _cartService.GetCart();
+
+            CartViewModel vm = new()
+            {
+                Items = cart.Items,
+                Total = (decimal)cart.Items.Sum(i => i.PricePerDay * i.Quantity)
+            };
+
+            return View(vm);
         }
 
-        // GET: BasketsController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
 
-        // POST: BasketsController/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public IActionResult AddToCart(int productId, string? size, string? gender)
         {
-            try
+            Product? product = _productRepository.GetById(productId);
+
+            if (product != null)
             {
-                return RedirectToAction(nameof(Index));
+                _cartService.AddItem(product, size, gender);
+                return Json(new { success = true, message = $"{product.Brand} {product.Model} tilføjet til kurven!" });
             }
-            catch
-            {
-                return View();
-            }
+            
+            return Json(new { success = false, message = "Produktet kunne ikke tilføjes." });
         }
 
-        // GET: BasketsController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: BasketsController/Edit/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public IActionResult RemoveFromCart(int productId, string? size, string? gender)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            _cartService.RemoveItem(productId, size, gender);
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: BasketsController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: BasketsController/Delete/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public IActionResult ClearCart()
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            _cartService.ClearCart();
+            return RedirectToAction(nameof(Index));
         }
+
     }
 }

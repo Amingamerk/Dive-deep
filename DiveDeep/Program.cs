@@ -1,5 +1,6 @@
 using DiveDeep.Data;
 using DiveDeep.Persistence;
+using DiveDeep.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace DiveDeep
@@ -21,6 +22,7 @@ namespace DiveDeep
             });
 
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddSingleton<ICartService, CartService>();
 
             var app = builder.Build();
 

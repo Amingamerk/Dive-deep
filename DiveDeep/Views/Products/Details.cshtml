@@ -1,11 +1,23 @@
 ﻿@model DiveDeep.Models.Product
 
-
-
 <div class="container mt-4" style="max-width: 600px;">
 
+    <!-- Toast for success message -->
+    <div id="addToCartToast" class="position-fixed bottom-0 end-0 p-3" style="z-index: 11; display: none;">
+        <div class="toast show bg-success text-white" role="alert">
+            <div class="toast-header bg-success text-white border-0">
+                <strong class="me-auto">Tilføjet!</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body" id="toastMessage">
+                Produktet er tilføjet til kurven
+            </div>
+        </div>
+    </div>
 
-    <form method="post" class="card p-4 shadow-sm">
+    <form id="bookingForm" class="card p-4 shadow-sm">
+        <input type="hidden" name="productId" value="@Model.ProductId" />
+        
         <div class="mb-3">
             <h3 class="form-label">Mærke: @Model.Brand</h3>
         </div>
@@ -18,7 +30,7 @@
         {
             <div class="mb-3">
                 <label class="form-label">@Model.SizeLabel</label>
-                <select class="form-select" name="Size">
+                <select class="form-select" name="size">
                     @foreach (var size in ViewBag.SizeOptions)
                     {
                         <option>@size</option>
@@ -29,20 +41,20 @@
 
         <div>
             
-            <form id="bookingForm">
+            <div class="mb-3">
                 <div class="input-daterange input-group" id="datepicker">
-                    <input type="text" class="form-control" placeholder="Start dato" name="start" id="startDate" required />
+                    <input type="text" class="form-control" placeholder="Start dato" name="startDate" id="startDate" />
                     <span class="input-group-text">til</span>
-                    <input type="text" class="form-control" placeholder="Slut dato" name="end" id="endDate" required />
+                    <input type="text" class="form-control" placeholder="Slut dato" name="endDate" id="endDate" />
                 </div>
-            </form>
+            </div>
 
             <div id="availabilityMessage" class="mt-3"></div>
             <div id="blockedDatesMessage" class="mt-3"></div>
          
         <div class="d-flex justify-content-between">
             <a asp-controller="Products" asp-action="Index" class="btn btn-danger">Cancel</a>
-            <button type="submit" class="btn btn-primary">Book</button>
+            <button type="button" id="bookButton" class="btn btn-primary" disabled>Book</button>
         </div>
         </div>
         
@@ -56,7 +68,10 @@
             var $endDate = $('#endDate');
             var $availabilityMessage = $('#availabilityMessage');
             var $blockedDatesMessage = $('#blockedDatesMessage');
+            var $bookButton = $('#bookButton');
+            var $form = $('#bookingForm');
             var productId = @Model.ProductId;
+            var isAvailable = false;
 
             function checkAvailability() {
                 var startDate = $startDate.val();
@@ -65,6 +80,8 @@
                 // Ryd tidligere beskeder
                 $availabilityMessage.empty();
                 $blockedDatesMessage.empty();
+                $bookButton.prop('disabled', true);
+                isAvailable = false;
 
                 if (!startDate || !endDate) {
                     return;
@@ -83,6 +100,8 @@
                             $availabilityMessage
                                 .html('<div class="alert alert-success"><i class="bi bi-check-circle"></i> ✓ Produktet er tilgængeligt for de valgte datoer!</div>')
                                 .show();
+                            $bookButton.prop('disabled', false);
+                            isAvailable = true;
                         } else {
                             $availabilityMessage
                                 .html('<div class="alert alert-danger"><i class="bi bi-exclamation-circle"></i> ✗ ' + response.message + '</div>')
@@ -122,6 +141,44 @@
                 
             }).on('changeDate', function() {
                 checkAvailability();
+            });
+
+            // Handle book button click
+            $bookButton.click(function(e) {
+                e.preventDefault();
+                
+                if (!isAvailable) {
+                    alert('Produktet er ikke tilgængeligt for de valgte datoer');
+                    return;
+                }
+
+                var formData = {
+                    productId: productId,
+                    size: $form.find('select[name="size"]').val() || null,
+                    gender: null
+                };
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("AddToCart", "Cart")',
+                    data: formData,
+                    success: function(response) {
+                        if (response.success) {
+                            $('#toastMessage').text(response.message);
+                            $('#addToCartToast').show();
+                            
+                            // Hide toast after 3 seconds
+                            setTimeout(function() {
+                                $('#addToCartToast').hide();
+                            }, 3000);
+                        } else {
+                            alert('Der opstod en fejl: ' + response.message);
+                        }
+                    },
+                    error: function() {
+                        alert('Der opstod en fejl ved tilføjelse til kurven');
+                    }
+                });
             });
         });
     </script>
