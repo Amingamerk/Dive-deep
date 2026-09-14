@@ -1,7 +1,5 @@
 namespace DiveDeep.Models
-
 {
-
     public class BCD : Product
     {
         public Size Size { get; set; }

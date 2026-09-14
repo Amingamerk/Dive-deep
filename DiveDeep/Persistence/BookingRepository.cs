@@ -32,6 +32,7 @@ namespace DiveDeep.Persistence
         {
             return _diveDeepContext.Bookings
                 .Include(b => b.Product)
+                .Include(b => b.BundleBooking)
                 .ToList();
         }
 
