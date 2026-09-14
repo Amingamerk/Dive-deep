@@ -1,0 +1,188 @@
+﻿@{
+    ViewData["Title"] = "Din kurv";
+    Layout = "_Layout";
+}
+
+<link rel="stylesheet" href="~/css/Cart.css" />
+
+<div class="kurv-wrapper">
+    <div class="kurv-container">
+
+        <div class="kurv-heading">
+            <h1>Din kurv</h1>
+            <p class="kurv-subtitle">5 produkter valgt</p>
+        </div>
+
+        <div class="kurv-layout">
+
+            <!-- Venstre: varer -->
+            <div class="kurv-items">
+
+                <!-- Lejeperiode -->
+                <div class="kurv-card periode-card">
+                    <div>
+                        <p class="label">Lejeperiode</p>
+                        <div class="periode-inputs">
+                            <input type="date" value="2026-09-18" class="dato-input" />
+                            <span class="pil">→</span>
+                            <input type="date" value="2026-09-21" class="dato-input" />
+                        </div>
+                    </div>
+                    <div class="dage-badge">3 dage</div>
+                </div>
+
+                <!-- Vare -->
+                <div class="kurv-card vare-card">
+                    <div class="vare-ikon">🤿</div>
+                    <div class="vare-info">
+                        <div class="vare-titel-row">
+                            <p class="vare-navn">BCD – Scubapro Hydros Pro</p>
+                            <span class="rabat-badge">-20%</span>
+                        </div>
+                        <p class="vare-meta">Komplet dykkersæt · Str. M</p>
+                        <p class="vare-enhed">120 kr / dag</p>
+                    </div>
+                    <div class="antal-kontrol">
+                        <button class="antal-btn" onclick="justerAntal(this, -1)">−</button>
+                        <span class="antal-vaerdi">3</span>
+                        <button class="antal-btn" onclick="justerAntal(this, 1)">+</button>
+                    </div>
+                    <div class="vare-pris">
+                        <p class="pris-original">360 kr</p>
+                        <p class="pris-rabat">288 kr</p>
+                        <p class="pris-dage">3 dage</p>
+                    </div>
+                    <button class="fjern-btn" title="Fjern">✕</button>
+                </div>
+
+                <!-- Vare -->
+                <div class="kurv-card vare-card">
+                    <div class="vare-ikon">🤿</div>
+                    <div class="vare-info">
+                        <div class="vare-titel-row">
+                            <p class="vare-navn">Dykkerdragtens tørdragt</p>
+                            <span class="rabat-badge">-20%</span>
+                        </div>
+                        <p class="vare-meta">Dykkerdragter · Str. L</p>
+                        <p class="vare-enhed">95 kr / dag</p>
+                    </div>
+                    <div class="antal-kontrol">
+                        <button class="antal-btn" onclick="justerAntal(this, -1)">−</button>
+                        <span class="antal-vaerdi">3</span>
+                        <button class="antal-btn" onclick="justerAntal(this, 1)">+</button>
+                    </div>
+                    <div class="vare-pris">
+                        <p class="pris-original">285 kr</p>
+                        <p class="pris-rabat">228 kr</p>
+                        <p class="pris-dage">3 dage</p>
+                    </div>
+                    <button class="fjern-btn" title="Fjern">✕</button>
+                </div>
+
+                <!-- Vare -->
+                <div class="kurv-card vare-card">
+                    <div class="vare-ikon">🤿</div>
+                    <div class="vare-info">
+                        <div class="vare-titel-row">
+                            <p class="vare-navn">Regulatorsæt – Apeks XTX50</p>
+                            <span class="rabat-badge">-20%</span>
+                        </div>
+                        <p class="vare-meta">Regulatorsæt</p>
+                        <p class="vare-enhed">75 kr / dag</p>
+                    </div>
+                    <div class="antal-kontrol">
+                        <button class="antal-btn" onclick="justerAntal(this, -1)">−</button>
+                        <span class="antal-vaerdi">3</span>
+                        <button class="antal-btn" onclick="justerAntal(this, 1)">+</button>
+                    </div>
+                    <div class="vare-pris">
+                        <p class="pris-original">225 kr</p>
+                        <p class="pris-rabat">180 kr</p>
+                        <p class="pris-dage">3 dage</p>
+                    </div>
+                    <button class="fjern-btn" title="Fjern">✕</button>
+                </div>
+
+                <!-- Vare (ingen rabat) -->
+                <div class="kurv-card vare-card">
+                    <div class="vare-ikon">🤿</div>
+                    <div class="vare-info">
+                        <div class="vare-titel-row">
+                            <p class="vare-navn">Maske & snorkel</p>
+                        </div>
+                        <p class="vare-meta">Maske & snorkel · Universalstørrelse</p>
+                        <p class="vare-enhed">30 kr / dag</p>
+                    </div>
+                    <div class="antal-kontrol">
+                        <button class="antal-btn" onclick="justerAntal(this, -1)">−</button>
+                        <span class="antal-vaerdi">3</span>
+                        <button class="antal-btn" onclick="justerAntal(this, 1)">+</button>
+                    </div>
+                    <div class="vare-pris">
+                        <p class="pris-rabat">90 kr</p>
+                        <p class="pris-dage">3 dage</p>
+                    </div>
+                    <button class="fjern-btn" title="Fjern">✕</button>
+                </div>
+
+                <a href="#" class="tilbage-link">← Fortsæt med at handle</a>
+            </div>
+
+            <!-- Højre: ordreoversigt -->
+            <div class="kurv-summary">
+                <h2>Ordreoversigt</h2>
+
+                <div class="summary-linjer">
+                    <div class="summary-linje">
+                        <span class="summary-label">Subtotal</span>
+                        <span class="summary-vaerdi">1.275 kr</span>
+                    </div>
+                    <div class="summary-linje">
+                        <span class="summary-label gul">Pakkerabat (−20%)</span>
+                        <span class="summary-vaerdi gul">−204 kr</span>
+                    </div>
+                    <div class="summary-total">
+                        <span>I alt</span>
+                        <span>1.071 kr</span>
+                    </div>
+                </div>
+
+                <!-- Rabatkode -->
+                <div class="rabatkode-sektion">
+                    <p class="label">Rabatkode</p>
+                    <div class="rabatkode-input-row">
+                        <input type="text" placeholder="DYKKER10" class="rabatkode-input" />
+                        <button class="rabatkode-btn">Brug</button>
+                    </div>
+                </div>
+
+                <button class="betal-btn">Gå til betaling</button>
+
+                <p class="summary-note">Gratis aflevering i butikken · Ingen binding</p>
+
+                <div class="trust-badges">
+                    <div class="trust-badge">15 års erfaring</div>
+                    <div class="trust-badge">3473 kunder</div>
+                    <div class="trust-badge">Fri afmelding</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function justerAntal(btn, delta) {
+        const row = btn.closest('.antal-kontrol');
+        const span = row.querySelector('.antal-vaerdi');
+        let val = parseInt(span.textContent);
+        val = Math.max(1, val + delta);
+        span.textContent = val;
+    }
+
+    document.querySelectorAll('.fjern-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            btn.closest('.vare-card').remove();
+        });
+    });
+</script>
