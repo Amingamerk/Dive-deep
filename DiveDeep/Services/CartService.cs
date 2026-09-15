@@ -10,13 +10,15 @@ namespace DiveDeep.Services
         {
             return _cart;
         }
-        public void AddItem(Product product, string? size, string? gender)
+        public void AddItem(Product product, string? size, string? gender, DateTime startTime, DateTime endTime)
         {
-            // Tjek om produktet allerede er i kurven med samme størrelse og køn
-            CartItem? existingItem = _cart.Items.FirstOrDefault(i => 
-                i.ProductId == product.ProductId && 
-                i.SelectedSize == size && 
-                i.SelectedGender == gender);
+            // Tjek om produktet allerede er i kurven med samme størrelse, køn og periode
+            CartItem? existingItem = _cart.Items.FirstOrDefault(i =>
+                i.ProductId == product.ProductId &&
+                i.SelectedSize == size &&
+                i.SelectedGender == gender &&
+                i.StartTime == startTime &&
+                i.EndTime == endTime);
 
             if (existingItem != null)
             {
@@ -35,7 +37,9 @@ namespace DiveDeep.Services
                     SelectedSize = size,
                     SelectedGender = gender,
                     ImagePath = $"/images/products/{product.Brand.ToLower()}.png",
-                    Quantity = 1
+                    Quantity = 1,
+                    StartTime = startTime,
+                    EndTime = endTime
                 };
                 _cart.Items.Add(item);
             }
