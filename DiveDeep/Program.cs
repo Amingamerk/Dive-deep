@@ -22,6 +22,7 @@ namespace DiveDeep
             });
 
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddSingleton<ICartService, CartService>();
             builder.Services.AddScoped<IBookingRepository, BookingRepository>();
             builder.Services.AddScoped<BookingService, BookingService>();
             builder.Services.AddScoped<IBundleRepository, InMemoryBundleRepository>();

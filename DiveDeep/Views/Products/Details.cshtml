@@ -1,3 +1,4 @@
+﻿@model DiveDeep.Models.Product
 ﻿@model DiveDeep.ViewModels.ProductViewModel
 
 <div class="container mt-4" style="max-width: 600px;">
@@ -7,6 +8,22 @@
         <div class="alert alert-danger">@TempData["Error"]</div>
     }
 
+    <!-- Toast for success message -->
+    <div id="addToCartToast" class="position-fixed bottom-0 end-0 p-3" style="z-index: 11; display: none;">
+        <div class="toast show bg-success text-white" role="alert">
+            <div class="toast-header bg-success text-white border-0">
+                <strong class="me-auto">Tilføjet!</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body" id="toastMessage">
+                Produktet er tilføjet til kurven
+            </div>
+        </div>
+    </div>
+
+    <form id="bookingForm" class="card p-4 shadow-sm">
+        <input type="hidden" name="productId" value="@Model.ProductId" />
+        
     <form asp-controller="Bookings"
           asp-action="Add"
           method="post"
