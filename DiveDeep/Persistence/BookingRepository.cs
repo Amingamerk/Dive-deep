@@ -32,6 +32,7 @@ namespace DiveDeep.Persistence
         {
             return _diveDeepContext.Bookings
                 .Include(b => b.Product)
+                .Include(b => b.BundleBooking)
                 .ToList();
         }
 
@@ -70,6 +71,23 @@ namespace DiveDeep.Persistence
             //}
             //_diveDeepContext.Update<Booking>(bookingToUpdate);
             //_diveDeepContext.SaveChanges();
+        }
+
+        public void AddBundleBooking(BundleBooking bundleBooking)
+        {
+            _diveDeepContext.Add<BundleBooking>(bundleBooking);
+
+            _diveDeepContext.SaveChanges();
+        }
+
+        public BundleBooking? GetBundleBookingById(int id)
+        {
+            BundleBooking? bundleBooking = _diveDeepContext.BundleBookings
+                .Include(bb => bb.Bookings)
+                .ThenInclude(b => b.Product)
+                .FirstOrDefault(bb => bb.BundleBookingId == id);
+
+            return bundleBooking;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using DiveDeep.Models;
 using DiveDeep.Persistence;
 using DiveDeep.Services;
+using DiveDeep.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
 
@@ -18,26 +19,20 @@ namespace DiveDeep.Controllers
         [HttpPost]
         public IActionResult Add(int productId, string dateRange)
         {
-            string[] parts = dateRange.Split(" til ");
-
-            DateTime startTime = DateTime.ParseExact(parts[0], "dd/MM/yyyy", CultureInfo.InvariantCulture);
-            DateTime endTime;
-
-            if (parts.Length == 2)
+            Booking booking = new();
+            booking.ProductId = productId;
+            if (DateRangeParser.TryParse(dateRange, out DateTime startTime, out DateTime endTime))
             {
-                endTime = DateTime.ParseExact(parts[1], "dd/MM/yyyy", CultureInfo.InvariantCulture);
+                booking.StartTime = startTime;
+                booking.EndTime = endTime;
             }
             else
             {
-                // Hvis der kun er valgt en dag regner vi med at lejen slutter dagen efter.
-                // Leje er minimum 24 timer, ellers kan vi ikke markere en dag som optaget
-                endTime = startTime.AddDays(1);
+                // Datoerne kunne ikke læses. Der findes ikke et Add-view, så kunden sendes
+                // tilbage til produktet. TempData bruges, fordi ModelState forsvinder ved en redirect
+                TempData["Error"] = "Vælg en gyldig periode";
+                return RedirectToAction("Details", "Products", new { id = productId });
             }
-
-            Booking booking = new();
-            booking.ProductId = productId;
-            booking.StartTime = startTime;
-            booking.EndTime = endTime;
 
             _bookingRepository.Add(booking);
             return RedirectToAction("Details", "Products", new { id = productId });
