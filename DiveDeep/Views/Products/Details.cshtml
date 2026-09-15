@@ -7,6 +7,21 @@
         <div class="alert alert-danger">@TempData["Error"]</div>
     }
 
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                document.getElementById('toastMessage').textContent = '@TempData["Success"]';
+                var toastElement = document.getElementById('addToCartToast');
+                toastElement.style.display = 'block';
+
+                setTimeout(function () {
+                    toastElement.style.display = 'none';
+                }, 3000);
+            });
+        </script>
+    }
+
     <!-- Toast for success message -->
     <div id="addToCartToast" class="position-fixed bottom-0 end-0 p-3" style="z-index: 11; display: none;">
         <div class="toast show bg-success text-white" role="alert">
@@ -89,7 +104,7 @@
 
 @section Scripts {
     <script>
-            flatpickr('#dateRange', {
+        flatpickr('#dateRange', {
             mode: 'range',
             dateFormat: 'd/m/Y',
             minDate: 'today',

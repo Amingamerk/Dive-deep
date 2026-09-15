@@ -10,14 +10,18 @@ namespace DiveDeep.Controllers
     public class BookingsController : Controller
     {
         private readonly IBookingRepository _bookingRepository;
+        private readonly ICartService _cartService;
+        private readonly IProductRepository _productRepository;
 
-        public BookingsController(IBookingRepository bookingRepository)
+        public BookingsController(IBookingRepository bookingRepository, ICartService cartService, IProductRepository productRepository)
         {
             _bookingRepository = bookingRepository;
+            _cartService = cartService;
+            _productRepository = productRepository;
         }
 
         [HttpPost]
-        public IActionResult Add(int productId, string dateRange)
+        public IActionResult Add(int productId, string dateRange, string? size, string? gender)
         {
             Booking booking = new();
             booking.ProductId = productId;
@@ -28,13 +32,20 @@ namespace DiveDeep.Controllers
             }
             else
             {
-                // Datoerne kunne ikke læses. Der findes ikke et Add-view, så kunden sendes
-                // tilbage til produktet. TempData bruges, fordi ModelState forsvinder ved en redirect
                 TempData["Error"] = "Vælg en gyldig periode";
                 return RedirectToAction("Details", "Products", new { id = productId });
             }
 
             _bookingRepository.Add(booking);
+            
+            // Tilføj produktet til kurven
+            Product? product = _productRepository.GetById(productId);
+            if (product != null)
+            {
+                _cartService.AddItem(product, size, gender);
+                TempData["Success"] = $"{product.Brand} {product.Model} tilføjet til kurven!";
+            }
+            
             return RedirectToAction("Details", "Products", new { id = productId });
         }
     }

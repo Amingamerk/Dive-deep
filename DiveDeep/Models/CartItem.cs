@@ -1,4 +1,5 @@
-﻿namespace DiveDeep.Models
+﻿
+namespace DiveDeep.Models
 {
     public class CartItem
     {
