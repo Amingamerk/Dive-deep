@@ -30,6 +30,9 @@ namespace DiveDeep.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BookingId"));
 
+                    b.Property<int?>("BundleBookingId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("datetime2");
 
@@ -41,9 +44,37 @@ namespace DiveDeep.Migrations
 
                     b.HasKey("BookingId");
 
+                    b.HasIndex("BundleBookingId");
+
                     b.HasIndex("ProductId");
 
                     b.ToTable("Bookings");
+                });
+
+            modelBuilder.Entity("DiveDeep.Models.BundleBooking", b =>
+                {
+                    b.Property<int>("BundleBookingId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BundleBookingId"));
+
+                    b.Property<int>("BundleId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("BundleName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<float>("DiscountPercent")
+                        .HasColumnType("real");
+
+                    b.HasKey("BundleBookingId");
+
+                    b.ToTable("BundleBookings");
                 });
 
             modelBuilder.Entity("DiveDeep.Models.Product", b =>
@@ -57,9 +88,6 @@ namespace DiveDeep.Migrations
                     b.Property<string>("Brand")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Category")
-                        .HasColumnType("int");
 
                     b.Property<string>("Model")
                         .HasColumnType("nvarchar(max)");
@@ -78,9 +106,8 @@ namespace DiveDeep.Migrations
                 {
                     b.HasBaseType("DiveDeep.Models.Product");
 
-                    b.PrimitiveCollection<string>("Sizes")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Size")
+                        .HasColumnType("int");
 
                     b.ToTable("BCDs", (string)null);
                 });
@@ -93,13 +120,11 @@ namespace DiveDeep.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.PrimitiveCollection<string>("Sizes")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Size")
+                        .HasColumnType("int");
 
-                    b.PrimitiveCollection<string>("SuitTypes")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("SuitType")
+                        .HasColumnType("int");
 
                     b.Property<string>("Thickness")
                         .HasColumnType("nvarchar(max)");
@@ -111,9 +136,8 @@ namespace DiveDeep.Migrations
                 {
                     b.HasBaseType("DiveDeep.Models.Product");
 
-                    b.PrimitiveCollection<string>("Sizes")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Size")
+                        .HasColumnType("int");
 
                     b.ToTable("Fins", (string)null);
                 });
@@ -122,11 +146,7 @@ namespace DiveDeep.Migrations
                 {
                     b.HasBaseType("DiveDeep.Models.Product");
 
-                    b.PrimitiveCollection<string>("Sizes")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.ToTable("MAskSnorkels", (string)null);
+                    b.ToTable("MaskSnorkels", (string)null);
                 });
 
             modelBuilder.Entity("DiveDeep.Models.RegulatorSet", b =>
@@ -134,12 +154,15 @@ namespace DiveDeep.Migrations
                     b.HasBaseType("DiveDeep.Models.Product");
 
                     b.Property<string>("FirstStep")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Octopus")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecondStep")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.ToTable("RegulatorSets", (string)null);
@@ -149,20 +172,25 @@ namespace DiveDeep.Migrations
                 {
                     b.HasBaseType("DiveDeep.Models.Product");
 
-                    b.PrimitiveCollection<string>("Sizes")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("VolumeLiters")
+                        .HasColumnType("int");
 
                     b.ToTable("Tanks", (string)null);
                 });
 
             modelBuilder.Entity("DiveDeep.Models.Booking", b =>
                 {
+                    b.HasOne("DiveDeep.Models.BundleBooking", "BundleBooking")
+                        .WithMany("Bookings")
+                        .HasForeignKey("BundleBookingId");
+
                     b.HasOne("DiveDeep.Models.Product", "Product")
                         .WithMany("Bookings")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("BundleBooking");
 
                     b.Navigation("Product");
                 });
@@ -219,6 +247,11 @@ namespace DiveDeep.Migrations
                         .HasForeignKey("DiveDeep.Models.Tank", "ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("DiveDeep.Models.BundleBooking", b =>
+                {
+                    b.Navigation("Bookings");
                 });
 
             modelBuilder.Entity("DiveDeep.Models.Product", b =>

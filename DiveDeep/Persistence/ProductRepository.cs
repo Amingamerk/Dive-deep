@@ -1,6 +1,6 @@
 ﻿using DiveDeep.Data;
 using DiveDeep.Models;
-using static DiveDeep.Models.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace DiveDeep.Persistence
 {
@@ -17,14 +17,11 @@ namespace DiveDeep.Persistence
 
         public List<Product> GetAll()
         {
-            _diveDeepContext.Database.EnsureCreated();
             return _diveDeepContext.Products.ToList();
         }
 
         public Product? GetById(int id)
         {
-            _diveDeepContext.Database.EnsureCreated();
-
             var product = _diveDeepContext.Products.FirstOrDefault(p => p.ProductId == id);
             if (product == null)
             {
@@ -63,41 +60,41 @@ namespace DiveDeep.Persistence
                 .ToList();
         }
 
-        public  int GetAvailableCount(int productId, DateTime startDate, DateTime endDate)
+        //public int getavailablecount(int productid, datetime startdate, datetime enddate)
+        //{
+        //    return 1 - (_divedeepcontext.bookings
+        //        .where(b =>
+        //            b.productid == productid &&
+        //            b.starttime < enddate &&
+        //            b.endtime > startdate
+        //        )
+        //        .sum(b => b.quantity)
+        //    );
+        //}
+
+        //public List<string> GetBlockedDates(int productId, DateTime startDate, DateTime endDate)
+        //{
+        //    var blockedDates = new List<string>();
+        //    var bookings = _diveDeepContext.Bookings
+        //        .Where(b =>
+        //            b.ProductId == productId &&
+        //            b.StartTime < endDate &&
+        //            b.EndTime > startDate
+        //        )
+        //        .ToList();
+
+        //    foreach (var booking in bookings)
+        //    {
+        //        var blockStart = booking.StartTime > startDate ? booking.StartTime : startDate;
+        //        var blockEnd = booking.EndTime < endDate ? booking.EndTime : endDate;
+
+        //        blockedDates.Add($"{blockStart:dd/MM/yyyy} - {blockEnd:dd/MM/yyyy}");
+        //    }
+
+        //    return blockedDates;
+        //}
+        public void Update(int id, Product product) 
         {
-            return 1 - (_diveDeepContext.Bookings
-                .Where(b =>
-                    b.ProductId == productId &&
-                    b.StartTime < endDate &&
-                    b.EndTime > startDate
-                )
-                .Sum(b => b.Quantity)
-            );
-        }
-
-        public List<string> GetBlockedDates(int productId, DateTime startDate, DateTime endDate)
-        {
-            var blockedDates = new List<string>();
-            var bookings = _diveDeepContext.Bookings
-                .Where(b =>
-                    b.ProductId == productId &&
-                    b.StartTime < endDate &&
-                    b.EndTime > startDate
-                )
-                .ToList();
-
-            foreach (var booking in bookings)
-            {
-                var blockStart = booking.StartTime > startDate ? booking.StartTime : startDate;
-                var blockEnd = booking.EndTime < endDate ? booking.EndTime : endDate;
-
-                blockedDates.Add($"{blockStart:dd/MM/yyyy} - {blockEnd:dd/MM/yyyy}");
-            }
-
-            return blockedDates;
-        }
-        public void Update(int id, Product product) {
-
             //var product = _diveDeepContext.Products.FirstOrDefault(p => p.ProductId == id);
             //if (product == null)
             //{
@@ -112,6 +109,31 @@ namespace DiveDeep.Persistence
         public List<ProductCategory> GetProductCategories()
         {
             return GetAll().Select(p => p.Category).Distinct().ToList();
+        }
+
+        public List<DateTime> GetBookedDates(int productId, DateTime fromDate, DateTime toDate)
+        {
+            List<Booking> bookings = _diveDeepContext.Bookings
+                .Where(b => b.ProductId == productId && b.StartTime < toDate && b.EndTime > fromDate)
+                .ToList();
+
+            List<DateTime> bookedDates = new();
+
+            foreach (Booking booking in bookings)
+            {
+                DateTime date = booking.StartTime.Date;
+
+                while (date < booking.EndTime.Date)
+                {
+                    if (!bookedDates.Contains(date))
+                    {
+                        bookedDates.Add(date);
+                    }
+
+                    date = date.AddDays(1);
+                }
+            }
+            return bookedDates;
         }
 
         public List<Product> GetVariants(string brand, string model)

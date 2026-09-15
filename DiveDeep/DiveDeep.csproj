@@ -15,6 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Areas\Admin\Data\" />
+    <Folder Include="Areas\Admin\Models\" />
+    <Folder Include="Areas\Admin\Views\Admin\" />
     <Folder Include="Migrations\" />
     <Folder Include="wwwroot\images\products\categories\" />
   </ItemGroup>

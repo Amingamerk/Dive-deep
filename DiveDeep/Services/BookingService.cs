@@ -15,6 +15,31 @@ namespace DiveDeep.Services
             _productRepository = productRepository;
         }
 
+        public BookingValidationResult ValidateDates(DateTime startTime, DateTime endTime)
+        {
+            BookingValidationResult result = new BookingValidationResult();
+            result.IsSuccessful = false;
+
+            // tjek at startdato er før slut dato
+            if (startTime >= endTime)
+            {
+                result.Key = "EndTime";
+                result.ErrorMessage = "Slut dato skal være efter start dato";
+                return result;
+            }
+
+            // tjek at startdato ikke er i fortiden
+            if (startTime < DateTime.Today)
+            {
+                result.Key = "StartTime";
+                result.ErrorMessage = "Start dato kan ikke være i fortiden";
+                return result;
+            }
+
+            result.IsSuccessful = true;
+            return result;
+        }
+
         public BookingValidationResult ValidateBooking(Booking booking)
         {
             var result = new BookingValidationResult();
@@ -23,28 +48,18 @@ namespace DiveDeep.Services
             DateTime startTime = booking.StartTime;
             DateTime endTime = booking.EndTime;
 
-            // Krav 1: Start dato skal være før slut dato
-            if (startTime >= endTime)
+            // tjek at datoerne er skrevet korrekt
+            BookingValidationResult dateResult = ValidateDates(booking.StartTime, booking.EndTime);
+            if (!dateResult.IsSuccessful)
             {
-                result.Key = "EndTime";
-                result.ErrorMessage = "Slut dato skal være efter start dato";
-                return result;
+                return dateResult;
             }
 
-            // Krav 2: Start dato kan ikke være i fortiden
-            if (startTime < DateTime.Now)
-            {
-                result.Key = "StartTime";
-                result.ErrorMessage = "Start dato kan ikke være i fortiden";
-                return result;
-            }
-
-            // Krav 3: Produktet skal være tilgængeligt i hele perioden
-            var isAvailable = _productRepository.IsProductAvailable(
+            // tjek at produktet er tilgængeligt i hele perioden
+            bool isAvailable = _productRepository.IsProductAvailable(
                 booking.ProductId,
                 startTime,
-                endTime,
-                booking.Quantity
+                endTime
             );
 
             if (!isAvailable)
@@ -56,15 +71,6 @@ namespace DiveDeep.Services
 
             result.IsSuccessful = true;
             return result;
-        }
-
-        public List<Product> GetAvailableProducts(int categoryId, DateTime startDate, DateTime endDate)
-        {
-            var products = _productRepository.GetAll();
-            return products
-                .Where(p => p.Category == (Enums.ProductCategory)categoryId)
-                .Where(p => _productRepository.IsProductAvailable(p.ProductId, startDate, endDate))
-                .ToList();
         }
     }
 }

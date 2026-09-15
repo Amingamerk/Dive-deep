@@ -21,6 +21,11 @@ namespace DiveDeep.Models
         [ValidateNever]
         [BindNever]
         public Product Product { get; set; } = null!;
-        public int Quantity { get; set; }
+
+        public int? BundleBookingId { get; set; }
+
+        [ValidateNever]
+        [BindNever]
+        public BundleBooking? BundleBooking { get; set; }
     }
 }

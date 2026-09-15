@@ -1,6 +1,6 @@
-using DiveDeep.ViewModels;
-using static DiveDeep.Models.Enums;
+using DiveDeep.Models;
 using DiveDeep.Persistence;
+using DiveDeep.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DiveDeep.Controllers
@@ -9,15 +9,7 @@ namespace DiveDeep.Controllers
     {
         private readonly IProductRepository _productRepository;
 
-        private readonly Dictionary<ProductCategory, (string Title, string ImageFile, string AltText)> categoryInfo = new()
-        {
-            [ProductCategory.BCD]          = ("BCD'er",            "BCD.png",           "BCD / vestsystem"),
-            [ProductCategory.DiveSuit]     = ("Dykkerdragter",     "wetsuit.png",       "Dykkerdragt"),
-            [ProductCategory.Fins]         = ("Finner",            "fins.png",          "Svømmefinner"),
-            [ProductCategory.MaskSnorkel]  = ("Masker & snorkler", "mask.png",          "Dykkermaske og snorkel"),
-            [ProductCategory.RegulatorSet] = ("Regulatorsæt",      "regulator_WIP.png", "Regulatorsæt"),
-            [ProductCategory.Tank]         = ("Dykkertanke",       "tank.png",          "Dykkertank")
-        };
+        
 
         public ProductsController(IProductRepository productRepository)
         {
@@ -31,7 +23,7 @@ namespace DiveDeep.Controllers
 
             foreach (ProductCategory category in categories)
             {
-                (string title, string imageFile, string altText) = categoryInfo[category];
+                (string title, string imageFile, string altText) = CategoryInfo.Categories[category];
 
                 viewModel.Add(new CategoryCardViewModel
                 {
@@ -43,12 +35,6 @@ namespace DiveDeep.Controllers
             }
 
             return View(viewModel);
-        }
-
-        public IActionResult Categories()
-        {
-            var categories = Enum.GetValues<ProductCategory>();
-            return View(categories);
         }
 
         public IActionResult Category(ProductCategory category)
@@ -74,39 +60,40 @@ namespace DiveDeep.Controllers
                 return NotFound();
             }
 
-            var variants = _productRepository.GetVariants(product.Brand, product.Model);
+            List<Product> variants = 
+                _productRepository.GetVariants(product.Brand, product.Model)
+                    .OrderBy(v => v.ProductId)
+                    .ToList();
 
-            // Extract unique sizes from variants using the virtual SizeOptions property
-            var sizeOptions = variants
-                .SelectMany(v => v.SizeOptions)
-                .Distinct()
-                .ToList();
+            // create productviewmodel
+            ProductViewModel pvm = new();
 
-            // Store in ViewBag for the view
-            ViewBag.Variants = variants;
-            ViewBag.SizeOptions = sizeOptions;
+            pvm.Brand = product.Brand;
+            pvm.Model = product.Model;
+            pvm.PricePerDay = product.PricePerDay;
+            pvm.VariantHeading = product.VariantHeading;
+            pvm.SelectedProductId = product.ProductId;
 
-            return View(product);
-        }
-
-        [HttpPost]
-        public IActionResult CheckAvailability(int productId, string startDate, string endDate)
-        {
-            if (!DateTime.TryParseExact(startDate, "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out var parsedStartDate) ||
-                !DateTime.TryParseExact(endDate, "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out var parsedEndDate))
+            foreach (Product p in variants)
             {
-                return Json(new { isAvailable = false, message = "Ugyldig datoformat" });
+                ProductVariantViewModel variant = new();
+                variant.ProductId = p.ProductId;
+                variant.Label = p.VariantLabel;
+                variant.Group = p.VariantGroup;
+                pvm.Variants.Add(variant);
             }
 
-            var isAvailable = _productRepository.IsProductAvailable(productId, parsedStartDate, parsedEndDate);
-            var blockedDates = _productRepository.GetBlockedDates(productId, parsedStartDate, parsedEndDate);
+            DateTime fromDate = DateTime.Today;
+            DateTime toDate = fromDate.AddMonths(12);
 
-            return Json(new
+            List<DateTime> bookedDates = _productRepository.GetBookedDates(product.ProductId, fromDate, toDate);
+
+            foreach (DateTime date in bookedDates)
             {
-                isAvailable = isAvailable,
-                message = isAvailable ? "Produktet er tilgængeligt" : "Produktet er desværre ikke tilgængeligt for de valgte datoer",
-                blockedDates = blockedDates
-            });
+                pvm.BookedDates.Add(date.ToString("dd/MM/yyyy"));
+            }
+
+            return View(pvm);
         }
     }
 

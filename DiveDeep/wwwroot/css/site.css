@@ -18,3 +18,11 @@ body {
 .category-card:hover img {
     transform: translateY(-4px) scale(1.03);
 }
+
+.cart-icon {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    display: block;
+    filter: brightness(0) invert(0.8);
+}

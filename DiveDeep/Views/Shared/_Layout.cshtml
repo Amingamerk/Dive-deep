@@ -10,7 +10,7 @@
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css" />
 </head>
 <body>
     <nav class="navbar navbar-expand-lg w-100 z-3 py-3">
@@ -25,11 +25,17 @@
                 <ul class="navbar-nav align-items-lg-center gap-lg-3">
                     <li class="nav-item"><a class="nav-link" asp-controller="Products" asp-action="Index">Udstyr</a></li>
                     <li class="nav-item"><a class="nav-link" asp-controller="Bundles" asp-action="Index">Pakker</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="FAQ">FAQ</a></li>
                     <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="AboutUs">Om os</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Contact">Kontakt</a></li>
+                    @*<li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="FAQ">FAQ</a></li> *@
+                    @*<li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Contact">Kontakt</a></li> *@
+
                     <li class="nav-item ms-lg-3 mt-3 mt-lg-0">
-                        <a class="btn btn-warning rounded-4 px-4" asp-controller="Cart" asp-action="Index">Kurv</a>
+                        <a class="btn btn-warning rounded-4 px-4" asp-controller="Products" asp-action="Index">Lej udstyr</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Cart" asp-action="Index">
+                            <img class="cart-icon" src="~/images/cart.png" alt="Indkøbskurv" />
+                        </a>
                     </li>
                 </ul>
             </div>
@@ -52,6 +58,7 @@
                     <h2 class="h6 fw-bold mb-3">KONTAKT</h2>
                     <p class="mb-1"><a class="text-white-50" href="tel:+4560708090">+45 60 70 80 90</a></p>
                     <p class="mb-0"><a class="text-white-50" href="mailto:info@divedeep.dk">info@divedeep.dk</a></p>
+                    <p class="mb-0"><a class="text-white-50" asp-controller="Home" asp-action="FAQ">FAQ</a></p>
                 </div>
                 <div class="col-md-4">
                     <h2 class="h6 fw-bold mb-3">ÅBNINGSTIDER</h2>
@@ -72,7 +79,9 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/plugins/rangePlugin.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/l10n/da.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
