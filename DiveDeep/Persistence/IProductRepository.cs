@@ -17,6 +17,7 @@ namespace DiveDeep.Persistence
 
         // Availability helpers used by controller
         bool IsProductAvailable(int productId, DateTime startDate, DateTime endDate, int requestedQuantity = 1);
+        List<Product> GetAvailableProducts(ProductCategory category, DateTime startDate, DateTime endDate);
         //List<string> GetBlockedDates(int productId, DateTime startDate, DateTime endDate);
 
         //void Update

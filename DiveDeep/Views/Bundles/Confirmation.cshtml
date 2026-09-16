@@ -1,0 +1,56 @@
+@model DiveDeep.ViewModels.BundleConfirmationViewModel
+@{
+    ViewData["Title"] = "Booking bekræftet";
+}
+
+@* ---------- Bekræftelse af pakkebooking ---------- *@
+<section class="container py-5 my-5">
+
+    <div class="text-center mb-5">
+        <span class="badge text-bg-warning rounded-pill mb-3">Booking bekræftet</span>
+        <h2 class="display-6 fw-light">Tak for din booking!</h2>
+        <p class="text-white-50">Dit udstyr står klar i butikken på startdatoen.</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card bg-white bg-opacity-10 border-0 rounded-4">
+                <div class="card-body p-4">
+
+                    <h3 class="h5 fw-bold mb-1">@Model.BundleName</h3>
+                    <p class="text-warning fw-bold mb-4">
+                        Fra @Model.StartDate.ToString("dd/MM/yyyy") til @Model.EndDate.ToString("dd/MM/yyyy") (@Model.Days dage)
+                    </p>
+
+                    @* Alt udstyr i pakken *@
+                    <p class="text-white-50 mb-2">Udstyr</p>
+                    <ul class="list-unstyled mb-4">
+                        @foreach (string productLabel in Model.ProductLabels)
+                        {
+                            <li class="py-2 border-bottom border-light border-opacity-10">@productLabel</li>
+                        }
+                    </ul>
+
+                    @* Priser: fuld pris, rabat og hvad kunden skal betale *@
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-white-50">Normalpris</span>
+                        <span class="text-white-50 text-decoration-line-through">@Model.FullPrice.ToString("0") kr</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-warning">Pakkerabat (-@Model.DiscountPercent %)</span>
+                        <span class="text-warning">-@((Model.FullPrice - Model.TotalPrice).ToString("0")) kr</span>
+                    </div>
+                    <div class="d-flex justify-content-between pt-3 border-top border-light border-opacity-10">
+                        <span class="h5 fw-bold mb-0">I alt</span>
+                        <span class="h5 fw-bold mb-0">@Model.TotalPrice.ToString("0") kr</span>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-3 justify-content-between pt-4">
+                        <a asp-controller="Bundles" asp-action="Index" class="btn btn-warning rounded-4 px-4">Se flere pakker</a>
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-light rounded-4 px-4">Til forsiden</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

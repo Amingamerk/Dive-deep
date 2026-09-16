@@ -1,6 +1,7 @@
 ﻿using DiveDeep.Models;
 using DiveDeep.Persistence;
 using DiveDeep.Services;
+using DiveDeep.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
 
@@ -9,37 +10,42 @@ namespace DiveDeep.Controllers
     public class BookingsController : Controller
     {
         private readonly IBookingRepository _bookingRepository;
+        private readonly ICartService _cartService;
+        private readonly IProductRepository _productRepository;
 
-        public BookingsController(IBookingRepository bookingRepository)
+        public BookingsController(IBookingRepository bookingRepository, ICartService cartService, IProductRepository productRepository)
         {
             _bookingRepository = bookingRepository;
+            _cartService = cartService;
+            _productRepository = productRepository;
         }
 
         [HttpPost]
-        public IActionResult Add(int productId, string dateRange)
+        public IActionResult Add(int productId, string dateRange, string? size, string? gender)
         {
-            string[] parts = dateRange.Split(" til ");
-
-            DateTime startTime = DateTime.ParseExact(parts[0], "dd/MM/yyyy", CultureInfo.InvariantCulture);
-            DateTime endTime;
-
-            if (parts.Length == 2)
+            Booking booking = new();
+            booking.ProductId = productId;
+            if (DateRangeParser.TryParse(dateRange, out DateTime startTime, out DateTime endTime))
             {
-                endTime = DateTime.ParseExact(parts[1], "dd/MM/yyyy", CultureInfo.InvariantCulture);
+                booking.StartTime = startTime;
+                booking.EndTime = endTime;
             }
             else
             {
-                // Hvis der kun er valgt en dag regner vi med at lejen slutter dagen efter.
-                // Leje er minimum 24 timer, ellers kan vi ikke markere en dag som optaget
-                endTime = startTime.AddDays(1);
+                TempData["Error"] = "Vælg en gyldig periode";
+                return RedirectToAction("Details", "Products", new { id = productId });
             }
 
-            Booking booking = new();
-            booking.ProductId = productId;
-            booking.StartTime = startTime;
-            booking.EndTime = endTime;
-
             _bookingRepository.Add(booking);
+            
+            // Tilføj produktet til kurven
+            Product? product = _productRepository.GetById(productId);
+            if (product != null)
+            {
+                _cartService.AddItem(product, size, gender);
+                TempData["Success"] = $"{product.Brand} {product.Model} tilføjet til kurven!";
+            }
+            
             return RedirectToAction("Details", "Products", new { id = productId });
         }
     }

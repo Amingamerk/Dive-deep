@@ -9,15 +9,7 @@ namespace DiveDeep.Controllers
     {
         private readonly IProductRepository _productRepository;
 
-        private readonly Dictionary<ProductCategory, (string Title, string ImageFile, string AltText)> categoryInfo = new()
-        {
-            [ProductCategory.BCD]          = ("BCD'er",            "BCD.png",           "BCD / vestsystem"),
-            [ProductCategory.DiveSuit]     = ("Dykkerdragter",     "wetsuit.png",       "Dykkerdragt"),
-            [ProductCategory.Fins]         = ("Finner",            "fins.png",          "Svømmefinner"),
-            [ProductCategory.MaskSnorkel]  = ("Masker & snorkler", "mask.png",          "Dykkermaske og snorkel"),
-            [ProductCategory.RegulatorSet] = ("Regulatorsæt",      "regulator_WIP.png", "Regulatorsæt"),
-            [ProductCategory.Tank]         = ("Dykkertanke",       "tank.png",          "Dykkertank")
-        };
+        
 
         public ProductsController(IProductRepository productRepository)
         {
@@ -31,7 +23,7 @@ namespace DiveDeep.Controllers
 
             foreach (ProductCategory category in categories)
             {
-                (string title, string imageFile, string altText) = categoryInfo[category];
+                (string title, string imageFile, string altText) = CategoryInfo.Categories[category];
 
                 viewModel.Add(new CategoryCardViewModel
                 {

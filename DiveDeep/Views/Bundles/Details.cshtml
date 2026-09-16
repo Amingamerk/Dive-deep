@@ -1,0 +1,147 @@
+@model DiveDeep.ViewModels.BundleViewModel
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+@* ---------- Pakke: vælg periode og udstyr ---------- *@
+<section class="container py-5 my-5">
+
+    @* Overskrift, samme stil som sektionerne på forsiden og pakkesiden *@
+    <div class="text-center mb-5">
+        <span class="badge text-bg-warning rounded-pill mb-3">-@Model.DiscountPercent %</span>
+        <h2 class="display-6 fw-light">@Model.Name</h2>
+        <p class="text-white-50">Vælg først periode, så viser vi det udstyr, der er ledigt.</p>
+    </div>
+
+    @* Midterkolonne, så formularerne ikke bliver for brede på store skærme *@
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+
+            @* Fejlbesked fra Book-actionen. Den kommer via TempData, fordi ModelState forsvinder ved en redirect *@
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger rounded-4">@TempData["Error"]</div>
+            }
+
+            @* ---------- Trin 1: Vælg periode (GET-formular) ---------- *@
+            <form asp-controller="Bundles"
+                  asp-action="Details"
+                  asp-route-id="@Model.BundleId"
+                  method="get"
+                  class="card bg-white bg-opacity-10 border-0 rounded-4 mb-4">
+                <div class="card-body p-4 d-flex flex-column">
+
+                    <label for="dateRange" class="h5 fw-bold mb-3">1. Vælg periode</label>
+
+                    @* value sørger for, at de valgte datoer bliver stående, når siden genindlæses *@
+                    <input type="text"
+                           class="form-control rounded-4"
+                           placeholder="Vælg datoer"
+                           name="dateRange"
+                           id="dateRange"
+                           value="@Model.DateRange"
+                           required />
+
+                    @* Viser fejl, som controlleren har lagt i ModelState med nøglen "DateRange" *@
+                    <span asp-validation-for="DateRange" class="text-danger small mt-2"></span>
+
+                    <button type="submit" class="btn btn-warning rounded-4 align-self-start mt-3 px-4">
+                        Vis ledigt udstyr
+                    </button>
+                </div>
+            </form>
+
+            @* ---------- Trin 2: Vælg udstyr (POST-formular) ---------- *@
+            @* Vises kun, når der er valgt gyldige datoer, og controlleren har bygget slots *@
+            @if (Model.Slots.Count > 0)
+            {
+                <form asp-controller="Bundles"
+                      asp-action="Book"
+                      method="post"
+                      class="card bg-white bg-opacity-10 border-0 rounded-4">
+                    <div class="card-body p-4">
+
+                        <h3 class="h5 fw-bold mb-1">2. Vælg udstyr</h3>
+                        <p class="text-warning fw-bold mb-4">
+                            Ledigt fra @Model.StartDate.ToString("dd/MM/yyyy") til @Model.EndDate.ToString("dd/MM/yyyy")
+                        </p>
+
+                        @* Skjulte felter, så Book-actionen ved hvilken pakke og periode der er valgt *@
+                        <input type="hidden" name="bundleId" value="@Model.BundleId" />
+                        <input type="hidden" name="dateRange" value="@Model.DateRange" />
+
+                        @* Én dropdown for hver del af pakken *@
+                        @for (int i = 0; i < Model.Slots.Count; i++)
+                        {
+                            DiveDeep.ViewModels.BundleSlotViewModel slot = Model.Slots[i];
+                            string selectId = "slot-" + i;
+
+                            <div class="mb-3">
+                                <label for="@selectId" class="form-label text-white-50">@slot.Title</label>
+
+                                @if (slot.Options.Count == 0)
+                                {
+                                    @* Alt i denne kategori er udlejet i perioden *@
+                                    <p id="@selectId" class="text-danger mb-0">Ingen ledige i perioden</p>
+                                }
+                                else
+                                {
+                                    @* Alle dropdowns hedder "productIds", så de samles i List<int> productIds i Book *@
+                                    <select class="form-select rounded-4" name="productIds" id="@selectId">
+                                        @foreach (var group in slot.Options.GroupBy(o => o.Group))
+                                        {
+                                            if (group.Key != null)
+                                            {
+                                                <optgroup label="@group.Key">
+                                                    @foreach (var option in group)
+                                                    {
+                                                        <option value="@option.ProductId">@option.Label</option>
+                                                    }
+                                                </optgroup>
+                                            }
+                                            else
+                                            {
+                                                foreach (var option in group)
+                                                {
+                                                    <option value="@option.ProductId">@option.Label</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                }
+                            </div>
+                        }
+
+                        <div class="d-flex flex-wrap gap-3 justify-content-between align-items-center pt-3">
+                            @if (Model.AllSlotsAvailable)
+                            {
+                                <button type="submit" class="btn btn-warning rounded-4 px-4">Book pakke</button>
+                            }
+                            else
+                            {
+                                <p class="text-white-50 mb-0">Prøv en anden periode for at booke pakken.</p>
+                            }
+
+                            <a asp-controller="Bundles" asp-action="Index" class="btn btn-outline-light rounded-4 px-4">
+                                Afbryd
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            }
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        // Samme datepicker som på produktsiden, men uden "disable",
+        // fordi ledigheden i stedet vises i dropdowns i trin 2
+        flatpickr('#dateRange', {
+            mode: 'range',
+            dateFormat: 'd/m/Y',
+            minDate: 'today',
+            locale: 'da'
+        });
+    </script>
+}

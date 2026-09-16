@@ -15,6 +15,8 @@ namespace DiveDeep.Data
         public DbSet<Tank> Tanks { get; set; }
         public DbSet<Product> Products { get; set; }
 
+        public DbSet<BundleBooking> BundleBookings { get; set; }
+
 
         public DiveDeepContext(DbContextOptions<DiveDeepContext> options) : base(options)
         {
@@ -27,8 +29,6 @@ namespace DiveDeep.Data
                 .HasOne(b => b.Product)
                 .WithMany(p => p.Bookings)
                 .HasForeignKey(b => b.ProductId);
-
-
 
             //modelBuilder.Entity<Product>(r =>
             //{
@@ -54,7 +54,7 @@ namespace DiveDeep.Data
             });
             modelBuilder.Entity<MaskSnorkel>(p =>
             {
-                p.ToTable("MAskSnorkels");
+                p.ToTable("MaskSnorkels");
             });
             modelBuilder.Entity<RegulatorSet>(p =>
             {
@@ -64,6 +64,12 @@ namespace DiveDeep.Data
             {
                 p.ToTable("Tanks");
             });
+
+            modelBuilder.Entity<Booking>()
+                .HasOne(b => b.BundleBooking)
+                .WithMany(bb => bb.Bookings)
+                .HasForeignKey(b => b.BundleBookingId)
+                .IsRequired(false);
 
 
             base.OnModelCreating(modelBuilder);

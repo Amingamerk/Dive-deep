@@ -1,5 +1,46 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+@model List<Booking>
 @{
+    ViewData["Title"] = "Bookinger";
+}
+
+@* Hurtig og simpel oversigt over alle bookinger *@
+<h1 class="h3 mb-4">Bookinger</h1>
+
+@if (Model.Count == 0)
+{
+    <p class="text-body-secondary">Der er ingen bookinger endnu.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Produkt</th>
+                    <th>Start</th>
+                    <th>Slut</th>
+                    <th>Pakke</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Booking booking in Model)
+                {
+                    <tr>
+                        <td>@booking.BookingId</td>
+                        <td>@booking.Product.Brand @booking.Product.Model (@booking.Product.VariantLabel)</td>
+                        <td>@booking.StartTime.ToString("dd/MM/yyyy")</td>
+                        <td>@booking.EndTime.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            @* Tom, hvis produktet er booket alene *@
+                            @if (booking.BundleBooking != null)
+                            {
+                                <span class="badge text-bg-warning">@booking.BundleBooking.BundleName #@booking.BundleBooking.BundleBookingId</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }

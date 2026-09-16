@@ -1,0 +1,130 @@
+﻿@model CartViewModel
+<div class="container py-5">
+
+    <h1>Din kurv</h1>
+
+    <div class="row">
+
+        <div class="col-lg-8">
+
+            @if (Model.Items.Count == 0)
+            {
+                <div class="alert alert-info">
+                    Din kurv er tom. <a asp-controller="Products" asp-action="Index">Gå til produkter</a>
+                </div>
+            }
+            else
+            {
+                @foreach (var item in Model.Items)
+                {
+                    <div class="card mb-4 bg-dark border-secondary">
+
+                        <div class="card-body">
+
+                            <div class="row align-items-center">
+
+                                @* <div class="col-md-2">
+                                    @if (!string.IsNullOrEmpty(item.ImagePath))
+                                    {
+                                        <img src="@item.ImagePath" alt="@item.Brand @item.Model" class="img-fluid" style="max-height: 150px; object-fit: contain;">
+                                    }
+                                </div> *@
+
+                                <div class="col-md-6">
+
+                                    <h5>
+                                        @item.Brand @item.Model
+                                    </h5>
+
+                                    <small class="text-muted d-block">
+                                        @if (!string.IsNullOrEmpty(item.SelectedSize))
+                                        {
+                                            <span>Størrelse: @item.SelectedSize</span>
+                                        }
+                                        @if (!string.IsNullOrEmpty(item.SelectedGender))
+                                        {
+                                            <span> | Køn: @item.SelectedGender</span>
+                                        }
+                                    </small>
+
+                                </div>
+
+                                <div class="col-md-2 text-end">
+
+                                    <h6>
+                                        @item.PricePerDay kr./dag
+                                    </h6>
+
+                                </div>
+
+                                <div class="col-md-2 text-end">
+                                    <form method="post" asp-action="RemoveFromCart" style="display: inline;">
+                                        <input type="hidden" name="id" value="@item.ProductId" />
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="bi bi-trash"></i> Slet
+                                        </button>
+                                    </form>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                }
+            }
+
+        </div>
+
+        <div class="col-lg-4">
+
+            <div class="card bg-dark border-secondary">
+
+                <div class="card-body">
+
+                    <h3>Ordreoversigt</h3>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+                        <span>Udstyr (@Model.Items.Count)</span>
+                        <span>@Model.Total kr.</span>
+                    </div>
+
+                    @if (Model.Discount > 0)
+                    {
+                        <div class="d-flex justify-content-between">
+                            <span>Rabat</span>
+                            <span>-@Model.Discount kr.</span>
+                        </div>
+                    }
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between mb-3">
+                        <strong>I alt</strong>
+                        <strong>@(Model.Total - Model.Discount) kr.</strong>
+                    </div>
+
+                    @if (Model.Items.Count > 0)
+                    {
+                        <a class="btn btn-warning w-100 mb-2">
+                            Gå til checkout
+                        </a>
+                    }
+
+                    <form method="post" asp-action="ClearCart">
+                        <button type="submit" class="btn btn-outline-danger w-100">
+                            Tøm kurven
+                        </button>
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

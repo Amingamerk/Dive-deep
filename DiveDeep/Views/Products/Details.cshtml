@@ -1,6 +1,40 @@
 ﻿@model DiveDeep.ViewModels.ProductViewModel
 
 <div class="container mt-4" style="max-width: 600px;">
+    @* Fejlbesked fra BookingsController, fx hvis datoerne ikke kunne læses *@
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                document.getElementById('toastMessage').textContent = '@TempData["Success"]';
+                var toastElement = document.getElementById('addToCartToast');
+                toastElement.style.display = 'block';
+
+                setTimeout(function () {
+                    toastElement.style.display = 'none';
+                }, 3000);
+            });
+        </script>
+    }
+
+    <!-- Toast for success message -->
+    <div id="addToCartToast" class="position-fixed bottom-0 end-0 p-3" style="z-index: 11; display: none;">
+        <div class="toast show bg-success text-white" role="alert">
+            <div class="toast-header bg-success text-white border-0">
+                <strong class="me-auto">Tilføjet!</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body" id="toastMessage">
+                Produktet er tilføjet til kurven
+            </div>
+        </div>
+    </div>
+
     <form asp-controller="Bookings"
           asp-action="Add"
           method="post"
@@ -70,7 +104,7 @@
 
 @section Scripts {
     <script>
-            flatpickr('#dateRange', {
+        flatpickr('#dateRange', {
             mode: 'range',
             dateFormat: 'd/m/Y',
             minDate: 'today',
