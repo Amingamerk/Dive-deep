@@ -10,15 +10,15 @@
     @if (TempData["Success"] != null)
     {
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                document.getElementById('toastMessage').textContent = '@TempData["Success"]';
-                var toastElement = document.getElementById('addToCartToast');
-                toastElement.style.display = 'block';
+                document.addEventListener('DOMContentLoaded', function() {
+                    document.getElementById('toastMessage').textContent = '@TempData["Success"]';
+                    var toastElement = document.getElementById('addToCartToast');
+                    toastElement.style.display = 'block';
 
-                setTimeout(function () {
-                    toastElement.style.display = 'none';
-                }, 3000);
-            });
+                    setTimeout(function() {
+                        toastElement.style.display = 'none';
+                    }, 3000);
+                });
         </script>
     }
 
@@ -89,15 +89,17 @@
 
         <div class="py-3 d-flex justify-content-between">
 
-            <button type="submit" class="btn btn-primary">
-                Tilføj til kurv
-            </button>
-
+            
             <a asp-controller="Products"
                asp-action="Index"
                class="btn btn-danger">
                 Afbryd
             </a>
+
+            <button type="submit" class="btn btn-primary">
+                Tilføj til kurv
+            </button>
+
         </div>
     </form>
 </div>
@@ -110,12 +112,12 @@
             minDate: 'today',
             locale: 'da',
             disable: @Html.Raw(Json.Serialize(Model.BookedDates))
-        });
+                });
 
         var variantSelect = document.querySelector('select[name="ProductId"]');
 
         if (variantSelect !== null) {
-            variantSelect.addEventListener('change', function () {
+            variantSelect.addEventListener('change', function() {
                 window.location = '/Products/Details/' + this.value;
             });
         }

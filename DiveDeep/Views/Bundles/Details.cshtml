@@ -113,6 +113,11 @@
                         }
 
                         <div class="d-flex flex-wrap gap-3 justify-content-between align-items-center pt-3">
+
+                            <a asp-controller="Bundles" asp-action="Index" class="btn btn-outline-light rounded-4 px-4">
+                                Afbryd
+                            </a>
+
                             @if (Model.AllSlotsAvailable)
                             {
                                 <button type="submit" class="btn btn-warning rounded-4 px-4">Book pakke</button>
@@ -122,9 +127,6 @@
                                 <p class="text-white-50 mb-0">Prøv en anden periode for at booke pakken.</p>
                             }
 
-                            <a asp-controller="Bundles" asp-action="Index" class="btn btn-outline-light rounded-4 px-4">
-                                Afbryd
-                            </a>
                         </div>
                     </div>
                 </form>
