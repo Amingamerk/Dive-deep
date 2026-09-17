@@ -8,16 +8,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Areas\Admin\Data\**" />
+    <Compile Remove="Areas\Admin\Models\**" />
+    <Compile Remove="Areas\Admin\Views\Admin\**" />
     <Compile Remove="Models\Domain\**" />
+    <Content Remove="Areas\Admin\Data\**" />
+    <Content Remove="Areas\Admin\Models\**" />
+    <Content Remove="Areas\Admin\Views\Admin\**" />
     <Content Remove="Models\Domain\**" />
+    <EmbeddedResource Remove="Areas\Admin\Data\**" />
+    <EmbeddedResource Remove="Areas\Admin\Models\**" />
+    <EmbeddedResource Remove="Areas\Admin\Views\Admin\**" />
     <EmbeddedResource Remove="Models\Domain\**" />
+    <None Remove="Areas\Admin\Data\**" />
+    <None Remove="Areas\Admin\Models\**" />
+    <None Remove="Areas\Admin\Views\Admin\**" />
     <None Remove="Models\Domain\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Admin\Data\" />
-    <Folder Include="Areas\Admin\Models\" />
-    <Folder Include="Areas\Admin\Views\Admin\" />
     <Folder Include="Migrations\" />
     <Folder Include="wwwroot\images\products\categories\" />
   </ItemGroup>
