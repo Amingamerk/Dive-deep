@@ -1,11 +1,11 @@
+using BarberLangeland.Controllers;
 using DiveDeep.Models;
 using DiveDeep.Persistence;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DiveDeep.Areas.Admin.Controllers
 {
-    [Area("Admin")]
-    public class ProductsController : Controller
+    public class ProductsController : AdminBaseController
     {
         private readonly IProductRepository _productRepository;
 

@@ -1,11 +1,11 @@
+using BarberLangeland.Controllers;
 using DiveDeep.Models;
 using DiveDeep.Persistence;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DiveDeep.Areas.Admin.Controllers
 {
-    [Area("Admin")]
-    public class BookingsController : Controller
+    public class BookingsController : AdminBaseController
     {
         private readonly IBookingRepository _bookingRepository;
 
