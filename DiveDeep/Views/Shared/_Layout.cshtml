@@ -15,24 +15,24 @@
 <body>
     <nav class="navbar navbar-expand-lg w-100 z-3 py-3">
         <div class="container">
-            <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">DIVE DEEP</a>
+            <a class="navbar-brand fw-bold" asp-area="" asp-controller="Home" asp-action="Index">DIVE DEEP</a>
 
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="collapse navbar-collapse justify-content-end" id="menu">
-                <ul class="navbar-nav align-items-lg-center gap-lg-3">                  
-                    <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="AboutUs">Om os</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Bundles" asp-action="Index">Pakker</a></li>
+                <ul class="navbar-nav align-items-lg-center gap-lg-3">
+                    <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Bundles" asp-action="Index">Pakker</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Home" asp-action="AboutUs">Om os</a></li>
                     @*<li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="FAQ">FAQ</a></li> *@
                     @*<li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Contact">Kontakt</a></li> *@
 
                     <li class="nav-item ms-lg-3 mt-3 mt-lg-0">
-                        <a class="btn btn-warning rounded-4 px-4" asp-controller="Products" asp-action="Index">Lej udstyr</a>
+                        <a class="btn btn-warning rounded-4 px-4" asp-area="" asp-controller="Products" asp-action="Index">Lej udstyr</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" asp-controller="Cart" asp-action="Index">
+                        <a class="nav-link" asp-area="" asp-controller="Cart" asp-action="Index">
                             <img class="cart-icon" src="~/images/cart.png" alt="Indkøbskurv" />
                         </a>
                     </li>
@@ -58,7 +58,7 @@
                     <h2 class="h6 fw-bold mb-3">KONTAKT</h2>
                     <p class="mb-1"><a class="text-white-50" href="tel:+4560708090">+45 60 70 80 90</a></p>
                     <p class="mb-0"><a class="text-white-50" href="mailto:info@divedeep.dk">info@divedeep.dk</a></p>
-                    <p class="mb-0"><a class="text-white-50" asp-controller="Home" asp-action="FAQ">FAQ</a></p>
+                    <p class="mb-0"><a class="text-white-50" asp-area="" asp-controller="Home" asp-action="FAQ">FAQ</a></p>
                 </div>
                 <div class="col-md-4">
                     <h2 class="h6 fw-bold mb-3">ÅBNINGSTIDER</h2>
@@ -72,7 +72,7 @@
 
             <div class="border-top border-light border-opacity-10 mt-5 pt-3 d-flex flex-column flex-md-row justify-content-between text-white-50 small">
                 <p class="mb-0">© @DateTime.Now.Year Dive Deep.</p>
-                <p class="mb-0"><a class="text-white-50" asp-controller="Home" asp-action="Privacy">Privatlivspolitik</a></p>
+                <p class="mb-0"><a class="text-white-50" asp-area="" asp-controller="Home" asp-action="Privacy">Privatlivspolitik</a></p>
             </div>
         </div>
     </footer>
