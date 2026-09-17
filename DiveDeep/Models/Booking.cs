@@ -1,3 +1,4 @@
+using DiveDeep.Data;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
@@ -27,5 +28,14 @@ namespace DiveDeep.Models
         [ValidateNever]
         [BindNever]
         public BundleBooking? BundleBooking { get; set; }
+
+        [ValidateNever]
+        [BindNever]
+        [Display(Name = "User")]
+        public string UserId { get; set; }
+
+        [ValidateNever]
+        [BindNever]
+        public ApplicationUser User { get; set; } = null!;
     }
 }
