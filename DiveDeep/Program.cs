@@ -8,10 +8,8 @@ namespace DiveDeep
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-
-
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
@@ -34,24 +32,10 @@ namespace DiveDeep
 
             var app = builder.Build();
 
-            // Opret database og seed data
+            // Opret database og seed data (migrering, produkter, roller og admin-bruger)
             using (var scope = app.Services.CreateScope())
             {
-                var context = scope.ServiceProvider.GetRequiredService<DiveDeepContext>();
-
-                context.Database.Migrate();
-
-                if (!context.Products.Any())
-                {
-                    var products = InMemoryProductRepository.GetAll();
-                    // Clear ProductId values to allow database to auto-generate them
-                    foreach (var product in products)
-                    {
-                        product.ProductId = 0;
-                    }
-                    context.Products.AddRange(products);
-                    context.SaveChanges();
-                }
+                await SeedData.InitializeAsync(scope.ServiceProvider, app.Configuration);
             }
 
             // Configure the HTTP request pipeline.
@@ -82,7 +66,7 @@ namespace DiveDeep
                 pattern: "{controller=Home}/{action=Index}/{id?}")
                 .WithStaticAssets();
 
-            app.Run();
+            await app.RunAsync();
         }
     }
 }
