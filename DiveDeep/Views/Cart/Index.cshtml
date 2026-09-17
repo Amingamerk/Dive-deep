@@ -3,6 +3,17 @@
 
     <h1>Din kurv</h1>
 
+    @* Beskeder fra CartController.Book *@
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
     <div class="row">
 
         <div class="col-lg-8">
@@ -47,6 +58,10 @@
                                         }
                                     </small>
 
+                                    <small class="text-muted d-block">
+                                        Fra @item.StartTime.ToString("dd/MM/yyyy") til @item.EndTime.ToString("dd/MM/yyyy")
+                                    </small>
+
                                 </div>
 
                                 <div class="col-md-2 text-end">
@@ -59,7 +74,9 @@
 
                                 <div class="col-md-2 text-end">
                                     <form method="post" asp-action="RemoveFromCart" style="display: inline;">
-                                        <input type="hidden" name="id" value="@item.ProductId" />
+                                        <input type="hidden" name="productId" value="@item.ProductId" />
+                                        <input type="hidden" name="size" value="@item.SelectedSize" />
+                                        <input type="hidden" name="gender" value="@item.SelectedGender" />
                                         <button type="submit" class="btn btn-sm btn-danger">
                                             <i class="bi bi-trash"></i> Slet
                                         </button>
@@ -108,9 +125,11 @@
 
                     @if (Model.Items.Count > 0)
                     {
-                        <a class="btn btn-warning w-100 mb-2">
-                            Gå til checkout
-                        </a>
+                        <form method="post" asp-action="Book">
+                            <button type="submit" class="btn btn-warning w-100 mb-2">
+                                Book
+                            </button>
+                        </form>
                     }
 
                     <form method="post" asp-action="ClearCart">
