@@ -1,18 +1,25 @@
 ﻿@model List<CategoryCardViewModel>
 
-<div class="row row-cols-auto row-cols-md-3">
+
+<h1>Udstyr: </h1>
+
+
+<div class="row row-cols-auto g-4">
     @foreach (CategoryCardViewModel category in Model)
     {
+
         <div class="col">
-            <div class="card h-100 g-4 p-5 border-0 shadow-sm rounded-4 position-relative category-card bg-transparent">
-                <div class="ratio ratio-1x1">
-                    <img src="@category.ImagePath" class="object-fit-contain p-1" alt="@category.AltText">
-                </div>
-                <div class="card-body text-center">
-                    <h3 class="card-title h6 mb-0">
-                        <a asp-controller="Products" asp-action="Category" asp-route-category="@category.RouteId"
-                           class="stretched-link text-decoration-none">@category.Title</a>
-                    </h3>
+            <div class="card h-100 bg-white bg-opacity-10 border-0 rounded-4" style="width: 22rem;">
+                <div class="card-body p-4 d-flex flex-column">
+                    <img src="@category.ImagePath"
+                         class="object-fit-contain p-1"
+                         alt="@category.AltText">
+                    <a class="btn btn-warning rounded-4  mt-auto px-4 align-content-center"
+                       asp-controller="Products"
+                       asp-action="Category"
+                       asp-route-category="@category.RouteId">
+                        @category.Title
+                    </a>
                 </div>
             </div>
         </div>
