@@ -1,10 +1,11 @@
 ﻿using DiveDeep.Models;
-using Microsoft.EntityFrameworkCore;
 using DiveDeep.Persistence;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace DiveDeep.Data
 {
-    public class DiveDeepContext : DbContext
+    public class DiveDeepContext : IdentityDbContext<ApplicationUser>
     {
         public DbSet<BCD> BCDs { get; set; }
         public DbSet<Booking> Bookings { get; set; }
@@ -71,6 +72,10 @@ namespace DiveDeep.Data
                 .HasForeignKey(b => b.BundleBookingId)
                 .IsRequired(false);
 
+            modelBuilder.Entity<Booking>()
+                .HasOne<ApplicationUser>(b => b.User)
+                .WithMany(b => b.Bookings)
+                .HasForeignKey(r => r.UserId);
 
             base.OnModelCreating(modelBuilder);
 

@@ -2,6 +2,7 @@ using DiveDeep.Data;
 using DiveDeep.Persistence;
 using DiveDeep.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace DiveDeep
 {
@@ -20,6 +21,8 @@ namespace DiveDeep
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("default"));
             });
+
+            builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<DiveDeepContext>();
 
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddSingleton<ICartService, CartService>();
@@ -60,7 +63,10 @@ namespace DiveDeep
             app.UseHttpsRedirection();
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
+
+            app.MapRazorPages();
 
             app.MapStaticAssets();
 
