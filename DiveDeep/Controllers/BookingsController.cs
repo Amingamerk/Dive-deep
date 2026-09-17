@@ -1,7 +1,9 @@
-﻿using DiveDeep.Models;
+﻿using DiveDeep.Data;
+using DiveDeep.Models;
 using DiveDeep.Persistence;
 using DiveDeep.Services;
 using DiveDeep.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
 
@@ -9,12 +11,17 @@ namespace DiveDeep.Controllers
 {
     public class BookingsController : Controller
     {
+
+        private readonly UserManager<ApplicationUser> _userManager;
+
         private readonly IBookingRepository _bookingRepository;
         private readonly ICartService _cartService;
         private readonly IProductRepository _productRepository;
 
-        public BookingsController(IBookingRepository bookingRepository, ICartService cartService, IProductRepository productRepository)
+        public BookingsController(UserManager<ApplicationUser> userManager, IBookingRepository bookingRepository, ICartService cartService, IProductRepository productRepository)
         {
+
+            _userManager = userManager;
             _bookingRepository = bookingRepository;
             _cartService = cartService;
             _productRepository = productRepository;
