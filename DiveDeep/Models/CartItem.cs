@@ -18,6 +18,11 @@ namespace DiveDeep.Models
         public string ImagePath { get; set; }
 
         public int Quantity { get; set; }
+
+        // Perioden gemmes i kurven, så bookingen først oprettes når kunden trykker "Book"
+        public DateTime StartTime { get; set; }
+
+        public DateTime EndTime { get; set; }
     }
 
 }

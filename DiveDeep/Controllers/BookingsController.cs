@@ -9,13 +9,11 @@ namespace DiveDeep.Controllers
 {
     public class BookingsController : Controller
     {
-        private readonly IBookingRepository _bookingRepository;
         private readonly ICartService _cartService;
         private readonly IProductRepository _productRepository;
 
-        public BookingsController(IBookingRepository bookingRepository, ICartService cartService, IProductRepository productRepository)
+        public BookingsController(ICartService cartService, IProductRepository productRepository)
         {
-            _bookingRepository = bookingRepository;
             _cartService = cartService;
             _productRepository = productRepository;
         }
@@ -23,29 +21,22 @@ namespace DiveDeep.Controllers
         [HttpPost]
         public IActionResult Add(int productId, string dateRange, string? size, string? gender)
         {
-            Booking booking = new();
-            booking.ProductId = productId;
-            if (DateRangeParser.TryParse(dateRange, out DateTime startTime, out DateTime endTime))
-            {
-                booking.StartTime = startTime;
-                booking.EndTime = endTime;
-            }
-            else
+            if (!DateRangeParser.TryParse(dateRange, out DateTime startTime, out DateTime endTime))
             {
                 TempData["Error"] = "Vælg en gyldig periode";
                 return RedirectToAction("Details", "Products", new { id = productId });
             }
 
-            _bookingRepository.Add(booking);
-            
-            // Tilføj produktet til kurven
             Product? product = _productRepository.GetById(productId);
-            if (product != null)
+            if (product == null)
             {
-                _cartService.AddItem(product, size, gender);
-                TempData["Success"] = $"{product.Brand} {product.Model} tilføjet til kurven!";
+                return NotFound();
             }
-            
+
+            // Produktet lægges kun i kurven. Bookingen gemmes først, når kunden trykker "Book" i kurven
+            _cartService.AddItem(product, size, gender, startTime, endTime);
+            TempData["Success"] = $"{product.Brand} {product.Model} tilføjet til kurven!";
+
             return RedirectToAction("Details", "Products", new { id = productId });
         }
     }
