@@ -7,15 +7,15 @@
         <div class="col">
             <div class="card h-100 bg-white bg-opacity-10 border-0 rounded-4" style="width: 22rem;">
                 <div class="card-body p-4 d-flex flex-column">
-                    <a asp-controller="Products"
-                       asp-action="Category"
-                       asp-route-category="@category.RouteId"
-                       class="stretched-link text-decoration-none text-white">
-                        @category.Title
-                    </a>
                     <img src="@category.ImagePath"
                          class="object-fit-contain p-1"
                          alt="@category.AltText">
+                    <a class="btn btn-warning rounded-4  mt-auto px-4 align-content-center"
+                       asp-controller="Products"
+                       asp-action="Category"
+                       asp-route-category="@category.RouteId">
+                        @category.Title
+                    </a>
                 </div>
             </div>
         </div>
