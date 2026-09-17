@@ -24,27 +24,5 @@ namespace DiveDeep.Controllers
             _cartService = cartService;
             _productRepository = productRepository;
         }
-
-        [HttpPost]
-        public IActionResult Add(int productId, string dateRange, string? size, string? gender)
-        {
-            if (!DateRangeParser.TryParse(dateRange, out DateTime startTime, out DateTime endTime))
-            {
-                TempData["Error"] = "Vælg en gyldig periode";
-                return RedirectToAction("Details", "Products", new { id = productId });
-            }
-
-            Product? product = _productRepository.GetById(productId);
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            // Produktet lægges kun i kurven. Bookingen gemmes først, når kunden trykker "Book" i kurven
-            _cartService.AddItem(product, size, gender, startTime, endTime);
-            TempData["Success"] = $"{product.Brand} {product.Model} tilføjet til kurven!";
-
-            return RedirectToAction("Details", "Products", new { id = productId });
-        }
     }
 }

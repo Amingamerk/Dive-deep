@@ -12,12 +12,14 @@ namespace DiveDeep.Controllers
         private readonly ICartService _cartService;
         private readonly IBookingRepository _bookingRepository;
         private readonly BookingService _bookingService;
+        private readonly IProductRepository _productRepository;
 
-        public CartController(ICartService cartService, IBookingRepository bookingRepository, BookingService bookingService)
+        public CartController(ICartService cartService, IBookingRepository bookingRepository, BookingService bookingService, IProductRepository productRepository)
         {
             _cartService = cartService;
             _bookingRepository = bookingRepository;
             _bookingService = bookingService;
+            _productRepository = productRepository;
         }
 
         public IActionResult Index()
@@ -33,6 +35,28 @@ namespace DiveDeep.Controllers
             return View(vm);
         }
 
+
+        [HttpPost]
+        public async Task<IActionResult> AddToCart(int productId, string dateRange, string? size, string? gender)
+        {
+            if (!DateRangeParser.TryParse(dateRange, out DateTime startTime, out DateTime endTime))
+            {
+                TempData["Error"] = "Vælg en gyldig periode";
+                return RedirectToAction("Details", "Products", new { id = productId });
+            }
+
+            Product? product = _productRepository.GetById(productId);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            // Produktet lægges kun i kurven. Bookingen gemmes først, når kunden trykker "Book" i kurven
+            _cartService.AddItem(product, size, gender, startTime, endTime);
+            TempData["Success"] = $"{product.Brand} {product.Model} tilføjet til kurven!";
+
+            return RedirectToAction("Details", "Products", new { id = productId });
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]

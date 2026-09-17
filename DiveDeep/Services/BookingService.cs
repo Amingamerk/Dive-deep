@@ -72,5 +72,22 @@ namespace DiveDeep.Services
             result.IsSuccessful = true;
             return result;
         }
+
+        public BookingValidationResult CreateBookings(List<Booking> bookings)
+        {
+            BookingValidationResult result = new();
+            if (bookings.Count == 0)
+            {
+                result.IsSuccessful = false;
+                result.ErrorMessage = "Din kurv er tom";
+                result.Key = "CardEmpty";
+                return result;
+            }
+            foreach (Booking booking in bookings)
+            {
+                BookingValidationResult tempBookingValidationResult;
+            }
+            return result;
+        }
     }
 }
