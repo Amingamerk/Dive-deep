@@ -1,9 +1,12 @@
 ﻿
+using System.Text.Json.Serialization;
+
 namespace DiveDeep.Models
 {
     public class CartItem
     {
         public int ProductId { get; set; }
+        [JsonIgnore]
         public Product Product { get; set; }
         public string Brand { get; set; }
 

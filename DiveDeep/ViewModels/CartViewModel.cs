@@ -7,6 +7,8 @@ namespace DiveDeep.ViewModels
     {
         public List<CartItem> Items { get; set; } = new();
 
+        public List<CartBundle> Bundles { get; set; } = new();
+
         public DateTime StartDate { get; set; }
 
         public DateTime EndDate { get; set; }

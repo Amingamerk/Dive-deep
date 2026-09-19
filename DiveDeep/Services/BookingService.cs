@@ -119,23 +119,68 @@ namespace DiveDeep.Services
             return result;
         }
 
-        public BookingValidationResult CreateBookings(List<Booking> bookings)
+        // Tjekker at hvert produkt passer til sin plads i pakken og er ledigt i perioden
+        public BookingValidationResult ValidateBundleProducts(Bundle bundle, List<Product> products, DateTime startTime, DateTime endTime)
         {
             BookingValidationResult result = new();
-            if (bookings.Count == 0)
+            result.IsSuccessful = false;
+
+            // Der skal være valgt præcis ét produkt til hver del af pakken
+            if (products.Count != bundle.Categories.Count)
+            {
+                result.ErrorMessage = "Vælg udstyr til alle dele af pakken";
+                return result;
+            }
+
+            for (int i = 0; i < products.Count; i++)
+            {
+                Product product = products[i];
+
+                // Dropdowns kommer i samme rækkefølge som pakkens kategorier
+                if (product.Category != bundle.Categories[i])
+                {
+                    result.ErrorMessage = "Det valgte udstyr passer ikke til pakken";
+                    return result;
+                }
+
+                if (!_productRepository.IsProductAvailable(product.ProductId, startTime, endTime))
+                {
+                    result.ErrorMessage = $"{product.Brand} {product.Model} ({product.VariantLabel}) er desværre lige blevet booket. Vælg venligst noget andet.";
+                    return result;
+                }
+            }
+
+            result.IsSuccessful = true;
+            return result;
+        }
+
+        public BookingValidationResult CreateBookings(List<Booking> bookings, List<BundleBooking> bundleBookings)
+        {
+            BookingValidationResult result = new();
+
+            // Saml alle bookinger i en samlet liste, så enkelte produkter og pakker tjekkes sammen
+            List<Booking> allBookings = new();
+            allBookings.AddRange(bookings);
+            foreach (BundleBooking bundleBooking in bundleBookings)
+            {
+                allBookings.AddRange(bundleBooking.Bookings);
+            }
+
+            if (allBookings.Count == 0)
             {
                 result.IsSuccessful = false;
                 result.ErrorMessage = "Din kurv er tom";
                 result.Key = "CartEmpty";
                 return result;
             }
-            result = CheckOverlappingBooking(bookings);
+
+            result = CheckOverlappingBooking(allBookings);
             if (result.IsSuccessful == false)
             {
                 return result;
             }
 
-            foreach (Booking booking in bookings)
+            foreach (Booking booking in allBookings)
             {
                 BookingValidationResult tempBookingValidationResult = ValidateBooking(booking);
                 // sæt produktets navn foran fejlbeskeden
@@ -149,10 +194,17 @@ namespace DiveDeep.Services
                     return tempBookingValidationResult;
                 }
             }
+
+            // Alt er i orden: så vi gemmer enkelte bookinger og pakkebookinger
             foreach (Booking booking in bookings)
             {
                 _bookingRepository.Add(booking);
             }
+            foreach (BundleBooking bundleBooking in bundleBookings)
+            {
+                _bookingRepository.AddBundleBooking(bundleBooking);
+            }
+
             return result;
         }
     }
