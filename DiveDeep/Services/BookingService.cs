@@ -1,18 +1,22 @@
+using DiveDeep.Data;
+using DiveDeep.Models;
+using DiveDeep.Persistence;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DiveDeep.Models;
-using DiveDeep.Persistence;
 
 namespace DiveDeep.Services
 {
     public class BookingService
     {
         private readonly IProductRepository _productRepository;
+        private readonly IBookingRepository _bookingRepository;
 
-        public BookingService(IProductRepository productRepository)
+        public BookingService(IProductRepository productRepository, IBookingRepository bookingRepository)
         {
             _productRepository = productRepository;
+            _bookingRepository = bookingRepository;
+
         }
 
         public BookingValidationResult ValidateDates(DateTime startTime, DateTime endTime)
@@ -38,6 +42,48 @@ namespace DiveDeep.Services
 
             result.IsSuccessful = true;
             return result;
+        }
+
+        public BookingValidationResult CheckOverlappingBooking(List<Booking> bookings)
+        {
+            BookingValidationResult bookingValidationResult = new();
+            bookingValidationResult.IsSuccessful = false;
+
+            // først finder vi produkter som er i kurven to gange
+            List<IGrouping<int, Booking>> duplicates = bookings
+                .GroupBy(x => x.ProductId)
+                .Where(g => g.Count() > 1)
+                .ToList();
+
+            foreach (IGrouping<int, Booking> d in duplicates)
+            {
+                List<Booking> sameProduct = d.ToList();
+
+                // Sammenlign hver booking med alle bookinger efter den
+                for (int i = 0; i < sameProduct.Count; i++)
+                {
+                    for (int j = i + 1; j < sameProduct.Count; j++)
+                    {
+                        Booking firstBooking = sameProduct[i];
+                        Booking secondBooking = sameProduct[j];
+
+                        // To perioder overlapper, hvis den ene starter før den anden slutter og den ene slutter efter den anden starter
+                        bool startsBeforeOtherEnds = firstBooking.StartTime < secondBooking.EndTime;
+                        bool endsAfterOtherStarts = firstBooking.EndTime > secondBooking.StartTime;
+
+                        if (startsBeforeOtherEnds && endsAfterOtherStarts)
+                        {
+                            bookingValidationResult.Key = "ProductId";
+                            bookingValidationResult.ErrorMessage = "Det samme produkt ligger flere gange i kurven med overlappende datoer";
+                            return bookingValidationResult;
+                        }
+                    }
+                }
+            }
+
+            // Ingen overlap fundet
+            bookingValidationResult.IsSuccessful = true;
+            return bookingValidationResult;
         }
 
         public BookingValidationResult ValidateBooking(Booking booking)
@@ -80,12 +126,32 @@ namespace DiveDeep.Services
             {
                 result.IsSuccessful = false;
                 result.ErrorMessage = "Din kurv er tom";
-                result.Key = "CardEmpty";
+                result.Key = "CartEmpty";
                 return result;
+            }
+            result = CheckOverlappingBooking(bookings);
+            if (result.IsSuccessful == false)
+            {
+                return result;
+            }
+
+            foreach (Booking booking in bookings)
+            {
+                BookingValidationResult tempBookingValidationResult = ValidateBooking(booking);
+                // sæt produktets navn foran fejlbeskeden
+                if (tempBookingValidationResult.IsSuccessful == false)
+                {
+                    Product? product = _productRepository.GetById(booking.ProductId);
+                    if (product != null)
+                    {
+                        tempBookingValidationResult.ErrorMessage = $"{product.Brand} {product.Model}: {tempBookingValidationResult.ErrorMessage}";
+                    }
+                    return tempBookingValidationResult;
+                }
             }
             foreach (Booking booking in bookings)
             {
-                BookingValidationResult tempBookingValidationResult;
+                _bookingRepository.Add(booking);
             }
             return result;
         }

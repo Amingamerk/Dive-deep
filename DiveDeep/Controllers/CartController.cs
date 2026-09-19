@@ -1,8 +1,10 @@
-﻿using DiveDeep.Models;
+﻿using DiveDeep.Data;
+using DiveDeep.Models;
 using DiveDeep.Persistence;
 using DiveDeep.Services;
 using DiveDeep.ViewModels;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DiveDeep.Controllers
@@ -10,16 +12,16 @@ namespace DiveDeep.Controllers
     public class CartController : Controller
     {
         private readonly ICartService _cartService;
-        private readonly IBookingRepository _bookingRepository;
         private readonly BookingService _bookingService;
         private readonly IProductRepository _productRepository;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public CartController(ICartService cartService, IBookingRepository bookingRepository, BookingService bookingService, IProductRepository productRepository)
+        public CartController(ICartService cartService, BookingService bookingService, IProductRepository productRepository, UserManager<ApplicationUser> userManager)
         {
             _cartService = cartService;
-            _bookingRepository = bookingRepository;
             _bookingService = bookingService;
             _productRepository = productRepository;
+            _userManager = userManager;
         }
 
         public IActionResult Index()
@@ -60,41 +62,32 @@ namespace DiveDeep.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public IActionResult Book()
         {
             Cart cart = _cartService.GetCart();
 
-            if (cart.Items.Count == 0)
+            // Find id på den bruger, der er logget ind
+            string? userId = _userManager.GetUserId(User);
+
+            List<Booking> bookings = new();
+
+            // konverter CartItem til booking
+            foreach (CartItem item in cart.Items)
             {
-                TempData["Error"] = "Din kurv er tom";
+                Booking booking = new();
+                booking.ProductId = item.ProductId;
+                booking.StartTime = item.StartTime;
+                booking.EndTime = item.EndTime;
+                booking.UserId = userId;
+                bookings.Add(booking);
+            }
+
+            BookingValidationResult bookingValidationResult = _bookingService.CreateBookings(bookings);
+            if (!bookingValidationResult.IsSuccessful)
+            {
+                TempData["Error"] = bookingValidationResult.ErrorMessage;
                 return RedirectToAction(nameof(Index));
-            }
-
-            // Tjek ALLE varer, før vi gemmer noget, så kurven aldrig bliver halvt booket
-            foreach (CartItem item in cart.Items)
-            {
-                Booking booking = new();
-                booking.ProductId = item.ProductId;
-                booking.StartTime = item.StartTime;
-                booking.EndTime = item.EndTime;
-
-                BookingValidationResult result = _bookingService.ValidateBooking(booking);
-                if (!result.IsSuccessful)
-                {
-                    TempData["Error"] = $"{item.Brand} {item.Model}: {result.ErrorMessage}";
-                    return RedirectToAction(nameof(Index));
-                }
-            }
-
-            // Alt er i orden: opret én booking per vare i kurven
-            foreach (CartItem item in cart.Items)
-            {
-                Booking booking = new();
-                booking.ProductId = item.ProductId;
-                booking.StartTime = item.StartTime;
-                booking.EndTime = item.EndTime;
-
-                _bookingRepository.Add(booking);
             }
 
             _cartService.ClearCart();
