@@ -1,5 +1,4 @@
-﻿using BarberLangeland.Controllers;
-using DiveDeep.Persistence;
+﻿using DiveDeep.Persistence;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DiveDeep.Areas.Admin.Controllers

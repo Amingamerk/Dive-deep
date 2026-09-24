@@ -5,8 +5,10 @@ namespace DiveDeep.Persistence
 {
     public interface IProductRepository
     {
-        //void Add
-        //void Delete(int id);
+        void Add(Product product);
+        void Update(Product product);
+        bool HasBookings(int productId);
+        void Delete(int id);
         List<Product> GetAll();
         Product? GetById(int id);
         List<Product> GetVariants(string brand, string model);

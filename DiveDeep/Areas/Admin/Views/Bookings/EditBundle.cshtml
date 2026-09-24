@@ -1,0 +1,61 @@
+@model BundleBookingEditViewModel
+@{
+    ViewData["Title"] = "Rediger pakke";
+}
+
+<h1 class="h3 mb-1">Rediger pakke: @Model.BundleName #@Model.BundleBookingId</h1>
+<p class="text-body-secondary mb-4">Booket af @Model.UserEmail</p>
+
+<form method="post" asp-action="EditBundle" style="max-width: 600px">
+    <input type="hidden" asp-for="BundleBookingId" />
+
+    <div class="text-danger mb-3" asp-validation-summary="All"></div>
+
+    @* hele pakken har samme periode *@
+    <div class="row mb-4">
+        <div class="col">
+            <label asp-for="StartTime" class="form-label">Start</label>
+            <input type="date" asp-for="StartTime" class="form-control" />
+        </div>
+        <div class="col">
+            <label asp-for="EndTime" class="form-label">Slut</label>
+            <input type="date" asp-for="EndTime" class="form-control" />
+        </div>
+    </div>
+
+    @* for i stedet for foreach, så felterne hedder Items[0].ProductId osv. *@
+    @for (int i = 0; i < Model.Items.Count; i++)
+    {
+        <input type="hidden" asp-for="Items[i].BookingId" />
+        <input type="hidden" asp-for="Items[i].RowVersion" />
+
+        <div class="row align-items-center mb-3">
+            <div class="col-4 text-body-secondary">@Model.Items[i].CategoryTitle</div>
+            <div class="col-4">@Model.Items[i].ProductName</div>
+            <div class="col-4">
+                <select asp-for="Items[i].ProductId" class="form-select">
+                    @foreach (var variant in Model.Items[i].Variants)
+                    {
+                        <option value="@variant.ProductId">
+                            @if (variant.VariantGroup != null)
+                            {
+                                @($"{variant.VariantGroup} - ")
+                            }
+                            @variant.VariantLabel
+                        </option>
+                    }
+                </select>
+            </div>
+        </div>
+    }
+
+    <div class="mt-4">
+        <button type="submit" class="btn btn-warning">Gem</button>
+        <a asp-action="Index" class="btn btn-outline-secondary ms-2">Annuller</a>
+    </div>
+</form>
+
+<form method="post" asp-action="DeleteBundle" asp-route-id="@Model.BundleBookingId" class="mt-4"
+      onsubmit="return confirm('Slet hele pakken?')">
+    <button type="submit" class="btn btn-outline-danger">Slet hele pakken</button>
+</form>

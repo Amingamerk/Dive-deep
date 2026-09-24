@@ -1,0 +1,14 @@
+@model ProductFormViewModel
+@{
+    ViewData["Title"] = "Rediger produkt";
+}
+
+<h1 class="h3 mb-4">Rediger produkt #@Model.ProductId: @CategoryInfo.Categories[Model.Category].Title</h1>
+
+@* enctype skal med, ellers bliver billedet ikke sendt med *@
+<form method="post" asp-action="Edit" enctype="multipart/form-data" style="max-width: 500px">
+    <partial name="_ProductForm" model="Model" />
+
+    <button type="submit" class="btn btn-warning">Gem</button>
+    <a asp-action="Index" asp-route-category="@Model.Category" class="btn btn-outline-secondary ms-2">Annuller</a>
+</form>
