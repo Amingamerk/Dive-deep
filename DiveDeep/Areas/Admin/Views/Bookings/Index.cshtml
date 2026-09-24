@@ -1,14 +1,63 @@
-@model List<Booking>
+@model BookingFilterViewModel
 @{
     ViewData["Title"] = "Bookinger";
 }
 
-@* Hurtig og simpel oversigt over alle bookinger *@
-<h1 class="h3 mb-4">Bookinger</h1>
+<h1 class="h3 mb-4">Bookinger <span class="text-body-secondary fs-6">(@Model.Bookings.Count stk.)</span></h1>
 
-@if (Model.Count == 0)
+@if (TempData["Error"] != null)
 {
-    <p class="text-body-secondary">Der er ingen bookinger endnu.</p>
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<form method="get" asp-action="Index" class="row g-2 align-items-end mb-4">
+    <div class="col-md">
+        <label asp-for="Period" class="form-label">Periode</label>
+        <select asp-for="Period" class="form-select">
+            <option value="">Alle</option>
+            <option value="Kommende">Kommende</option>
+            <option value="Igangværende">Igangværende</option>
+            <option value="Afsluttede">Afsluttede</option>
+        </select>
+    </div>
+    <div class="col-md">
+        <label asp-for="UserId" class="form-label">Bruger</label>
+        <select asp-for="UserId" asp-items="@(new SelectList(Model.Users, "Id", "Email"))" class="form-select">
+            <option value="">Alle</option>
+        </select>
+    </div>
+    <div class="col-md">
+        <label asp-for="Category" class="form-label">Kategori</label>
+        <select asp-for="Category" class="form-select">
+            <option value="">Alle</option>
+            @foreach (var category in CategoryInfo.Categories)
+            {
+                <option value="@category.Key">@category.Value.Title</option>
+            }
+        </select>
+    </div>
+    <div class="col-md">
+        <label asp-for="Type" class="form-label">Type</label>
+        <select asp-for="Type" class="form-select">
+            <option value="">Alle</option>
+            <option value="Enkelt">Enkeltbookinger</option>
+            <option value="Pakke">Pakker</option>
+        </select>
+    </div>
+    <div class="col-md-auto">
+        <button type="submit" class="btn btn-warning">Filtrér</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Nulstil</a>
+    </div>
+</form>
+
+@if (Model.Bookings.Count == 0)
+{
+    <p class="text-body-secondary">Der er ingen bookinger der passer til filteret.</p>
 }
 else
 {
@@ -18,17 +67,20 @@ else
                 <tr>
                     <th>#</th>
                     <th>Produkt</th>
+                    <th>Booket af</th>
                     <th>Start</th>
                     <th>Slut</th>
                     <th>Pakke</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (Booking booking in Model)
+                @foreach (Booking booking in Model.Bookings)
                 {
                     <tr>
                         <td>@booking.BookingId</td>
                         <td>@booking.Product.Brand @booking.Product.Model (@booking.Product.VariantLabel)</td>
+                        <td>@booking.User.Email</td>
                         <td>@booking.StartTime.ToString("dd/MM/yyyy")</td>
                         <td>@booking.EndTime.ToString("dd/MM/yyyy")</td>
                         <td>
@@ -36,6 +88,24 @@ else
                             @if (booking.BundleBooking != null)
                             {
                                 <span class="badge text-bg-warning">@booking.BundleBooking.BundleName #@booking.BundleBooking.BundleBookingId</span>
+                            }
+                        </td>
+                        <td class="text-end text-nowrap">
+                            @if (booking.BundleBooking != null)
+                            {
+                                <a asp-action="EditBundle" asp-route-id="@booking.BundleBookingId" class="btn btn-sm btn-outline-warning">Rediger pakke</a>
+                                <form method="post" asp-action="DeleteBundle" asp-route-id="@booking.BundleBookingId" class="d-inline"
+                                      onsubmit="return confirm('Slet hele pakken?')">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Slet pakke</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <a asp-action="Edit" asp-route-id="@booking.BookingId" class="btn btn-sm btn-outline-warning">Rediger</a>
+                                <form method="post" asp-action="Delete" asp-route-id="@booking.BookingId" class="d-inline"
+                                      onsubmit="return confirm('Slet bookingen?')">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Slet</button>
+                                </form>
                             }
                         </td>
                     </tr>

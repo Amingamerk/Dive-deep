@@ -1,0 +1,91 @@
+@model ProductFormViewModel
+
+<input type="hidden" asp-for="ProductId" />
+<input type="hidden" asp-for="Category" />
+<input type="hidden" asp-for="ProductImageId" />
+
+<div class="text-danger mb-3" asp-validation-summary="All"></div>
+
+<div class="mb-3">
+    <label asp-for="Brand" class="form-label">Mærke</label>
+    <input asp-for="Brand" class="form-control" />
+    <span asp-validation-for="Brand" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Model" class="form-label">Model</label>
+    <input asp-for="Model" class="form-control" />
+</div>
+
+<div class="mb-3">
+    <label asp-for="PricePerDay" class="form-label">Pris pr. dag (kr)</label>
+    <input asp-for="PricePerDay" class="form-control" />
+    <span asp-validation-for="PricePerDay" class="text-danger"></span>
+</div>
+
+@* felter som kun findes på den enkelte kategori *@
+@if (Model.Category == ProductCategory.BCD || Model.Category == ProductCategory.Fins || Model.Category == ProductCategory.DiveSuit)
+{
+    <div class="mb-3">
+        <label asp-for="Size" class="form-label">Størrelse</label>
+        <select asp-for="Size" asp-items="Html.GetEnumSelectList<Size>()" class="form-select"></select>
+    </div>
+}
+
+@if (Model.Category == ProductCategory.DiveSuit)
+{
+    <div class="mb-3">
+        <label asp-for="SuitType" class="form-label">Type</label>
+        <select asp-for="SuitType" asp-items="Html.GetEnumSelectList<SuitType>()" class="form-select"></select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Gender" class="form-label">Køn</label>
+        <select asp-for="Gender" class="form-select">
+            <option value="Herre">Herre</option>
+            <option value="Dame">Dame</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Thickness" class="form-label">Tykkelse (kun våddragter)</label>
+        <input asp-for="Thickness" class="form-control" placeholder="fx 5 mm" />
+    </div>
+}
+
+@if (Model.Category == ProductCategory.Tank)
+{
+    <div class="mb-3">
+        <label asp-for="VolumeLiters" class="form-label">Volumen (liter)</label>
+        <input asp-for="VolumeLiters" class="form-control" />
+    </div>
+}
+
+@if (Model.Category == ProductCategory.RegulatorSet)
+{
+    <div class="mb-3">
+        <label asp-for="FirstStep" class="form-label">Trin 1</label>
+        <input asp-for="FirstStep" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="SecondStep" class="form-label">Trin 2</label>
+        <input asp-for="SecondStep" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Octopus" class="form-label">Octopus</label>
+        <input asp-for="Octopus" class="form-control" />
+    </div>
+}
+
+<div class="mb-4">
+    <label asp-for="ImageFile" class="form-label">Billede (bruges af alle størrelser af modellen)</label>
+    @if (Model.ProductImageId != null)
+    {
+        <div class="mb-2">
+            <img src="@Url.Action("Image", "Products", new { area = "", id = Model.ProductImageId })" alt="@Model.Brand @Model.Model" style="height: 120px; object-fit: contain;" />
+        </div>
+    }
+    <input asp-for="ImageFile" type="file" accept="image/*" class="form-control" />
+</div>

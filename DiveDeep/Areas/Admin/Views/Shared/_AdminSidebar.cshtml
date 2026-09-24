@@ -75,8 +75,9 @@
                             class="link-body-emphasis d-inline-flex text-decoration-none rounded">Indstillinger</a>
                     </li>
                     <li>
-                        <a href="#"
-                            class="link-body-emphasis d-inline-flex text-decoration-none rounded">Log ud</a>
+                        <form method="post" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                            <button type="submit" class="btn btn-link p-0 link-body-emphasis d-inline-flex text-decoration-none rounded">Log ud</button>
+                        </form>
                     </li>
                 </ul>
             </div>

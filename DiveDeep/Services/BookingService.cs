@@ -1,6 +1,7 @@
 using DiveDeep.Data;
 using DiveDeep.Models;
 using DiveDeep.Persistence;
+using DiveDeep.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,144 @@ namespace DiveDeep.Services
             _productRepository = productRepository;
             _bookingRepository = bookingRepository;
 
+        }
+
+
+        public List<Booking> GetAll()
+        {
+            return _bookingRepository.GetAll();
+        }
+
+        public List<Booking> GetByUserId(string id)
+        {
+            return _bookingRepository.GetByUserId(id);
+        }
+
+        public Booking? GetById(int id)
+        {
+            return _bookingRepository.GetById(id);
+        }
+
+        public void Delete(int id)
+        {
+            _bookingRepository.Delete(id);
+        }
+
+        public BundleBooking? GetBundleBookingById(int id)
+        {
+            return _bookingRepository.GetBundleBookingById(id);
+        }
+
+        public void DeleteBundleBooking(int id)
+        {
+            _bookingRepository.DeleteBundleBooking(id);
+        }
+
+        public BookingValidationResult UpdateBooking(Booking booking)
+        {
+            BookingValidationResult result = ValidateDates(booking.StartTime, booking.EndTime);
+            if (result.IsSuccessful == false)
+            {
+                return result;
+            }
+
+            result = CheckAvailableForUpdate(booking);
+            if (result.IsSuccessful == false)
+            {
+                return result;
+            }
+
+            _bookingRepository.Update(booking);
+            return result;
+        }
+
+        public BookingValidationResult UpdateBundleBooking(List<Booking> bookings, DateTime startTime, DateTime endTime)
+        {
+            BookingValidationResult result = ValidateDates(startTime, endTime);
+            if (result.IsSuccessful == false)
+            {
+                return result;
+            }
+
+            // alle produkter i pakken får den samme periode
+            foreach (Booking booking in bookings)
+            {
+                booking.StartTime = startTime;
+                booking.EndTime = endTime;
+
+                BookingValidationResult availableResult = CheckAvailableForUpdate(booking);
+                if (availableResult.IsSuccessful == false)
+                {
+                    return availableResult;
+                }
+            }
+
+            _bookingRepository.UpdateBundleBooking(bookings);
+            return result;
+        }
+
+        public List<Booking> Filter(List<Booking> bookings, BookingFilterViewModel filter)
+        {
+            List<Booking> result = bookings;
+
+            if (filter.UserId != null)
+            {
+                result = result.Where(b => b.UserId == filter.UserId).ToList();
+            }
+
+            if (filter.Category != null)
+            {
+                result = result.Where(b => b.Product.Category == filter.Category).ToList();
+            }
+
+            if (filter.Period == "Kommende")
+            {
+                result = result.Where(b => b.StartTime > DateTime.Today).ToList();
+            }
+            else if (filter.Period == "Igangværende")
+            {
+                result = result.Where(b => b.StartTime <= DateTime.Today && b.EndTime >= DateTime.Today).ToList();
+            }
+            else if (filter.Period == "Afsluttede")
+            {
+                result = result.Where(b => b.EndTime < DateTime.Today).ToList();
+            }
+
+            if (filter.Type == "Enkelt")
+            {
+                result = result.Where(b => b.BundleBookingId == null).ToList();
+            }
+            else if (filter.Type == "Pakke")
+            {
+                result = result.Where(b => b.BundleBookingId != null).ToList();
+            }
+
+            return result;
+        }
+
+        // som ValidateBooking, men bookingen må gerne overlappe med sig selv
+        private BookingValidationResult CheckAvailableForUpdate(Booking booking)
+        {
+            BookingValidationResult result = new();
+            result.IsSuccessful = false;
+
+            Booking? overlappingBooking = _bookingRepository.FindOverlappingBooking(booking.ProductId, booking.StartTime, booking.EndTime, booking.BookingId);
+            if (overlappingBooking != null)
+            {
+                result.Key = "ProductId";
+                result.ErrorMessage = "Produktet er desværre ikke tilgængeligt for de valgte datoer";
+
+                // sæt produktets navn foran fejlbeskeden
+                Product? product = _productRepository.GetById(booking.ProductId);
+                if (product != null)
+                {
+                    result.ErrorMessage = $"{product.Brand} {product.Model}: {result.ErrorMessage}";
+                }
+                return result;
+            }
+
+            result.IsSuccessful = true;
+            return result;
         }
 
         public BookingValidationResult ValidateDates(DateTime startTime, DateTime endTime)

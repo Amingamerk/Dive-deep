@@ -15,6 +15,63 @@ namespace DiveDeep.Persistence
         }
 
 
+        public void Add(Product product)
+        {
+            // en ny størrelse af en model der allerede findes, får modellens billede
+            Product? variant = GetVariants(product.Brand, product.Model ?? "").FirstOrDefault();
+            if (variant != null)
+            {
+                product.ProductImageId = variant.ProductImageId;
+            }
+
+            _diveDeepContext.Products.Add(product);
+            _diveDeepContext.SaveChanges();
+        }
+
+        public void Update(Product product)
+        {
+            Product? productToUpdate = GetById(product.ProductId);
+            if (productToUpdate == null) return;
+
+            productToUpdate.Brand = product.Brand;
+            productToUpdate.Model = product.Model;
+            productToUpdate.PricePerDay = product.PricePerDay;
+
+            // felter som kun findes på den enkelte kategori
+            if (productToUpdate is BCD bcd && product is BCD newBcd)
+            {
+                bcd.Size = newBcd.Size;
+            }
+            else if (productToUpdate is DiveSuit diveSuit && product is DiveSuit newDiveSuit)
+            {
+                diveSuit.Size = newDiveSuit.Size;
+                diveSuit.SuitType = newDiveSuit.SuitType;
+                diveSuit.Gender = newDiveSuit.Gender;
+                diveSuit.Thickness = newDiveSuit.Thickness;
+            }
+            else if (productToUpdate is Fins fins && product is Fins newFins)
+            {
+                fins.Size = newFins.Size;
+            }
+            else if (productToUpdate is Tank tank && product is Tank newTank)
+            {
+                tank.VolumeLiters = newTank.VolumeLiters;
+            }
+            else if (productToUpdate is RegulatorSet regulatorSet && product is RegulatorSet newRegulatorSet)
+            {
+                regulatorSet.FirstStep = newRegulatorSet.FirstStep;
+                regulatorSet.SecondStep = newRegulatorSet.SecondStep;
+                regulatorSet.Octopus = newRegulatorSet.Octopus;
+            }
+
+            _diveDeepContext.SaveChanges();
+        }
+
+        public bool HasBookings(int productId)
+        {
+            return _diveDeepContext.Bookings.Any(b => b.ProductId == productId);
+        }
+
         public List<Product> GetAll()
         {
             return _diveDeepContext.Products.ToList();

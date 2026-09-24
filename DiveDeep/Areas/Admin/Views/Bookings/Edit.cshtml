@@ -1,0 +1,44 @@
+@model BookingEditViewModel
+@{
+    ViewData["Title"] = "Rediger booking";
+}
+
+<h1 class="h3 mb-1">Rediger booking #@Model.Booking.BookingId</h1>
+<p class="text-body-secondary mb-4">Booket af @Model.UserEmail</p>
+
+<form method="post" asp-action="Edit" style="max-width: 500px">
+    <input type="hidden" asp-for="Booking.BookingId" />
+    <input type="hidden" asp-for="Booking.RowVersion" />
+
+    <div class="text-danger mb-3" asp-validation-summary="All"></div>
+
+    <div class="mb-3">
+        <label asp-for="Booking.ProductId" class="form-label">@Model.ProductName</label>
+        <select asp-for="Booking.ProductId" class="form-select">
+            @foreach (var variant in Model.Variants)
+            {
+                <option value="@variant.ProductId">
+                    @if (variant.VariantGroup != null)
+                    {
+                        @($"{variant.VariantGroup} - ")
+                    }
+                    @variant.VariantLabel
+                </option>
+            }
+        </select>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col">
+            <label asp-for="Booking.StartTime" class="form-label">Start</label>
+            <input type="date" asp-for="Booking.StartTime" class="form-control" />
+        </div>
+        <div class="col">
+            <label asp-for="Booking.EndTime" class="form-label">Slut</label>
+            <input type="date" asp-for="Booking.EndTime" class="form-control" />
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-warning">Gem</button>
+    <a asp-action="Index" class="btn btn-outline-secondary ms-2">Annuller</a>
+</form>

@@ -37,5 +37,7 @@ namespace DiveDeep.Models
         [ValidateNever]
         [BindNever]
         public ApplicationUser User { get; set; } = null!;
+
+        [Timestamp] public byte[] RowVersion { get; set; } = null!;
     }
 }

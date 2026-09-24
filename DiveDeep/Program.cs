@@ -29,6 +29,7 @@ namespace DiveDeep
             builder.Services.AddScoped<IBookingRepository, BookingRepository>();
             builder.Services.AddScoped<BookingService, BookingService>();
             builder.Services.AddScoped<IBundleRepository, InMemoryBundleRepository>();
+            builder.Services.AddScoped<ImageService>();
 
             var app = builder.Build();
 
