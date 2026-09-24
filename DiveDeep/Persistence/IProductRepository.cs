@@ -12,6 +12,9 @@ namespace DiveDeep.Persistence
         List<Product> GetVariants(string brand, string model);
         List<Product> GetByCategory(ProductCategory category);
         List<ProductCategory> GetProductCategories();
+        // image stuff
+        ProductImage? GetImage(int productId);
+        void SaveImage(int productId, byte[] data, string contentType);
 
         List<DateTime> GetBookedDates(int productId, DateTime fromDate, DateTime toDate);
 

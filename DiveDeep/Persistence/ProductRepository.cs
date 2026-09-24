@@ -30,7 +30,13 @@ namespace DiveDeep.Persistence
             return product;
         }
 
-        public  void Delete(int id) => GetAll().RemoveAll(p => p.ProductId == id);
+        public void Delete(int id)
+        {
+            Product? product = GetById(id);
+            if (product == null) return;
+            _diveDeepContext.Products.Remove(product);
+            _diveDeepContext.SaveChanges();
+        }
 
         public Booking? FindOverlappingBooking(int productId, DateTime startTime, DateTime endTime, int? excludedBookingId = null)
         {
@@ -109,6 +115,41 @@ namespace DiveDeep.Persistence
         public List<ProductCategory> GetProductCategories()
         {
             return GetAll().Select(p => p.Category).Distinct().ToList();
+        }
+
+        public ProductImage? GetImage(int productImageId)
+        {
+            return _diveDeepContext.ProductImages.FirstOrDefault(i => i.ProductImageId == productImageId);
+        }
+
+        public void SaveImage(int productId, byte[] data, string contentType)
+        {
+            Product? product = GetById(productId);
+            if (product == null) return;
+
+            ProductImage? productImage = null;
+            if (product.ProductImageId != null)
+            {
+                productImage = GetImage(product.ProductImageId.Value);
+            }
+
+            // tjek om modellen ikke har et billede endnu
+            if (productImage == null)
+            {
+                productImage = new ProductImage();
+                _diveDeepContext.ProductImages.Add(productImage);
+            }
+
+            productImage.Image = data;
+            productImage.ContentType = contentType;
+
+            // sørger for at alle varianter af modellen har samme billede
+            foreach (Product variant in GetVariants(product.Brand, product.Model))
+            {
+                variant.Image = productImage;
+            }
+
+            _diveDeepContext.SaveChanges();
         }
 
         public List<DateTime> GetBookedDates(int productId, DateTime fromDate, DateTime toDate)

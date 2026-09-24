@@ -73,6 +73,7 @@ namespace DiveDeep.Controllers
             pvm.PricePerDay = product.PricePerDay;
             pvm.VariantHeading = product.VariantHeading;
             pvm.SelectedProductId = product.ProductId;
+            pvm.ProductImageId = product.ProductImageId;
 
             foreach (Product p in variants)
             {
@@ -94,6 +95,16 @@ namespace DiveDeep.Controllers
             }
 
             return View(pvm);
+        }
+
+        public IActionResult Image(int id)
+        {
+            ProductImage? image = _productRepository.GetImage(id);
+            if (image == null)
+            {
+                return NotFound();
+            }
+            return File(image.Image, image.ContentType);
         }
     }
 

@@ -15,6 +15,7 @@ namespace DiveDeep.Data
         public DbSet<RegulatorSet> RegulatorSets { get; set; }
         public DbSet<Tank> Tanks { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<ProductImage> ProductImages { get; set; }
 
         public DbSet<BundleBooking> BundleBookings { get; set; }
 
@@ -76,6 +77,12 @@ namespace DiveDeep.Data
                 .HasOne<ApplicationUser>(b => b.User)
                 .WithMany(b => b.Bookings)
                 .HasForeignKey(r => r.UserId);
+
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.Image)
+                .WithMany()
+                .HasForeignKey(p => p.ProductImageId)
+                .IsRequired(false);
 
             base.OnModelCreating(modelBuilder);
 

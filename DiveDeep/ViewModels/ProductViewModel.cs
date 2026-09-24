@@ -7,6 +7,7 @@
         public float PricePerDay { get; set; }
         public string VariantHeading { get; set; } = "Størrelse";
         public int SelectedProductId { get; set; }
+        public int? ProductImageId { get; set; }
         public List<ProductVariantViewModel> Variants { get; set; } = new();
         public List<string> BookedDates { get; set; } = new();
     }
