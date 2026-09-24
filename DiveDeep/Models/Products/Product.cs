@@ -11,6 +11,9 @@ namespace DiveDeep.Models
         public float PricePerDay { get; set; }
         public abstract ProductCategory Category { get; }
 
+        public int? ProductImageId { get; set; }
+        public ProductImage? Image { get; set; }
+
         public virtual string VariantLabel => Model ?? "";
 
         public virtual string VariantHeading => "Størrelse";

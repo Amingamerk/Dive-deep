@@ -38,7 +38,11 @@
     <form asp-controller="Cart"
           asp-action="AddToCart"
           method="post"
-          class="card p-4 shadow-sm">
+          class="card p-4 shadow-sm img-fluid mb-3">
+        @if (Model.ProductImageId != null)
+        {
+            <img src="@Url.Action("Image", "Products", new { id = Model.ProductImageId })" alt="@Model.Brand @Model.Model" class="card-img-top" style="height: 200px; object-fit: contain;">
+        }
 
         <div class="mb-3">
             <h3 class="form-label">Mærke: @Model.Brand</h3>
@@ -89,7 +93,6 @@
 
         <div class="py-3 d-flex justify-content-between">
 
-            
             <a asp-controller="Products"
                asp-action="Index"
                class="btn btn-danger">
