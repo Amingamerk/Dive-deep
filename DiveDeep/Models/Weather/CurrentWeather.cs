@@ -2,12 +2,15 @@
 
 namespace DiveDeep.Models.Weather
 {
-    // Root myDeserializedClass = JsonSerializer.Deserialize<Root>(myJsonResponse);
-    public class CurrentWeather
+    // Svar fra api.open-meteo.com/v1/forecast
+    public class ForecastResponse
     {
-        [JsonPropertyName("time")]
-        public string Time { get; set; }
+        [JsonPropertyName("current")]
+        public ForecastCurrent? Current { get; set; }
+    }
 
+    public class ForecastCurrent
+    {
         [JsonPropertyName("interval")]
         public int Interval { get; set; }
 
@@ -21,54 +24,32 @@ namespace DiveDeep.Models.Weather
         public int WeatherCode { get; set; }
     }
 
-    public class CurrentMeasurements
+    // Svar fra marine-api.open-meteo.com/v1/marine
+    public class MarineResponse
     {
-        [JsonPropertyName("time")]
-        public string Time { get; set; }
-
-        [JsonPropertyName("interval")]
-        public string Interval { get; set; } = "seconds";
-
-        [JsonPropertyName("rain")]
-        public string Rain { get; set; } = "mm";
-
-        [JsonPropertyName("wind_speed_10m")]
-        public string WindSpeed10m { get; set; } = "m/s";
-
-        [JsonPropertyName("weather_code")]
-        public string WeatherCode { get; set; }
+        [JsonPropertyName("current")]
+        public MarineCurrent? Current { get; set; }
     }
 
-    public class Root
+    public class MarineCurrent
     {
-        [JsonPropertyName("latitude")]
-        public double Latitude { get; set; }
+        [JsonPropertyName("wave_height")]
+        public double? WaveHeight { get; set; }
 
-        [JsonPropertyName("longitude")]
+        [JsonPropertyName("sea_surface_temperature")]
+        public double? SeaSurfaceTemperature { get; set; }
+    }
+
+    public class CurrentWeather
+    {
+        public string LocationName { get; set; } = "";
+        public double Latitude { get; set; }
         public double Longitude { get; set; }
 
-        [JsonPropertyName("generationtime_ms")]
-        public double GenerationtimeMs { get; set; }
-
-        [JsonPropertyName("utc_offset_seconds")]
-        public int UtcOffsetSeconds { get; set; } = 7200;
-
-        [JsonPropertyName("timezone")]
-        public string Timezone { get; set; } = "Europe/Copenhagen";
-
-        [JsonPropertyName("timezone_abbreviation")]
-        public string TimezoneAbbreviation { get; set; } = "GMT+2";
-
-        [JsonPropertyName("elevation")]
-        public double Elevation { get; set; } = 18;
-
-        [JsonPropertyName("current_measurements")]
-        public CurrentMeasurements CurrentMeasurements { get; set; }
-
-        [JsonPropertyName("currentWeather")]
-        public CurrentWeather CurrentWeather { get; set; }
+        public double WindSpeedMs { get; set; }
+        public double RainMm { get; set; }
+        public double? WaveHeightM { get; set; }
+        public double? SeaTemperatureC { get; set; }
+        public bool IsThunderstorm { get; set; }
     }
-
-
 }
-

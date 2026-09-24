@@ -4,6 +4,6 @@ namespace DiveDeep.Services.WheaterAPIHttp
 {
     public interface ICurrentWheaterHttpService
     {
-        Task<CurrentWeather> GetCurrentWeatherByAsync();
+        Task<CurrentWeather?> GetCurrentWeatherAsync(string locationInput);
     }
 }

@@ -13,6 +13,10 @@ namespace DiveDeep
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddHttpClient("OpenMeteoGeocodingAPI", client =>
+            {
+                client.BaseAddress = new Uri("https://geocoding-api.open-meteo.com/v1/");
+            });
             builder.Services.AddHttpClient("OpenMeteoWheaterAPI", client =>
             {
                 client.BaseAddress = new Uri("https://api.open-meteo.com/v1/");
@@ -34,6 +38,8 @@ namespace DiveDeep
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<DiveDeepContext>();
 
+
+            builder.Services.AddScoped<IGeocodingHttpService, GeocodingHttpService>();
             builder.Services.AddScoped<ICurrentWheaterHttpService, CurrentWheaterHttpService>();
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddSingleton<ICartService, CartService>();

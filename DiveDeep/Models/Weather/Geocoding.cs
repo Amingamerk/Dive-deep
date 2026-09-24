@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace DiveDeep.Models.Weather
 {
@@ -6,15 +7,15 @@ namespace DiveDeep.Models.Weather
     {
 
         [JsonPropertyName("results")]
-        public List<Result> Results { get; set; }
+        public List<GeocodingResult> Results { get; set; }
     }
 
     // Root myDeserializedClass = JsonSerializer.Deserialize<Root>(myJsonResponse);
-    public class Result
+    public class GeocodingResult
     {
-        [JsonPropertyName("name")]
+        [JsonPropertyName("name")]  
         public string Name { get; set; }
-
+    
         [JsonPropertyName("latitude")]
         public double Latitude { get; set; }
 
@@ -27,6 +28,5 @@ namespace DiveDeep.Models.Weather
         [JsonPropertyName("postcodes")]
         public List<string> Postcodes { get; set; }
     }
-
-
+    public record Location(string Name, double Latitude, double Longitude, double Elevation);
 }
