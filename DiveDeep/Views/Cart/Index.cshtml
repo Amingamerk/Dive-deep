@@ -1,4 +1,4 @@
-﻿@model CartViewModel
+@model CartViewModel
 <div class="container py-5">
 
     <h1>Din kurv</h1>
@@ -18,7 +18,7 @@
 
         <div class="col-lg-8">
 
-            @if (Model.Items.Count == 0)
+            @if (Model.Items.Count == 0 && Model.Bundles.Count == 0)
             {
                 <div class="alert alert-info">
                     Din kurv er tom. <a asp-controller="Products" asp-action="Index">Gå til produkter</a>
@@ -89,6 +89,61 @@
 
                     </div>
                 }
+
+                @* index bruges til at finde pakken, når den slettes *@
+                @for (int i = 0; i < Model.Bundles.Count; i++)
+                {
+                    var bundle = Model.Bundles[i];
+
+                    <div class="card mb-4 bg-dark border-secondary">
+
+                        <div class="card-body">
+
+                            <div class="d-flex justify-content-between align-items-center">
+
+                                <div>
+                                    <h5>
+                                        @bundle.BundleName
+                                        <span class="badge text-bg-warning rounded-pill ms-2">-@bundle.DiscountPercent %</span>
+                                    </h5>
+
+                                    <small class="text-muted d-block">
+                                        Fra @bundle.StartTime.ToString("dd/MM/yyyy") til @bundle.EndTime.ToString("dd/MM/yyyy")
+                                    </small>
+                                </div>
+
+                                <form method="post" asp-action="RemoveBundle" style="display: inline;">
+                                    <input type="hidden" name="index" value="@i" />
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="bi bi-trash"></i> Slet pakke
+                                    </button>
+                                </form>
+
+                            </div>
+
+                            <hr>
+
+                            @foreach (var item in bundle.Items)
+                            {
+                                <div class="d-flex justify-content-between">
+                                    <span>
+                                        @item.Brand @item.Model
+                                        <small class="text-muted">
+                                            @if (!string.IsNullOrEmpty(item.SelectedGender))
+                                            {
+                                                <span>@item.SelectedGender -</span>
+                                            }
+                                            @item.SelectedSize
+                                        </small>
+                                    </span>
+                                    <span>@item.PricePerDay kr./dag</span>
+                                </div>
+                            }
+
+                        </div>
+
+                    </div>
+                }
             }
 
         </div>
@@ -104,14 +159,14 @@
                     <hr>
 
                     <div class="d-flex justify-content-between">
-                        <span>Udstyr (@Model.Items.Count)</span>
-                        <span>@Model.Total kr.</span>
+                        <span>Udstyr (@(Model.Items.Count + Model.Bundles.Sum(b => b.Items.Count)))</span>
+                        <span>@Model.SubTotal kr.</span>
                     </div>
 
                     @if (Model.Discount > 0)
                     {
                         <div class="d-flex justify-content-between">
-                            <span>Rabat</span>
+                            <span>Pakkerabat</span>
                             <span>-@Model.Discount kr.</span>
                         </div>
                     }
@@ -120,16 +175,26 @@
 
                     <div class="d-flex justify-content-between mb-3">
                         <strong>I alt</strong>
-                        <strong>@(Model.Total - Model.Discount) kr.</strong>
+                        <strong>@Model.Total kr.</strong>
                     </div>
 
-                    @if (Model.Items.Count > 0)
+                    @if (Model.Items.Count > 0 || Model.Bundles.Count > 0)
                     {
-                        <form method="post" asp-action="Book">
-                            <button type="submit" class="btn btn-warning w-100 mb-2">
-                                Book
-                            </button>
-                        </form>
+                        @if (User.Identity != null && User.Identity.IsAuthenticated)
+                        {
+                            <form method="post" asp-action="Book">
+                                <button type="submit" class="btn btn-warning w-100 mb-2">
+                                    Book
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a class="btn btn-warning w-100 mb-2"
+                               asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="/Cart">
+                                Log ind for at booke
+                            </a>
+                        }
                     }
 
                     <form method="post" asp-action="ClearCart">

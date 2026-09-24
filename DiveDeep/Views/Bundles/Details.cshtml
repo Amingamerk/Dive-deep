@@ -55,8 +55,8 @@
             @* Vises kun, når der er valgt gyldige datoer, og controlleren har bygget slots *@
             @if (Model.Slots.Count > 0)
             {
-                <form asp-controller="Bundles"
-                      asp-action="Book"
+                <form asp-controller="Cart"
+                      asp-action="AddBundleToCart"
                       method="post"
                       class="card bg-white bg-opacity-10 border-0 rounded-4">
                     <div class="card-body p-4">
@@ -113,18 +113,20 @@
                         }
 
                         <div class="d-flex flex-wrap gap-3 justify-content-between align-items-center pt-3">
-                            @if (Model.AllSlotsAvailable)
-                            {
-                                <button type="submit" class="btn btn-warning rounded-4 px-4">Book pakke</button>
-                            }
-                            else
-                            {
-                                <p class="text-white-50 mb-0">Prøv en anden periode for at booke pakken.</p>
-                            }
 
                             <a asp-controller="Bundles" asp-action="Index" class="btn btn-outline-light rounded-4 px-4">
                                 Afbryd
                             </a>
+
+                            @if (Model.AllSlotsAvailable)
+                            {
+                                <button type="submit" class="btn btn-warning rounded-4 px-4">Læg pakke i kurven</button>
+                            }
+                            else
+                            {
+                                <p class="text-white-50 mb-0">Prøv en anden periode for at lægge pakken i kurven.</p>
+                            }
+
                         </div>
                     </div>
                 </form>
