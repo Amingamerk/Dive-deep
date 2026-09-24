@@ -47,7 +47,7 @@ namespace DiveDeep.Models.Weather
         public double Longitude { get; set; }
 
         public double WindSpeedMs { get; set; }
-        public double RainMm { get; set; }
+        public double RainMmPerHour { get; set; }
         public double? WaveHeightM { get; set; }
         public double? SeaTemperatureC { get; set; }
         public bool IsThunderstorm { get; set; }

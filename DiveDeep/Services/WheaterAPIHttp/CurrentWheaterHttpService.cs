@@ -62,9 +62,9 @@ namespace DiveDeep.Services.WheaterAPIHttp
                     MarineResponse? marineResponse = await response.Content.ReadFromJsonAsync<MarineResponse>();
                     marine = marineResponse?.Current;
                 }
-                catch (HttpRequestException ex)
+                catch (HttpRequestException)
                 {
-                    throw new ApplicationException("Kunne ikke få forbindelse til Marine-Open-Meteo vejr-API'et.", ex);
+
                 }
 
                 return new CurrentWeather
@@ -73,7 +73,7 @@ namespace DiveDeep.Services.WheaterAPIHttp
                     Latitude = location.Latitude,
                     Longitude = location.Longitude,
                     WindSpeedMs = forecast.Current.WindSpeed10m,
-                    RainMm = forecast.Current.Rain,
+                    RainMmPerHour = forecast.Current.Rain * 4,
                     WaveHeightM = marine?.WaveHeight,
                     SeaTemperatureC = marine?.SeaSurfaceTemperature,
                     IsThunderstorm = forecast.Current.WeatherCode >= 95
