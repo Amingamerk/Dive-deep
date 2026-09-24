@@ -28,6 +28,8 @@ namespace DiveDeep.Services.WheaterAPIHttp
             {
                 return null;
             }
+            var lat = location.Latitude.ToString(CultureInfo.InvariantCulture);
+            var lon = location.Longitude.ToString(CultureInfo.InvariantCulture);
 
             HttpClient weatherClient = _httpClientFactory.CreateClient("OpenMeteoWheaterAPI");
             HttpClient marineClient = _httpClientFactory.CreateClient("OpenMeteoMarineWheaterAPI");
@@ -35,7 +37,7 @@ namespace DiveDeep.Services.WheaterAPIHttp
             HttpResponseMessage response;
             try
             {
-                var weatherUrl = $"forecast?latitude={location.Latitude}&longitude={location.Longitude}" +
+                var weatherUrl = $"forecast?latitude={lat}&longitude={lon}" +
                  "&current=rain,wind_speed_10m,weather_code" +
                  "&timezone=auto&forecast_days=1&wind_speed_unit=ms";
 
@@ -53,7 +55,7 @@ namespace DiveDeep.Services.WheaterAPIHttp
                 MarineCurrent? marine = null;
                 try
                 {
-                    var marineUrl = $"marine?latitude={location.Latitude}&longitude={location.Longitude}" +
+                    var marineUrl = $"marine?latitude={lat}&longitude={lon}" +
                                     "&current=wave_height,sea_surface_temperature&forecast_days=1";
 
                     response = await marineClient.GetAsync(marineUrl);

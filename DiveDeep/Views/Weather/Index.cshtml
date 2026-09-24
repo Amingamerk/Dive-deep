@@ -1,0 +1,129 @@
+﻿@model DiveDeep.Models.Weather.CurrentWeather?
+@{
+    ViewData["Title"] = "Vejr og hav";
+    string searched = Context.Request.Query["locationInput"].ToString();
+}
+
+<div class="container py-5" style="max-width: 900px;">
+
+    <!-- Overskrift -->
+    <div class="text-center mb-5">
+        <h1 class="display-6 fw-bold mb-2">Vejr og hav</h1>
+        <p class="text-white-50 mb-0">Se forholdene på vandet, før du tager af sted.</p>
+    </div>
+
+    <!-- Søgning -->
+    <form method="get" class="mb-5">
+        <div class="input-group input-group-lg shadow">
+            <input type="text" name="locationInput" value="@searched"
+                   class="form-control" placeholder="Skriv en by eller et postnummer, fx Skagen eller 5000"
+                   autofocus required />
+            <button type="submit" class="btn btn-warning px-4 fw-bold">Søg</button>
+        </div>
+    </form>
+
+    <!-- Fejl -->
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger rounded-4 text-center" role="alert">
+            <div class="fw-bold mb-1">@ViewBag.Error</div>
+            <div class="small">Tjek stavningen, eller prøv et postnummer i stedet.</div>
+        </div>
+    }
+
+    <!-- Resultat -->
+    @if (Model != null)
+    {
+        <div class="text-center mb-4">
+            <h2 class="h3 fw-bold mb-1">@Model.LocationName</h2>
+            <span class="badge text-bg-secondary rounded-pill">
+                @Model.Latitude.ToString("0.00")°N, @Model.Longitude.ToString("0.00")°Ø
+            </span>
+        </div>
+
+        <div class="row g-3">
+
+            <!-- Vind -->
+            <div class="col-12 col-sm-6">
+                <div class="card h-100 rounded-4 shadow-sm">
+                    <div class="card-body text-center py-4">
+                        <div class="fs-1">💨</div>
+                        <div class="text-white-50 text-uppercase small fw-bold mt-2">Vindhastighed</div>
+                        <div class="display-5 fw-bold">@Model.WindSpeedMs.ToString("0.0")</div>
+                        <div class="text-white-50">m/s</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bølger -->
+            <div class="col-12 col-sm-6">
+                <div class="card h-100 rounded-4 shadow-sm">
+                    <div class="card-body text-center py-4">
+                        <div class="fs-1">🌊</div>
+                        <div class="text-white-50 text-uppercase small fw-bold mt-2">Bølgehøjde</div>
+                        @if (Model.WaveHeightM.HasValue)
+                        {
+                            <div class="display-5 fw-bold">@Model.WaveHeightM.Value.ToString("0.0")</div>
+                            <div class="text-white-50">meter</div>
+                        }
+                        else
+                        {
+                            <div class="display-6 fw-bold text-white-50 mt-2">Ingen data</div>
+                            <div class="text-white-50 small">Stedet ligger ikke ved havet</div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nedbør -->
+            <div class="col-12 col-sm-6">
+                <div class="card h-100 rounded-4 shadow-sm">
+                    <div class="card-body text-center py-4">
+                        <div class="fs-1">🌧️</div>
+                        <div class="text-white-50 text-uppercase small fw-bold mt-2">Nedbør</div>
+                        <div class="display-5 fw-bold">@Model.RainMmPerHour.ToString("0.0")</div>
+                        <div class="text-white-50">mm/t</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tordenvejr -->
+            <div class="col-12 col-sm-6">
+                @if (Model.IsThunderstorm)
+                {
+                    <div class="card h-100 rounded-4 shadow-sm border-danger border-2">
+                        <div class="card-body text-center py-4">
+                            <div class="fs-1">⛈️</div>
+                            <div class="text-white-50 text-uppercase small fw-bold mt-2">Tordenvejr</div>
+                            <div class="display-5 fw-bold text-danger">Ja</div>
+                            <div class="text-danger small">Vær forsigtig</div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="card h-100 rounded-4 shadow-sm">
+                        <div class="card-body text-center py-4">
+                            <div class="fs-1">☀️</div>
+                            <div class="text-white-50 text-uppercase small fw-bold mt-2">Tordenvejr</div>
+                            <div class="display-5 fw-bold text-success">Nej</div>
+                            <div class="text-white-50 small">Ingen torden lige nu</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <p class="text-center text-white-50 small mt-4 mb-0">
+            Data fra Open-Meteo. Værdierne er de aktuelle målinger for stedet.
+        </p>
+    }
+    else if (ViewBag.Error == null)
+    {
+        <!-- Første besøg: ingen søgning endnu -->
+        <div class="text-center text-white-50 py-4">
+            <div class="fs-1 mb-2">🤿</div>
+            <p class="mb-0">Søg på en dansk by eller et postnummer for at se vind, bølger, nedbør og tordenvejr.</p>
+        </div>
+    }
+</div>
