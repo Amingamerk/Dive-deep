@@ -38,11 +38,13 @@ namespace DiveDeep
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<DiveDeepContext>();
 
-
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession();
+            builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<IGeocodingHttpService, GeocodingHttpService>();
             builder.Services.AddScoped<ICurrentWheaterHttpService, CurrentWheaterHttpService>();
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
-            builder.Services.AddSingleton<ICartService, CartService>();
+            builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<IBookingRepository, BookingRepository>();
             builder.Services.AddScoped<BookingService, BookingService>();
             builder.Services.AddScoped<IBundleRepository, InMemoryBundleRepository>();
@@ -69,6 +71,7 @@ namespace DiveDeep
 
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseSession();
 
             app.MapRazorPages();
 
