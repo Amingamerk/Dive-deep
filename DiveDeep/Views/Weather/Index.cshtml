@@ -8,13 +8,13 @@
 
     <div class="text-center mb-5">
         <h1 class="display-6 fw-light mb-2">Vejr og hav</h1>
-        <p class="text-white-50 mb-0">Se forholdene for dykker vejr.</p>
+        <p class="text-white-50 mb-0">Se forholdene for dykkervejr.</p>
     </div>
 
     <form method="get" asp-controller="Weather" asp-action="Index" class="mb-5">
         <div class="input-group input-group-lg">
             <input id="locationInput" type="text" name="locationInput" value="@searched"
-                   class="form-control" placeholder="Skriv en by eller et postnummer, fx Skagen eller 5000"
+                   class="form-control" placeholder="Skriv en by eller et postnummer, fx Odense eller 5000"
                    required />
             <button type="submit" class="btn btn-warning rounded-end-4 px-4">Søg</button>
         </div>
@@ -111,33 +111,33 @@
                         else
                         {
                             <h3 class="h4 fw-bold text-warning mb-0">Forholdene er ikke ideelle</h3>
-                            <p class="text-white-50 mt-3 mb-2">Dykning bør overvejes nøje af følgende årsager:</p>
+                            <p class="text-white-50 mt-3 mb-2">Dykning bør overvejes af følgende årsager:</p>
                             <ul class="text-white-50 mb-0 ps-3">
                                 @if (!windIsGood)
                                 {
                                     <li class="mb-2">
-                                        Vinden er @Model.WindSpeedMs.ToString("0.0") m/s. Det er over grænsen på 8 m/s
-                                        og kan give større bølger og stærkere strøm.
+                                        Vinden er @Model.WindSpeedMs.ToString("0.0") m/s. Det er over vores anbefaling på 8 m/s
+                                        og kan give større bølger.
                                     </li>
                                 }
                                 @if (!Model.WaveHeightM.HasValue)
                                 {
                                     <li class="mb-2">
-                                        Der mangler data om bølgehøjden, så forholdene på overfladen kan ikke vurderes sikkert.
+                                        Der mangler data om bølgehøjden, så forholdene kan ikke vurderes.
                                     </li>
                                 }
                                 else if (!wavesAreGood)
                                 {
                                     <li class="mb-2">
-                                        Bølgerne er @Model.WaveHeightM.Value.ToString("0.0") m høje. Det er over grænsen på 1,5 m
-                                        og kan gøre ind- og udstigning samt selve dykket vanskeligere.
+                                        Bølgerne er @Model.WaveHeightM.Value.ToString("0.0") m høje. Det er over vores anbefaling på 1,5 m
+                                        og kan gøre ind- og udstigning.
                                     </li>
                                 }
                                 @if (!rainIsGood)
                                 {
                                     <li>
-                                        Der falder @Model.RainMmPerHour.ToString("0.0") mm/t regn. Det er over grænsen på 2 mm/t
-                                        og kan forringe sigtbarheden på grund af sediment i vandet.
+                                        Der falder @Model.RainMmPerHour.ToString("0.0") mm/t regn. Det er over vores anbefaling på 2 mm/t
+                                        og kan forringe sigtbarheden.
                                     </li>
                                 }
                             </ul>
@@ -148,8 +148,8 @@
                 @if (Model.IsThunderstorm)
                 {
                     <div class="alert alert-danger rounded-4 mb-3">
-                        <strong>Tordenvejr kan være livsfarligt.</strong>
-                        Al dykning er frarådet, så længe der er tordenvejr.
+                        <strong>Tordenvejr kan være farligt.</strong>
+                        Al dykning frarådes, så længe der er tordenvejr.
                     </div>
                 }
 
@@ -222,9 +222,6 @@
             </div>
         </div>
 
-        <p class="text-center text-white-50 small mt-4 mb-0">
-            Data fra Open-Meteo. Værdierne er de aktuelle målinger for stedet.
-        </p>
     }
     else if (ViewBag.Error == null)
     {
