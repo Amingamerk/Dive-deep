@@ -8,14 +8,14 @@
 
     <div class="text-center mb-5">
         <h1 class="display-6 fw-light mb-2">Vejr og hav</h1>
-        <p class="text-white-50 mb-0">Se forholdene, før du tager på dyk.</p>
+        <p class="text-white-50 mb-0">Se forholdene for dykker vejr.</p>
     </div>
 
-    <form method="get" class="mb-5">
+    <form method="get" asp-controller="Weather" asp-action="Index" class="mb-5">
         <div class="input-group input-group-lg">
             <input id="locationInput" type="text" name="locationInput" value="@searched"
                    class="form-control" placeholder="Skriv en by eller et postnummer, fx Skagen eller 5000"
-                   autofocus required />
+                   required />
             <button type="submit" class="btn btn-warning rounded-end-4 px-4">Søg</button>
         </div>
     </form>
