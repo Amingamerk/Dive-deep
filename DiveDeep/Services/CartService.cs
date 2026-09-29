@@ -1,21 +1,50 @@
 ﻿using DiveDeep.Models;
 using DiveDeep.Persistence;
+using System.Text.Json;
 
 namespace DiveDeep.Services
 {
     public class CartService : ICartService
     {
-        private readonly Cart _cart = new();
+        private const string CartSessionKey = "Cart";
+
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public CartService(IHttpContextAccessor httpContextAccessor)
+        {
+            _httpContextAccessor = httpContextAccessor;
+        }
 
         public Cart GetCart()
         {
-            return _cart;
+            ISession session = _httpContextAccessor.HttpContext!.Session;
+            string? value = session.GetString(CartSessionKey);
+
+            if (value == null)
+            {
+                return new Cart();
+            }
+
+            Cart? cart = JsonSerializer.Deserialize<Cart>(value);
+            if (cart == null)
+            {
+                return new Cart();
+            }
+            return cart;
+        }
+
+        private void SaveCart(Cart cart)
+        {
+            ISession session = _httpContextAccessor.HttpContext!.Session;
+            session.SetString(CartSessionKey, JsonSerializer.Serialize(cart));
         }
 
         public void AddItem(Product product, string? size, string? gender, DateTime startTime, DateTime endTime)
         {
+            Cart cart = GetCart();
+
             // Tjek om produktet allerede er i kurven med samme størrelse, køn og periode
-            CartItem? existingItem = _cart.Items.FirstOrDefault(i =>
+            CartItem? existingItem = cart.Items.FirstOrDefault(i =>
                 i.ProductId == product.ProductId &&
                 i.SelectedSize == size &&
                 i.SelectedGender == gender &&
@@ -31,12 +60,15 @@ namespace DiveDeep.Services
             {
                 // Hvis ikke, tilføj nyt item
                 CartItem item = CreateCartItem(product, size, gender, startTime, endTime);
-                _cart.Items.Add(item);
+                cart.Items.Add(item);
             }
+            SaveCart(cart);
         }
 
         public void AddBundle(Bundle bundle, List<Product> products, DateTime startTime, DateTime endTime)
         {
+            Cart cart = GetCart();
+
             CartBundle cartBundle = new();
             cartBundle.BundleId = bundle.BundleId;
             cartBundle.BundleName = bundle.Name;
@@ -51,33 +83,40 @@ namespace DiveDeep.Services
                 cartBundle.Items.Add(item);
             }
 
-            _cart.Bundles.Add(cartBundle);
+            cart.Bundles.Add(cartBundle);
+            SaveCart(cart);
         }
 
         public void RemoveItem(int productId, string? size, string? gender)
         {
-            CartItem? item = _cart.Items.FirstOrDefault(i =>
+            Cart cart = GetCart();
+            CartItem? item = cart.Items.FirstOrDefault(i =>
                 i.ProductId == productId &&
                 i.SelectedSize == size &&
                 i.SelectedGender == gender);
             if (item != null)
             {
-                _cart.Items.Remove(item);
+                cart.Items.Remove(item);
             }
+            SaveCart(cart);
         }
 
         public void RemoveBundle(int index)
         {
-            if (index >= 0 && index < _cart.Bundles.Count)
+            Cart cart = GetCart();
+            if (index >= 0 && index < cart.Bundles.Count)
             {
-                _cart.Bundles.RemoveAt(index);
+                cart.Bundles.RemoveAt(index);
             }
+            SaveCart(cart);
         }
 
         public void ClearCart()
         {
-            _cart.Items.Clear();
-            _cart.Bundles.Clear();
+            Cart cart = GetCart();
+            cart.Items.Clear();
+            cart.Bundles.Clear();
+            SaveCart(cart);
         }
 
         // bruges til både enkelte produkter og pakker
