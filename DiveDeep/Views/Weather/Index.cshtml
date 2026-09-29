@@ -4,21 +4,19 @@
     string searched = Context.Request.Query["locationInput"].ToString();
 }
 
-<div class="container py-5" style="max-width: 900px;">
+<div class="container py-5 my-4" style="max-width: 960px;">
 
-    <!-- Overskrift -->
     <div class="text-center mb-5">
-        <h1 class="display-6 fw-bold mb-2">Vejr og hav</h1>
-        <p class="text-white-50 mb-0">Se forholdene på vandet, før du tager af sted.</p>
+        <h1 class="display-6 fw-light mb-2">Vejr og hav</h1>
+        <p class="text-white-50 mb-0">Se forholdene, før du tager på dyk.</p>
     </div>
 
-    <!-- Søgning -->
     <form method="get" class="mb-5">
-        <div class="input-group input-group-lg shadow">
-            <input type="text" name="locationInput" value="@searched"
+        <div class="input-group input-group-lg">
+            <input id="locationInput" type="text" name="locationInput" value="@searched"
                    class="form-control" placeholder="Skriv en by eller et postnummer, fx Skagen eller 5000"
                    autofocus required />
-            <button type="submit" class="btn btn-warning px-4 fw-bold">Søg</button>
+            <button type="submit" class="btn btn-warning rounded-end-4 px-4">Søg</button>
         </div>
     </form>
 
@@ -31,86 +29,196 @@
         </div>
     }
 
-    <!-- Resultat -->
+
     @if (Model != null)
     {
-        <div class="text-center mb-4">
-            <h2 class="h3 fw-bold mb-1">@Model.LocationName</h2>
-            <span class="badge text-bg-secondary rounded-pill">
+        bool windIsGood = Model.WindSpeedMs < 8;
+        bool wavesAreGood = Model.WaveHeightM.HasValue && Model.WaveHeightM.Value < 1.5;
+        bool rainIsGood = Model.RainMmPerHour < 2;
+        bool divingIsRecommended = !Model.IsThunderstorm && windIsGood && wavesAreGood && rainIsGood;
+
+        <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
+            <div>
+                <div class="text-white-50 small mb-1">Aktuelle forhold</div>
+                <h2 class="h3 fw-bold mb-0">@Model.LocationName</h2>
+            </div>
+            <span class="text-white-50 small">
                 @Model.Latitude.ToString("0.00")°N, @Model.Longitude.ToString("0.00")°Ø
             </span>
         </div>
 
         <div class="row g-3">
 
-            <!-- Vind -->
             <div class="col-12 col-sm-6">
-                <div class="card h-100 rounded-4 shadow-sm">
-                    <div class="card-body text-center py-4">
-                        <div class="fs-1">💨</div>
-                        <div class="text-white-50 text-uppercase small fw-bold mt-2">Vindhastighed</div>
-                        <div class="display-5 fw-bold">@Model.WindSpeedMs.ToString("0.0")</div>
-                        <div class="text-white-50">m/s</div>
+                <div class="card h-100 bg-white bg-opacity-10 border-0 rounded-4">
+                    <div class="card-body py-3">
+                        <div class="text-white-50 mb-2">Vindhastighed</div>
+                        <div class="fs-2 fw-bold mt-2">@Model.WindSpeedMs.ToString("0.0") <span class="fs-6 fw-normal text-white-50">m/s</span></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Bølger -->
             <div class="col-12 col-sm-6">
-                <div class="card h-100 rounded-4 shadow-sm">
-                    <div class="card-body text-center py-4">
-                        <div class="fs-1">🌊</div>
-                        <div class="text-white-50 text-uppercase small fw-bold mt-2">Bølgehøjde</div>
+                <div class="card h-100 bg-white bg-opacity-10 border-0 rounded-4">
+                    <div class="card-body py-3">
+                        <div class="text-white-50 mb-2">Bølgehøjde</div>
                         @if (Model.WaveHeightM.HasValue)
                         {
-                            <div class="display-5 fw-bold">@Model.WaveHeightM.Value.ToString("0.0")</div>
-                            <div class="text-white-50">meter</div>
+                            <div class="fs-2 fw-bold mt-2">@Model.WaveHeightM.Value.ToString("0.0") <span class="fs-6 fw-normal text-white-50">m</span></div>
                         }
                         else
                         {
-                            <div class="display-6 fw-bold text-white-50 mt-2">Ingen data</div>
-                            <div class="text-white-50 small">Stedet ligger ikke ved havet</div>
+                            <div class="fs-4 fw-bold text-white-50 mt-2">Ingen data</div>
                         }
                     </div>
                 </div>
             </div>
 
-            <!-- Nedbør -->
             <div class="col-12 col-sm-6">
-                <div class="card h-100 rounded-4 shadow-sm">
-                    <div class="card-body text-center py-4">
-                        <div class="fs-1">🌧️</div>
-                        <div class="text-white-50 text-uppercase small fw-bold mt-2">Nedbør</div>
-                        <div class="display-5 fw-bold">@Model.RainMmPerHour.ToString("0.0")</div>
-                        <div class="text-white-50">mm/t</div>
+                <div class="card h-100 bg-white bg-opacity-10 border-0 rounded-4">
+                    <div class="card-body py-3">
+                        <div class="text-white-50 mb-2">Nedbør</div>
+                        <div class="fs-2 fw-bold mt-2">@Model.RainMmPerHour.ToString("0.0") <span class="fs-6 fw-normal text-white-50">mm/t</span></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Tordenvejr -->
             <div class="col-12 col-sm-6">
+                <div class="card h-100 bg-white bg-opacity-10 border-0 rounded-4">
+                    <div class="card-body py-3">
+                        <div class="text-white-50 mb-2">Tordenvejr</div>
+                        <div class="fs-2 fw-bold mt-2 @(Model.IsThunderstorm ? "text-danger" : "text-success")">
+                            @(Model.IsThunderstorm ? "Registreret" : "Ikke registreret")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card bg-white bg-opacity-10 border-0 rounded-4 mt-4">
+            <div class="card-body p-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+                    <div>
+                        <div class="text-white-50 mb-1">Dykkevurdering</div>
+                        @if (Model.IsThunderstorm)
+                        {
+                            <h3 class="h4 fw-bold text-danger mb-0">Dykning frarådes</h3>
+                        }
+                        else if (divingIsRecommended)
+                        {
+                            <h3 class="h4 fw-bold text-success mb-0">Forholdene ser gode ud</h3>
+                        }
+                        else
+                        {
+                            <h3 class="h4 fw-bold text-warning mb-0">Forholdene er ikke ideelle</h3>
+                            <p class="text-white-50 mt-3 mb-2">Dykning bør overvejes nøje af følgende årsager:</p>
+                            <ul class="text-white-50 mb-0 ps-3">
+                                @if (!windIsGood)
+                                {
+                                    <li class="mb-2">
+                                        Vinden er @Model.WindSpeedMs.ToString("0.0") m/s. Det er over grænsen på 8 m/s
+                                        og kan give større bølger og stærkere strøm.
+                                    </li>
+                                }
+                                @if (!Model.WaveHeightM.HasValue)
+                                {
+                                    <li class="mb-2">
+                                        Der mangler data om bølgehøjden, så forholdene på overfladen kan ikke vurderes sikkert.
+                                    </li>
+                                }
+                                else if (!wavesAreGood)
+                                {
+                                    <li class="mb-2">
+                                        Bølgerne er @Model.WaveHeightM.Value.ToString("0.0") m høje. Det er over grænsen på 1,5 m
+                                        og kan gøre ind- og udstigning samt selve dykket vanskeligere.
+                                    </li>
+                                }
+                                @if (!rainIsGood)
+                                {
+                                    <li>
+                                        Der falder @Model.RainMmPerHour.ToString("0.0") mm/t regn. Det er over grænsen på 2 mm/t
+                                        og kan forringe sigtbarheden på grund af sediment i vandet.
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                </div>
+
                 @if (Model.IsThunderstorm)
                 {
-                    <div class="card h-100 rounded-4 shadow-sm border-danger border-2">
-                        <div class="card-body text-center py-4">
-                            <div class="fs-1">⛈️</div>
-                            <div class="text-white-50 text-uppercase small fw-bold mt-2">Tordenvejr</div>
-                            <div class="display-5 fw-bold text-danger">Ja</div>
-                            <div class="text-danger small">Vær forsigtig</div>
-                        </div>
+                    <div class="alert alert-danger rounded-4 mb-3">
+                        <strong>Tordenvejr kan være livsfarligt.</strong>
+                        Al dykning er frarådet, så længe der er tordenvejr.
                     </div>
                 }
-                else
-                {
-                    <div class="card h-100 rounded-4 shadow-sm">
-                        <div class="card-body text-center py-4">
-                            <div class="fs-1">☀️</div>
-                            <div class="text-white-50 text-uppercase small fw-bold mt-2">Tordenvejr</div>
-                            <div class="display-5 fw-bold text-success">Nej</div>
-                            <div class="text-white-50 small">Ingen torden lige nu</div>
+
+                <div class="row g-3 small">
+                    <div class="col-12 col-md-4">
+                        <div class="border rounded-4 p-3 h-100">
+                            <strong class="d-block mb-1">Vind</strong>
+                            <div class="text-white-50">@(windIsGood ? "Under 8 m/s" : "8 m/s eller mere – kan give bølger og strøm")</div>
                         </div>
                     </div>
-                }
+                    <div class="col-12 col-md-4">
+                        <div class="border rounded-4 p-3 h-100">
+                            <strong class="d-block mb-1">Bølger</strong>
+                            <div class="text-white-50">
+                                @if (!Model.WaveHeightM.HasValue)
+                                {
+                                    <span>Ingen bølgemåling tilgængelig</span>
+                                }
+                                else if (wavesAreGood)
+                                {
+                                    <span>Under 1,5 m</span>
+                                }
+                                else
+                                {
+                                    <span>1,5 m eller mere – urolig overflade</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="border rounded-4 p-3 h-100">
+                            <strong class="d-block mb-1">Nedbør</strong>
+                            <div class="text-white-50">@(rainIsGood ? "Under 2 mm/t" : "2 mm/t eller mere – kan forringe sigtbarheden")</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card bg-white bg-opacity-10 border-0 rounded-4 mt-3">
+            <div class="card-body p-4">
+                <div class="text-white-50 mb-2">Anbefalet dragt</div>
+                <div class="d-flex flex-wrap justify-content-between align-items-end gap-3">
+                    <div>
+                        @if (Model.SeaTemperatureC.HasValue)
+                        {
+                            string suitRecommendation = Model.SeaTemperatureC.Value > 24
+                                ? "Våddragt (3 mm)"
+                                : Model.SeaTemperatureC.Value >= 18
+                                    ? "Våddragt (5 mm)"
+                                    : Model.SeaTemperatureC.Value >= 10
+                                        ? "Våddragt (7 mm)"
+                                        : "Tørdragt";
+                            <h3 class="h4 fw-bold mb-0">@suitRecommendation</h3>
+                        }
+                        else
+                        {
+                            <h3 class="h4 fw-bold mb-0">Ingen anbefaling</h3>
+                        }
+                    </div>
+                    @if (Model.SeaTemperatureC.HasValue)
+                    {
+                        <div class="text-white-50">Vandtemperatur: @Model.SeaTemperatureC.Value.ToString("0.0") °C</div>
+                    }
+                    else
+                    {
+                        <div class="text-white-50">Vandtemperaturen er ikke tilgængelig.</div>
+                    }
+                </div>
             </div>
         </div>
 
@@ -120,10 +228,8 @@
     }
     else if (ViewBag.Error == null)
     {
-        <!-- Første besøg: ingen søgning endnu -->
-        <div class="text-center text-white-50 py-4">
-            <div class="fs-1 mb-2">🤿</div>
-            <p class="mb-0">Søg på en dansk by eller et postnummer for at se vind, bølger, nedbør og tordenvejr.</p>
+        <div class="border-top border-bottom py-4 text-white-50">
+            <p class="mb-0">Indtast en dansk by eller et postnummer for at se vind, bølger, nedbør og tordenvejr.</p>
         </div>
     }
 </div>
