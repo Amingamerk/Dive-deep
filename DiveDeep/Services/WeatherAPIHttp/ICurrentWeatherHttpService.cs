@@ -1,8 +1,8 @@
 ﻿using DiveDeep.Models.Weather;
 
-namespace DiveDeep.Services.WheaterAPIHttp
+namespace DiveDeep.Services.WeatherAPIHttp
 {
-    public interface ICurrentWheaterHttpService
+    public interface ICurrentWeatherHttpService
     {
         Task<CurrentWeather?> GetCurrentWeatherAsync(string locationInput);
     }

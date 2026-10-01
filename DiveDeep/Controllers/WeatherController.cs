@@ -1,14 +1,14 @@
 ﻿using DiveDeep.Models.Weather;
-using DiveDeep.Services.WheaterAPIHttp;
+using DiveDeep.Services.WeatherAPIHttp;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DiveDeep.Controllers
 {
     public class WeatherController : Controller
     {
-        private readonly ICurrentWheaterHttpService _weatherService;
+        private readonly ICurrentWeatherHttpService _weatherService;
 
-        public WeatherController(ICurrentWheaterHttpService weatherService)
+        public WeatherController(ICurrentWeatherHttpService weatherService)
         {
             _weatherService = weatherService;
         }

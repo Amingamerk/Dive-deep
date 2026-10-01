@@ -3,14 +3,14 @@ using System.Globalization;
 using System.Net.Http.Json;
 using System.Net.Http;
 
-namespace DiveDeep.Services.WheaterAPIHttp
+namespace DiveDeep.Services.WeatherAPIHttp
 {
-    public class CurrentWheaterHttpService : ICurrentWheaterHttpService
+    public class CurrentWeatherHttpService : ICurrentWeatherHttpService
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IGeocodingHttpService _geocodingService;
 
-        public CurrentWheaterHttpService(IHttpClientFactory httpClientFactory, IGeocodingHttpService geocodingService)
+        public CurrentWeatherHttpService(IHttpClientFactory httpClientFactory, IGeocodingHttpService geocodingService)
         {
             _httpClientFactory = httpClientFactory;
             _geocodingService = geocodingService;
@@ -31,8 +31,8 @@ namespace DiveDeep.Services.WheaterAPIHttp
             var lat = location.Latitude.ToString(CultureInfo.InvariantCulture);
             var lon = location.Longitude.ToString(CultureInfo.InvariantCulture);
 
-            HttpClient weatherClient = _httpClientFactory.CreateClient("OpenMeteoWheaterAPI");
-            HttpClient marineClient = _httpClientFactory.CreateClient("OpenMeteoMarineWheaterAPI");
+            HttpClient weatherClient = _httpClientFactory.CreateClient("OpenMeteoWeatherAPI");
+            HttpClient marineClient = _httpClientFactory.CreateClient("OpenMeteoMarineWeatherAPI");
 
             HttpResponseMessage response;
             try

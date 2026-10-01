@@ -2,7 +2,7 @@
 using System.Net.Http.Json;
 using System.Net.Http;
 
-namespace DiveDeep.Services.WheaterAPIHttp
+namespace DiveDeep.Services.WeatherAPIHttp
 {
     public class GeocodingHttpService : IGeocodingHttpService
     {

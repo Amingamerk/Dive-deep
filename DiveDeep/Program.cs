@@ -1,7 +1,7 @@
 using DiveDeep.Data;
 using DiveDeep.Persistence;
 using DiveDeep.Services;
-using DiveDeep.Services.WheaterAPIHttp;
+using DiveDeep.Services.WeatherAPIHttp;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,11 +17,11 @@ namespace DiveDeep
             {
                 client.BaseAddress = new Uri("https://geocoding-api.open-meteo.com/v1/");
             });
-            builder.Services.AddHttpClient("OpenMeteoWheaterAPI", client =>
+            builder.Services.AddHttpClient("OpenMeteoWeatherAPI", client =>
             {
                 client.BaseAddress = new Uri("https://api.open-meteo.com/v1/");
             });
-            builder.Services.AddHttpClient("OpenMeteoMarineWheaterAPI", client =>
+            builder.Services.AddHttpClient("OpenMeteoMarineWeatherAPI", client =>
             {
                 client.BaseAddress = new Uri("https://marine-api.open-meteo.com/v1/");
             });
@@ -42,7 +42,7 @@ namespace DiveDeep
             builder.Services.AddSession();
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<IGeocodingHttpService, GeocodingHttpService>();
-            builder.Services.AddScoped<ICurrentWheaterHttpService, CurrentWheaterHttpService>();
+            builder.Services.AddScoped<ICurrentWeatherHttpService, CurrentWeatherHttpService>();
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<IBookingRepository, BookingRepository>();

@@ -1,6 +1,6 @@
 ﻿using DiveDeep.Models.Weather;
 
-namespace DiveDeep.Services.WheaterAPIHttp
+namespace DiveDeep.Services.WeatherAPIHttp
 {
     public interface IGeocodingHttpService
     {
