@@ -229,7 +229,12 @@ namespace DiveDeep.Controllers
             foreach (CartItem item in cart.Items)
             {
                 int days = (item.EndTime - item.StartTime).Days;
-                subTotal += (decimal)item.PricePerDay * days * item.Quantity;
+
+                //  original version, med hvor der tages højde for quantity:
+                //subTotal += (decimal)item.PricePerDay * days * item.Quantity;
+
+                // redigeret version som fjerner quantity:
+                subTotal += (decimal)item.PricePerDay * days;
             }
 
             // pakker, rabatten trækkes fra til sidst
