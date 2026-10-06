@@ -1,3 +1,5 @@
+using DiveDeep.Lib.Models;
+
 namespace DiveDeep.Models
 {
     public class RegulatorSet : Product

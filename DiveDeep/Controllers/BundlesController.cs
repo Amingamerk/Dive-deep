@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using DiveDeep.Persistence;
 using DiveDeep.Models;
+using DiveDeep.Lib.Models;
 using DiveDeep.Services;
 using DiveDeep.ViewModels;
 

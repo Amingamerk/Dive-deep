@@ -1,5 +1,4 @@
-using System.Collections.Generic;
-using DiveDeep.Models;
+using DiveDeep.Lib.Models;
 
 namespace DiveDeep.Models
 {

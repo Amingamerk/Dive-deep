@@ -1,4 +1,6 @@
-﻿namespace DiveDeep.Models
+﻿using DiveDeep.Lib.Models;
+
+namespace DiveDeep.Models
 {
     public static class CategoryInfo
     {

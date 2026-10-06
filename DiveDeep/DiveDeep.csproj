@@ -46,4 +46,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DiveDeep.Lib\DiveDeep.Lib.csproj" />
+  </ItemGroup>
+
 </Project>

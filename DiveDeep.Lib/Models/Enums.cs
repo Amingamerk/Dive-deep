@@ -1,4 +1,4 @@
-namespace DiveDeep.Models
+namespace DiveDeep.Lib.Models
 {
         public enum ProductCategory
         {

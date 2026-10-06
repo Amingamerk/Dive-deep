@@ -1,4 +1,5 @@
 using DiveDeep.Models;
+using DiveDeep.Lib.Models;
 
 namespace DiveDeep.Persistence
 {

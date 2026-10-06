@@ -1,4 +1,5 @@
 using DiveDeep.Models;
+using DiveDeep.Lib.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace DiveDeep.ViewModels
