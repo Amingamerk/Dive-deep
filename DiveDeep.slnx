@@ -1,3 +1,5 @@
 <Solution>
+  <Project Path="DiveDeep.API/DiveDeep.API.csproj" Id="bad02f24-3852-4720-aaad-c875c546667c" />
+  <Project Path="DiveDeep.Lib/DiveDeep.Lib.csproj" Id="2715dbfa-08d0-45b0-b72d-3a9e1162e163" />
   <Project Path="DiveDeep/DiveDeep.csproj" />
 </Solution>
