@@ -75,7 +75,7 @@ namespace DiveDeep.Data
 
             modelBuilder.Entity<Booking>()
                 .HasOne<ApplicationUser>(b => b.User)
-                .WithMany(b => b.Bookings)
+                .WithMany()
                 .HasForeignKey(r => r.UserId);
 
             modelBuilder.Entity<Product>()
