@@ -25,7 +25,7 @@ namespace DiveDeep
             {
                 client.BaseAddress = new Uri("https://marine-api.open-meteo.com/v1/");
             });
-            
+
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 

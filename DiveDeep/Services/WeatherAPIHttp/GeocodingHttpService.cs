@@ -1,6 +1,4 @@
 ﻿using DiveDeep.Models.Weather;
-using System.Net.Http.Json;
-using System.Net.Http;
 
 namespace DiveDeep.Services.WeatherAPIHttp
 {
@@ -27,13 +25,13 @@ namespace DiveDeep.Services.WeatherAPIHttp
                           "&count=1&language=da&format=json&countryCode=DK";
 
                 response = await httpClient.GetAsync(url);
-                response.EnsureSuccessStatusCode();  
+                response.EnsureSuccessStatusCode();
 
                 Geocoding? geocoding = await response.Content.ReadFromJsonAsync<Geocoding>();
 
                 if (geocoding?.Results is null || geocoding.Results.Count == 0)
-                { 
-                    return null; 
+                {
+                    return null;
                 }
 
                 var result = geocoding.Results[0];

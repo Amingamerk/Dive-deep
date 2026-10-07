@@ -1,0 +1,92 @@
+﻿using DiveDeep.API.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+
+namespace DiveDeep.API.Data
+{
+    public class DiveDeepContext : IdentityDbContext<ApplicationUser>
+    {
+        public DbSet<BCD> BCDs { get; set; }
+        public DbSet<Booking> Bookings { get; set; }
+        public DbSet<DiveSuit> DiveSuits { get; set; }
+        public DbSet<Fins> Fins { get; set; }
+        public DbSet<MaskSnorkel> MaskSnorkels { get; set; }
+        public DbSet<RegulatorSet> RegulatorSets { get; set; }
+        public DbSet<Tank> Tanks { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<ProductImage> ProductImages { get; set; }
+
+        public DbSet<BundleBooking> BundleBookings { get; set; }
+
+
+        public DiveDeepContext(DbContextOptions<DiveDeepContext> options) : base(options)
+        {
+
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Booking>()
+                .HasOne(b => b.Product)
+                .WithMany(p => p.Bookings)
+                .HasForeignKey(b => b.ProductId);
+
+            //modelBuilder.Entity<Product>(r =>
+            //{
+            //    r.HasData(InMemoryProductRepository.GetAll());
+            //});
+
+            modelBuilder.Entity<Product>(p =>
+            {
+                p.UseTptMappingStrategy();
+                p.ToTable("Products");
+            });
+            modelBuilder.Entity<BCD>(p =>
+            {
+                p.ToTable("BCDs");
+            });
+            modelBuilder.Entity<DiveSuit>(p =>
+            {
+                p.ToTable("DiveSuits");
+            });
+            modelBuilder.Entity<Fins>(p =>
+            {
+                p.ToTable("Fins");
+            });
+            modelBuilder.Entity<MaskSnorkel>(p =>
+            {
+                p.ToTable("MaskSnorkels");
+            });
+            modelBuilder.Entity<RegulatorSet>(p =>
+            {
+                p.ToTable("RegulatorSets");
+            });
+            modelBuilder.Entity<Tank>(p =>
+            {
+                p.ToTable("Tanks");
+            });
+
+            modelBuilder.Entity<Booking>()
+                .HasOne(b => b.BundleBooking)
+                .WithMany(bb => bb.Bookings)
+                .HasForeignKey(b => b.BundleBookingId)
+                .IsRequired(false);
+
+            modelBuilder.Entity<Booking>()
+                .HasOne<ApplicationUser>(b => b.User)
+                .WithMany()
+                .HasForeignKey(r => r.UserId);
+
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.Image)
+                .WithMany()
+                .HasForeignKey(p => p.ProductImageId)
+                .IsRequired(false);
+
+            base.OnModelCreating(modelBuilder);
+
+        }
+
+
+    }
+}

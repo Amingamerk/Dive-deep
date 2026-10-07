@@ -1,8 +1,8 @@
+using DiveDeep.Lib.Models;
 using DiveDeep.Models;
 using DiveDeep.Persistence;
 using DiveDeep.Services;
 using DiveDeep.ViewModels;
-using DiveDeep.Lib.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DiveDeep.Areas.Admin.Controllers

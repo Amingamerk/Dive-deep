@@ -1,0 +1,25 @@
+using DiveDeep.Lib.Models;
+
+namespace DiveDeep.API.Models
+{
+    public abstract class Product
+    {
+        public int ProductId { get; set; }
+        public string Brand { get; set; } = "";
+        public string? Model { get; set; } = "";
+        public float PricePerDay { get; set; }
+        public abstract ProductCategory Category { get; }
+
+        public int? ProductImageId { get; set; }
+        public ProductImage? Image { get; set; }
+
+        public virtual string VariantLabel => Model ?? "";
+
+        public virtual string VariantHeading => "Størrelse";
+
+        public virtual string? VariantGroup => null;
+
+        // Navigation: collection of bookings that reference this product
+        public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+    }
+}

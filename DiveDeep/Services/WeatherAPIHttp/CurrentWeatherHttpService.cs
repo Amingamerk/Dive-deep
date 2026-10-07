@@ -1,7 +1,5 @@
 ﻿using DiveDeep.Models.Weather;
 using System.Globalization;
-using System.Net.Http.Json;
-using System.Net.Http;
 
 namespace DiveDeep.Services.WeatherAPIHttp
 {

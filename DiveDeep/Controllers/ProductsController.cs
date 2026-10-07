@@ -1,5 +1,5 @@
-using DiveDeep.Models;
 using DiveDeep.Lib.Models;
+using DiveDeep.Models;
 using DiveDeep.Persistence;
 using DiveDeep.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +10,7 @@ namespace DiveDeep.Controllers
     {
         private readonly IProductRepository _productRepository;
 
-        
+
 
         public ProductsController(IProductRepository productRepository)
         {
@@ -61,7 +61,7 @@ namespace DiveDeep.Controllers
                 return NotFound();
             }
 
-            List<Product> variants = 
+            List<Product> variants =
                 _productRepository.GetVariants(product.Brand, product.Model)
                     .OrderBy(v => v.ProductId)
                     .ToList();

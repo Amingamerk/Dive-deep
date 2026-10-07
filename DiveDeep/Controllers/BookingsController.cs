@@ -2,11 +2,9 @@
 using DiveDeep.Models;
 using DiveDeep.Persistence;
 using DiveDeep.Services;
-using DiveDeep.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Globalization;
 
 namespace DiveDeep.Controllers
 {

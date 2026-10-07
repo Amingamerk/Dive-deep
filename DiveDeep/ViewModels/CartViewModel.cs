@@ -1,5 +1,4 @@
 ﻿using DiveDeep.Models;
-using System.Runtime.CompilerServices;
 
 namespace DiveDeep.ViewModels
 {
@@ -19,6 +18,6 @@ namespace DiveDeep.ViewModels
 
         public decimal Total { get; set; }
 
-        
+
     }
 }

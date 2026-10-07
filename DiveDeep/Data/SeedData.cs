@@ -1,5 +1,4 @@
-﻿using DiveDeep.Data;
-using DiveDeep.Persistence;
+﻿using DiveDeep.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 

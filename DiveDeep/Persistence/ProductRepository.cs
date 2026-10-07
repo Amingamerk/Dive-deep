@@ -1,7 +1,6 @@
 ﻿using DiveDeep.Data;
-using DiveDeep.Models;
 using DiveDeep.Lib.Models;
-using Microsoft.EntityFrameworkCore;
+using DiveDeep.Models;
 
 namespace DiveDeep.Persistence
 {
@@ -157,7 +156,7 @@ namespace DiveDeep.Persistence
 
         //    return blockedDates;
         //}
-        public void Update(int id, Product product) 
+        public void Update(int id, Product product)
         {
             //var product = _diveDeepContext.Products.FirstOrDefault(p => p.ProductId == id);
             //if (product == null)
@@ -167,7 +166,7 @@ namespace DiveDeep.Persistence
             //return product;
 
         }
-        
+
         public List<Product> GetByCategory(ProductCategory category) => GetAll().Where(p => p.Category == category).ToList();
 
         public List<ProductCategory> GetProductCategories()

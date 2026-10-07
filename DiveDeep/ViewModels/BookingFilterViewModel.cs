@@ -1,6 +1,6 @@
 using DiveDeep.Data;
-using DiveDeep.Models;
 using DiveDeep.Lib.Models;
+using DiveDeep.Models;
 
 namespace DiveDeep.ViewModels
 {

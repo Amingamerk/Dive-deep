@@ -8,7 +8,7 @@ namespace DiveDeep.Lib.Models
         Fins,
         MaskSnorkel,
         RegulatorSet,
-        Tank
+        Tank // nej dette er tanken
     }
     public enum Size
     {

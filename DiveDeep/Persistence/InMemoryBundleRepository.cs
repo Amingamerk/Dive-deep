@@ -1,5 +1,5 @@
-﻿using DiveDeep.Models;
-using DiveDeep.Lib.Models;
+﻿using DiveDeep.Lib.Models;
+using DiveDeep.Models;
 
 namespace DiveDeep.Persistence
 {
@@ -12,7 +12,7 @@ namespace DiveDeep.Persistence
                 BundleId = 1,
                 Name = "Komplet dykkersæt",
                 Description = "BCD, dykkerdragt, regulatorsæt, tank, finner, maske og snorkel.",
-                Categories = new List<ProductCategory> { 
+                Categories = new List<ProductCategory> {
                     ProductCategory.BCD,
                     ProductCategory.DiveSuit,
                     ProductCategory.Tank,
