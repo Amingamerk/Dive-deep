@@ -12,6 +12,7 @@ namespace DiveDeep.API.Persistence
         Task<List<Product>> GetAll();
         Task<Product?> GetById(int id);
         Task<List<Product>> GetVariants(string brand, string model);
+        Task<List<Product>> GetVariants(string brand);
         Task<List<Product>> GetByCategory(ProductCategory category);
         Task<List<ProductCategory>> GetProductCategories();
         // image stuff

@@ -1,6 +1,7 @@
 using DiveDeep.Lib.Models;
 using DiveDeep.Models;
 using DiveDeep.Persistence;
+using DiveDeep.Services.HttpServices;
 using DiveDeep.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,18 +9,16 @@ namespace DiveDeep.Controllers
 {
     public class ProductsController : Controller
     {
-        private readonly IProductRepository _productRepository;
+        private readonly IProductHttpService _productHttpService;
 
-
-
-        public ProductsController(IProductRepository productRepository)
+        public ProductsController(IProductHttpService productHttpService)
         {
-            _productRepository = productRepository;
+            _productHttpService = productHttpService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            List<ProductCategory> categories = _productRepository.GetProductCategories();
+            List<ProductCategory> categories = await _productHttpService.GetProductCategories();
             List<CategoryCardViewModel> viewModel = new();
 
             foreach (ProductCategory category in categories)
@@ -38,33 +37,32 @@ namespace DiveDeep.Controllers
             return View(viewModel);
         }
 
-        public IActionResult Category(ProductCategory category)
+        public async Task<IActionResult> Category(ProductCategory category)
         {
-            var products = _productRepository.GetByCategory(category)
-                .GroupBy(p => new
-                {
-                    p.Brand,
-                    p.Model
-                })
+            List<ProductDto> allInCategory = await _productHttpService.GetByCategory(category);
+
+            var products = allInCategory
+                .GroupBy(p => new { p.Brand, p.Model })
                 .Select(g => g.First())
                 .ToList();
 
             return View(products);
         }
 
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-            var product = _productRepository.GetById(id);
+            var product = await _productHttpService.GetById(id);
 
             if (product == null)
             {
                 return NotFound();
             }
 
-            List<Product> variants =
-                _productRepository.GetVariants(product.Brand, product.Model)
-                    .OrderBy(v => v.ProductId)
-                    .ToList();
+            List<ProductDto> allVariants = await _productHttpService.GetVariants(product.Brand, product.Model);
+
+            List<ProductDto> variants = allVariants
+                .OrderBy(v => v.ProductId)
+                .ToList();
 
             // create productviewmodel
             ProductViewModel pvm = new();
@@ -76,7 +74,7 @@ namespace DiveDeep.Controllers
             pvm.SelectedProductId = product.ProductId;
             pvm.ProductImageId = product.ProductImageId;
 
-            foreach (Product p in variants)
+            foreach (ProductDto p in variants)
             {
                 ProductVariantViewModel variant = new();
                 variant.ProductId = p.ProductId;
@@ -88,7 +86,7 @@ namespace DiveDeep.Controllers
             DateTime fromDate = DateTime.Today;
             DateTime toDate = fromDate.AddMonths(12);
 
-            List<DateTime> bookedDates = _productRepository.GetBookedDates(product.ProductId, fromDate, toDate);
+            List<DateTime> bookedDates = await _productHttpService.GetBookedDates(product.ProductId, fromDate, toDate);
 
             foreach (DateTime date in bookedDates)
             {
@@ -98,9 +96,9 @@ namespace DiveDeep.Controllers
             return View(pvm);
         }
 
-        public IActionResult Image(int id)
+        public async Task<IActionResult> Image(int id)
         {
-            ProductImage? image = _productRepository.GetImage(id);
+            ProductImageDto? image = await _productHttpService.GetImage(id);
             if (image == null)
             {
                 return NotFound();

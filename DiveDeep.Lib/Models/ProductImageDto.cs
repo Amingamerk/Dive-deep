@@ -4,7 +4,7 @@ using System.Text;
 
 namespace DiveDeep.Lib.Models
 {
-    public class ImageDto
+    public class ProductImageDto
     {
         public int ProductImageId { get; set; }
         public byte[] Image { get; set; } = Array.Empty<byte>();

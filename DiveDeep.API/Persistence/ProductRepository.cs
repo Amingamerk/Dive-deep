@@ -248,5 +248,13 @@ namespace DiveDeep.API.Persistence
                 .Where(p => p.Brand == brand && p.Model == model)
                 .ToList();
         }
+
+        public async Task<List<Product>> GetVariants(string brand)
+        {
+            List<Product> all = await GetAll();
+            return all
+                .Where(p => p.Brand == brand)
+                .ToList();
+        }
     }
 }

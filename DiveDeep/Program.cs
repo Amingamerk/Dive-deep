@@ -13,6 +13,8 @@ namespace DiveDeep
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // Add services to the container.
+
             builder.Services.AddHttpClient("OpenMeteoGeocodingAPI", client =>
             {
                 client.BaseAddress = new Uri("https://geocoding-api.open-meteo.com/v1/");
@@ -26,7 +28,11 @@ namespace DiveDeep
                 client.BaseAddress = new Uri("https://marine-api.open-meteo.com/v1/");
             });
 
-            // Add services to the container.
+            builder.Services.AddHttpClient("DiveDeepAPI", (httpClient) =>
+            {
+                httpClient.BaseAddress = new Uri("https://localhost:7109/api/");
+            });
+
             builder.Services.AddControllersWithViews();
 
             builder.Services.AddDbContext<DiveDeepContext>(options =>
