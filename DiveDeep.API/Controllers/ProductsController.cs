@@ -85,6 +85,7 @@ namespace DiveDeep.API.Controllers
 
         // API metoder herunder
 
+        // Få alle kategorier
         [HttpGet]
         public async Task<IActionResult> GetCategories()
         {
@@ -95,5 +96,20 @@ namespace DiveDeep.API.Controllers
             }
             return Ok(categories);
         }
+
+        // Få produkter ud fra kategorier
+        [HttpGet("{category}")]
+        public async Task<IActionResult> GetByCategory(ProductCategory category)
+        {
+            List<Product> products = await _productRepository.GetByCategory(category);
+
+            if (products.Count <= 0)
+            {
+                return NotFound();
+            }
+
+            return Ok(products);
+        }
+
     }
 }
