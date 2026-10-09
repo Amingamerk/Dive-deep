@@ -14,9 +14,8 @@ Login (Identity) bliver i web appen indtil vi har haft klassen om sikkerhed. Det
 
 ## Før du starter
 
-1. Sæt solution til at starte både DiveDeep og DiveDeep.API, ellers kan web appen ikke få fat i API'et. Højreklik på solution og vælg Configure Startup Projects, og vælg Multiple startup projects.
-   https://learn.microsoft.com/en-us/visualstudio/ide/how-to-set-multiple-startup-projects
-2. API'et kører på `https://localhost:7109`, og Scalar åbner på `/scalar/v1`. Her kan du teste dine endpoints uden at røre web appen.
+1. Start DiveDeep.API først. Den kører på `https://localhost:7109`, og Scalar åbner på `/scalar/v1`. Her kan du teste dine endpoints uden at røre web appen.
+2. Start web appen bagefter, når API'et virker. Web appen kan kun hente data, mens API'et kører.
 3. Vælg én ressource ad gangen (fx Bundles eller Bookings) og gør den helt færdig, før du tager den næste. Så kan projektet køre hele tiden.
 
 ## Trin for trin
