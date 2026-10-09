@@ -266,7 +266,7 @@ namespace DiveDeep.API.Controllers
                 
                 if (productImage != null)
                 {
-                    return Ok(File(productImage.Image, productImage.ContentType));
+                    return File(productImage.Image, productImage.ContentType);
                 }
             }
             
