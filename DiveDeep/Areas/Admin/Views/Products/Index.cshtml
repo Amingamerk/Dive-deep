@@ -1,4 +1,4 @@
-@model List<Product>
+@model List<ProductDto>
 @{
     ViewData["Title"] = "Produkter";
     ProductCategory? selectedCategory = ViewBag.Category;
@@ -63,7 +63,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (Product product in Model)
+                        @foreach (ProductDto product in Model)
                         {
                             <tr>
                                 <td>@product.ProductId</td>

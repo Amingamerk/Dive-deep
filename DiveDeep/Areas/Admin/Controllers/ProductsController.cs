@@ -2,32 +2,34 @@ using DiveDeep.Lib.Models;
 using DiveDeep.Models;
 using DiveDeep.Persistence;
 using DiveDeep.Services;
+using DiveDeep.Services.HttpServices;
 using DiveDeep.ViewModels;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DiveDeep.Areas.Admin.Controllers
 {
     public class ProductsController : AdminBaseController
     {
-        private readonly IProductRepository _productRepository;
+        private readonly IProductHttpService _productHttpService;
         private readonly ImageService _imageService;
 
-        public ProductsController(IProductRepository productRepository, ImageService imageService)
+        public ProductsController(IProductHttpService productHttpService, ImageService imageService)
         {
-            _productRepository = productRepository;
+            _productHttpService = productHttpService;
             _imageService = imageService;
         }
 
-        public IActionResult Index(ProductCategory? category)
+        public async Task<IActionResult> Index(ProductCategory? category)
         {
-            List<Product> products;
+            List<ProductDto> products;
             if (category == null)
             {
-                products = _productRepository.GetAll();
+                products = await _productHttpService.GetAll();
             }
             else
             {
-                products = _productRepository.GetByCategory(category.Value);
+                products = await _productHttpService.GetByCategory(category.Value);
             }
 
             // sorteret efter kategori, mærke og model
@@ -53,28 +55,31 @@ namespace DiveDeep.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Add(ProductFormViewModel vm)
+        public async Task<IActionResult> Add(ProductFormViewModel vm)
         {
             if (ModelState.IsValid == false)
             {
                 return View(vm);
             }
 
-            Product product = CreateProduct(vm);
-            _productRepository.Add(product);
+            ProductDto product = CreateProduct(vm);
+            int productId = await _productHttpService.Add(product);
 
             if (vm.ImageFile != null)
             {
-                _productRepository.SaveImage(product.ProductId, _imageService.ReadFileBytes(vm.ImageFile), vm.ImageFile.ContentType);
+                ProductImageDto productImageDto = new();
+                productImageDto.Image = _imageService.ReadFileBytes(vm.ImageFile);
+                productImageDto.ContentType = vm.ImageFile.ContentType;
+                await _productHttpService.SaveImage(productId, productImageDto);
             }
 
             TempData["Success"] = $"{product.Brand} {product.Model} er oprettet";
             return RedirectToAction(nameof(Index), new { category = vm.Category });
         }
 
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            Product? product = _productRepository.GetById(id);
+            ProductDto? product = await _productHttpService.GetById(id);
             if (product == null)
             {
                 return NotFound();
@@ -89,30 +94,30 @@ namespace DiveDeep.Areas.Admin.Controllers
             vm.ProductImageId = product.ProductImageId;
 
             // felter som kun findes på den enkelte kategori
-            if (product is BCD bcd)
+            if (product.Category == ProductCategory.BCD)
             {
-                vm.Size = bcd.Size;
+                vm.Size = product.Size;
             }
-            else if (product is DiveSuit diveSuit)
+            else if (product.Category == ProductCategory.DiveSuit)
             {
-                vm.Size = diveSuit.Size;
-                vm.SuitType = diveSuit.SuitType;
-                vm.Gender = diveSuit.Gender;
-                vm.Thickness = diveSuit.Thickness;
+                vm.Size = product.Size;
+                vm.SuitType = product.SuitType;
+                vm.Gender = product.Gender;
+                vm.Thickness = product.Thickness;
             }
-            else if (product is Fins fins)
+            else if (product.Category == ProductCategory.Fins)
             {
-                vm.Size = fins.Size;
+                vm.Size = product.Size;
             }
-            else if (product is Tank tank)
+            else if (product.Category == ProductCategory.Tank)
             {
-                vm.VolumeLiters = tank.VolumeLiters;
+                vm.VolumeLiters = product.VolumeLiters;
             }
-            else if (product is RegulatorSet regulatorSet)
+            else if (product.Category == ProductCategory.RegulatorSet)
             {
-                vm.FirstStep = regulatorSet.FirstStep;
-                vm.SecondStep = regulatorSet.SecondStep;
-                vm.Octopus = regulatorSet.Octopus;
+                vm.FirstStep = product.FirstStep;
+                vm.SecondStep = product.SecondStep;
+                vm.Octopus = product.Octopus;
             }
 
             return View(vm);
@@ -120,19 +125,22 @@ namespace DiveDeep.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(ProductFormViewModel vm)
+        public async Task<IActionResult> Edit(ProductFormViewModel vm)
         {
             if (ModelState.IsValid == false)
             {
                 return View(vm);
             }
 
-            Product product = CreateProduct(vm);
-            _productRepository.Update(product);
+            ProductDto product = CreateProduct(vm);
+            await _productHttpService.Update(product);
 
             if (vm.ImageFile != null)
             {
-                _productRepository.SaveImage(vm.ProductId, _imageService.ReadFileBytes(vm.ImageFile), vm.ImageFile.ContentType);
+                ProductImageDto productImageDto = new();
+                productImageDto.Image = _imageService.ReadFileBytes(vm.ImageFile);
+                productImageDto.ContentType = vm.ImageFile.ContentType;
+                await _productHttpService.SaveImage(vm.ProductId, productImageDto);
             }
 
             TempData["Success"] = $"{product.Brand} {product.Model} er gemt";
@@ -141,80 +149,72 @@ namespace DiveDeep.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            Product? product = _productRepository.GetById(id);
+            ProductDto? product = await _productHttpService.GetById(id);
             if (product == null)
             {
                 return NotFound();
             }
 
             // ellers ville databasen også slette kundernes bookinger
-            if (_productRepository.HasBookings(id))
+            if (await _productHttpService.HasBookings(id))
             {
                 TempData["Error"] = $"{product.Brand} {product.Model} ({product.VariantLabel}) har bookinger og kan ikke slettes";
                 return RedirectToAction(nameof(Index), new { category = product.Category });
             }
 
-            _productRepository.Delete(id);
+            await _productHttpService.Delete(id);
             TempData["Success"] = $"{product.Brand} {product.Model} ({product.VariantLabel}) er slettet";
 
             return RedirectToAction(nameof(Index), new { category = product.Category });
         }
 
-        // laver den rigtige type produkt ud fra kategorien
-        private Product CreateProduct(ProductFormViewModel vm)
+        // laver en ProductDto ud fra formularen
+        private ProductDto CreateProduct(ProductFormViewModel vm)
         {
-            Product product;
+            ProductDto productDto = new();
+            productDto.ProductId = vm.ProductId;
+            productDto.Brand = vm.Brand;
+            productDto.Model = vm.Model;
+            productDto.PricePerDay = vm.PricePerDay;
+            productDto.Category = vm.Category;
 
-            switch (vm.Category)
+            // Sæt size for Fins, BCD og DiveSuit
+            if (vm.Category == ProductCategory.Fins)
             {
-                case ProductCategory.BCD:
-                    BCD bcd = new();
-                    bcd.Size = vm.Size;
-                    product = bcd;
-                    break;
+                productDto.Size = vm.Size;
+            }
+            if (vm.Category == ProductCategory.BCD)
+            {
+                productDto.Size = vm.Size;
+            }
+            if (vm.Category == ProductCategory.DiveSuit)
+            {
+                productDto.Size = vm.Size;
+                productDto.SuitType = vm.SuitType;
+                productDto.Gender = vm.Gender ?? "";
 
-                case ProductCategory.DiveSuit:
-                    DiveSuit diveSuit = new();
-                    diveSuit.Size = vm.Size;
-                    diveSuit.SuitType = vm.SuitType;
-                    diveSuit.Gender = vm.Gender ?? "";
-                    diveSuit.Thickness = vm.Thickness;
-                    product = diveSuit;
-                    break;
-
-                case ProductCategory.Fins:
-                    Fins fins = new();
-                    fins.Size = vm.Size;
-                    product = fins;
-                    break;
-
-                case ProductCategory.Tank:
-                    Tank tank = new();
-                    tank.VolumeLiters = vm.VolumeLiters;
-                    product = tank;
-                    break;
-
-                case ProductCategory.RegulatorSet:
-                    RegulatorSet regulatorSet = new();
-                    regulatorSet.FirstStep = vm.FirstStep ?? "";
-                    regulatorSet.SecondStep = vm.SecondStep ?? "";
-                    regulatorSet.Octopus = vm.Octopus ?? "";
-                    product = regulatorSet;
-                    break;
-
-                default:
-                    product = new MaskSnorkel();
-                    break;
+                // Thickness bruges kun af våddragter
+                if (vm.SuitType == SuitType.Wetsuit)
+                {
+                    productDto.Thickness = vm.Thickness;
+                }
             }
 
-            product.ProductId = vm.ProductId;
-            product.Brand = vm.Brand;
-            product.Model = vm.Model;
-            product.PricePerDay = vm.PricePerDay;
+            if (vm.Category == ProductCategory.RegulatorSet)
+            {
+                productDto.FirstStep = vm.FirstStep ?? "";
+                productDto.SecondStep = vm.SecondStep ?? "";
+                productDto.Octopus = vm.Octopus ?? "";
+            }
 
-            return product;
+            if (vm.Category == ProductCategory.Tank)
+            {
+                productDto.VolumeLiters = vm.VolumeLiters;
+            }
+
+            return productDto;
         }
     }
 }

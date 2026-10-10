@@ -5,11 +5,8 @@ namespace DiveDeep.Areas.Admin.Controllers
 {
     public class HomeController : AdminBaseController
     {
-        private readonly IProductRepository _productRepository;
-
-        public HomeController(IProductRepository productRepository)
+        public HomeController()
         {
-            _productRepository = productRepository;
         }
 
         public IActionResult Index()

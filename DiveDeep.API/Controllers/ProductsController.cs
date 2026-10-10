@@ -1,7 +1,6 @@
 ﻿using DiveDeep.API.Models;
 using DiveDeep.API.Persistence;
 using DiveDeep.Lib.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DiveDeep.API.Controllers
@@ -154,7 +153,126 @@ namespace DiveDeep.API.Controllers
             return productDtos;
         }
 
+        // Laver den rigtige type produkt ud fra kategorien
+        private Product ConvertToProduct(ProductDto productDto)
+        {
+            Product product;
+
+            switch (productDto.Category)
+            {
+                case ProductCategory.BCD:
+                    BCD bcd = new();
+                    bcd.Size = productDto.Size.GetValueOrDefault();
+                    product = bcd;
+                    break;
+
+                case ProductCategory.DiveSuit:
+                    DiveSuit diveSuit = new();
+                    diveSuit.Size = productDto.Size.GetValueOrDefault();
+                    diveSuit.SuitType = productDto.SuitType.GetValueOrDefault();
+                    diveSuit.Gender = productDto.Gender ?? "";
+                    diveSuit.Thickness = productDto.Thickness;
+                    product = diveSuit;
+                    break;
+
+                case ProductCategory.Fins:
+                    Fins fins = new();
+                    fins.Size = productDto.Size.GetValueOrDefault();
+                    product = fins;
+                    break;
+
+                case ProductCategory.Tank:
+                    Tank tank = new();
+                    tank.VolumeLiters = productDto.VolumeLiters.GetValueOrDefault();
+                    product = tank;
+                    break;
+
+                case ProductCategory.RegulatorSet:
+                    RegulatorSet regulatorSet = new();
+                    regulatorSet.FirstStep = productDto.FirstStep ?? "";
+                    regulatorSet.SecondStep = productDto.SecondStep ?? "";
+                    regulatorSet.Octopus = productDto.Octopus ?? "";
+                    product = regulatorSet;
+                    break;
+
+                default:
+                    product = new MaskSnorkel();
+                    break;
+            }
+
+            product.ProductId = productDto.ProductId;
+            product.Brand = productDto.Brand;
+            product.Model = productDto.Model;
+            product.PricePerDay = productDto.PricePerDay;
+
+            return product;
+        }
+
         // API metoder herunder
+
+        // Opdater produkt
+        [HttpPut]
+        public async Task<IActionResult> Update([FromBody] ProductDto productDto)
+        {
+            Product? existingProduct = await _productRepository.GetById(productDto.ProductId);
+            if (existingProduct == null)
+            {
+                return NotFound();
+            }
+
+            Product product = ConvertToProduct(productDto);
+            await _productRepository.Update(product);
+
+            return NoContent();
+        }
+
+        // Tilføj produkt
+        [HttpPost("add")]
+        public async Task<IActionResult> Add([FromBody] ProductDto productDto)
+        {
+            Product product = ConvertToProduct(productDto);
+            try
+            {
+                await _productRepository.Add(product);
+
+                // EF har lagt det nye id ind i product efter SaveChanges
+                return Ok(product.ProductId);
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+        }
+
+        // Tilføj billede til produkt
+        [HttpPost("{productId}/add-image")]
+        public async Task<IActionResult> SaveImageToProduct(int productId, [FromBody] ProductImageDto productImageDto)
+        {
+            try
+            {
+                await _productRepository.SaveImage(productId, productImageDto.Image, productImageDto.ContentType);
+                return Created();
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+        }
+
+        // Slet produkt
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                await _productRepository.Delete(id);
+                return NoContent();
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+        }
 
         // Få alle kategorier
         [HttpGet("categories")]
@@ -184,6 +302,22 @@ namespace DiveDeep.API.Controllers
             return Ok(productDtos);
         }
 
+        // Få alle produkter
+        [HttpGet]
+        public async Task<IActionResult> GetAllProducts()
+        {
+            List<Product> products = await _productRepository.GetAll();
+            List<ProductDto> productDtos = new();
+            if (products.Count <= 0)
+            {
+                return Ok(productDtos);
+            }
+
+            productDtos = await ConvertMultipleToProductDto(products);
+
+            return Ok(productDtos);
+        }
+
         // Få produkt ud fra id
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
@@ -199,7 +333,6 @@ namespace DiveDeep.API.Controllers
 
             return Ok(productDto);
         }
-
 
         // Få varianter ud fra id
         [HttpGet("{id}/variants")]
@@ -229,6 +362,24 @@ namespace DiveDeep.API.Controllers
             List<ProductDto> productDtos = await ConvertMultipleToProductDto(products);
 
             return Ok(productDtos);
+        }
+
+        // Tjek om der findes bookinger på produktet
+        [HttpGet("{id}/has-bookings")]
+        public async Task<IActionResult> HasBookings(int id)
+        {
+            // Tjek at produktet eksisterer
+            Product? product = await _productRepository.GetById(id);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            bool productHasBookings = false;
+            productHasBookings = await _productRepository.HasBookings(id);
+
+            return Ok(productHasBookings);
         }
 
         // Få bookede datoer i datospæn
@@ -272,6 +423,5 @@ namespace DiveDeep.API.Controllers
             
             return NotFound();
         }
-
     }
 }

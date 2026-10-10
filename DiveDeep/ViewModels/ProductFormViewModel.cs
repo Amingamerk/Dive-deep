@@ -18,15 +18,15 @@ namespace DiveDeep.ViewModels
         public float PricePerDay { get; set; }
 
         // BCD, finner og dragter
-        public Size Size { get; set; }
+        public Size? Size { get; set; }
 
         // kun dragter
-        public SuitType SuitType { get; set; }
+        public SuitType? SuitType { get; set; }
         public string? Gender { get; set; }
         public string? Thickness { get; set; }
 
         // kun flasker
-        public int VolumeLiters { get; set; }
+        public int? VolumeLiters { get; set; }
 
         // kun regulatorsæt
         public string? FirstStep { get; set; }

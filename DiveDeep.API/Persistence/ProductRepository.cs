@@ -1,6 +1,7 @@
 ﻿using DiveDeep.API.Data;
 using DiveDeep.API.Models;
 using DiveDeep.Lib.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace DiveDeep.API.Persistence
 {

@@ -22,6 +22,7 @@ namespace DiveDeep.Controllers
             _bookingService = bookingService;
         }
 
+        // Skal rykkes til web api
         private float GetCheapestTotalPerDay(Bundle bundle)
         {
             float sum = 0;

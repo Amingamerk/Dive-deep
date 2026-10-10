@@ -1,6 +1,4 @@
 ﻿using DiveDeep.Lib.Models;
-using DiveDeep.Models;
-using Mapster;
 
 namespace DiveDeep.Services.HttpServices
 {
@@ -14,11 +12,45 @@ namespace DiveDeep.Services.HttpServices
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<List<DateTime>> GetBookedDates(int productId, DateTime fromDate, DateTime toDate)
+        public async Task<int> Add(ProductDto product)
         {
             using var httpClient = _httpClientFactory.CreateClient("DiveDeepAPI");
 
-            var response = await httpClient.GetAsync($"products/{productId}/booked-dates/{fromDate}/{toDate}");
+            var response = await httpClient.PostAsJsonAsync($"products/add", product);
+
+            return await response.Content.ReadFromJsonAsync<int>();
+        }
+
+        public async Task Delete(int id)
+        {
+            using var httpClient = _httpClientFactory.CreateClient("DiveDeepAPI");
+
+            var response = await httpClient.DeleteAsync($"products/{id}");
+        }
+
+        public async Task<List<ProductDto>> GetAll()
+        {
+            using var httpClient = _httpClientFactory.CreateClient("DiveDeepAPI");
+
+            var response = await httpClient.GetAsync($"products");
+
+            List<ProductDto> productDtos = new();
+            if (!(response?.IsSuccessStatusCode) ?? false)
+            {
+                return productDtos;
+            }
+
+            productDtos = await response.Content.ReadFromJsonAsync<List<ProductDto>>();
+
+            return productDtos;
+        }
+
+        public async Task<List<DateTime>> GetBookedDates(int productId, DateTime fromDate, DateTime toDate)
+        {
+            using var httpClient = _httpClientFactory.CreateClient("DiveDeepAPI");
+            string fromDateString = fromDate.ToString("yyyy-MM-dd");
+            string toDateString = toDate.ToString("yyyy-MM-dd");
+            var response = await httpClient.GetAsync($"products/{productId}/booked-dates/{fromDateString}/{toDateString}");
 
             if (!(response?.IsSuccessStatusCode) ?? false)
             {
@@ -36,7 +68,7 @@ namespace DiveDeep.Services.HttpServices
 
             if (!(response?.IsSuccessStatusCode) ?? false)
             {
-                return null;
+                return new List<ProductDto>();
             }
             
             return await response.Content.ReadFromJsonAsync<List<ProductDto>>();
@@ -54,6 +86,13 @@ namespace DiveDeep.Services.HttpServices
             }
 
             return await response.Content.ReadFromJsonAsync<ProductDto>();
+        }
+
+        public async Task SaveImage(int productId, ProductImageDto productImageDto)
+        {
+            using var httpClient = _httpClientFactory.CreateClient("DiveDeepAPI");
+
+            var response = await httpClient.PostAsJsonAsync($"products/{productId}/add-image", productImageDto);
         }
 
         public async Task<ProductImageDto?> GetImage(int productId)
@@ -105,6 +144,29 @@ namespace DiveDeep.Services.HttpServices
             }
 
             return await response.Content.ReadFromJsonAsync<List<ProductDto>>();
+        }
+
+        public async Task<bool> HasBookings(int id)
+        {
+            using var httpClient = _httpClientFactory.CreateClient("DiveDeepAPI");
+
+            var response = await httpClient.GetAsync($"products/{id}/has-bookings");
+
+            if ((response?.IsSuccessStatusCode) ?? false)
+            {
+                return await response.Content.ReadFromJsonAsync<bool>();
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        public async Task Update(ProductDto product)
+        {
+            using var httpClient = _httpClientFactory.CreateClient("DiveDeepAPI");
+
+            var response = await httpClient.PutAsJsonAsync("products", product);
         }
     }
 }
