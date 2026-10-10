@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DiveDeep.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/products")]
     [ApiController]
     public class ProductsController : ControllerBase
     {
@@ -157,7 +157,7 @@ namespace DiveDeep.API.Controllers
         // API metoder herunder
 
         // Få alle kategorier
-        [HttpGet("Categories")]
+        [HttpGet("categories")]
         public async Task<IActionResult> GetCategories()
         {
             var categories = await _productRepository.GetProductCategories();
@@ -169,7 +169,7 @@ namespace DiveDeep.API.Controllers
         }
 
         // Få produkter ud fra kategorier
-        [HttpGet("Categories/{category}")]
+        [HttpGet("categories/{category}")]
         public async Task<IActionResult> GetByCategory(ProductCategory category)
         {
             List<Product> products = await _productRepository.GetByCategory(category);
@@ -202,7 +202,7 @@ namespace DiveDeep.API.Controllers
 
 
         // Få varianter ud fra id
-        [HttpGet("{id}/Variants")]
+        [HttpGet("{id}/variants")]
         public async Task<IActionResult> GetVariantsById(int id)
         {
             Product? product = await _productRepository.GetById(id);
@@ -232,7 +232,7 @@ namespace DiveDeep.API.Controllers
         }
 
         // Få bookede datoer i datospæn
-        [HttpGet("{id}/BookedDates/{fromDate}/{toDate}")]
+        [HttpGet("{id}/booked-dates/{fromDate}/{toDate}")]
         public async Task<IActionResult> GetBookedDates(int id, DateTime fromDate, DateTime toDate)
         {
             // Tjek at produktet eksisterer

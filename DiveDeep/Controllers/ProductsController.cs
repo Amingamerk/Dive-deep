@@ -58,7 +58,7 @@ namespace DiveDeep.Controllers
                 return NotFound();
             }
 
-            List<ProductDto> allVariants = await _productHttpService.GetVariants(product.Brand, product.Model);
+            List<ProductDto> allVariants = await _productHttpService.GetVariantsById(id);
 
             List<ProductDto> variants = allVariants
                 .OrderBy(v => v.ProductId)
@@ -99,7 +99,7 @@ namespace DiveDeep.Controllers
         public async Task<IActionResult> Image(int id)
         {
             ProductImageDto? image = await _productHttpService.GetImage(id);
-            if (image == null)
+            if (image == null || image.Image == null)
             {
                 return NotFound();
             }

@@ -1,6 +1,7 @@
 using DiveDeep.Data;
 using DiveDeep.Persistence;
 using DiveDeep.Services;
+using DiveDeep.Services.HttpServices;
 using DiveDeep.Services.WeatherAPIHttp;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -46,9 +47,15 @@ namespace DiveDeep
 
             builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession();
+            // Vejr api ting
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<IGeocodingHttpService, GeocodingHttpService>();
             builder.Services.AddScoped<ICurrentWeatherHttpService, CurrentWeatherHttpService>();
+
+            // Web API ting
+            builder.Services.AddScoped<IProductHttpService, ProductHttpService>();
+
+            // Repositories
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<IBookingRepository, BookingRepository>();

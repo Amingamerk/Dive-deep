@@ -10,8 +10,9 @@ namespace DiveDeep.Services.HttpServices
         //Task Delete(int id);
         //Task<List<ProductDto>> GetAll();
         Task<ProductDto?> GetById(int id);
-        Task<List<ProductDto>> GetVariants(string brand, string model);
-        Task<List<ProductDto>> GetVariants(string brand);
+        //Task<List<ProductDto>> GetVariants(string brand, string model);
+        //Task<List<ProductDto>> GetVariants(string brand);
+        Task<List<ProductDto>> GetVariantsById(int id);
         Task<List<ProductDto>> GetByCategory(ProductCategory category);
         Task<List<ProductCategory>> GetProductCategories();
         // image stuff

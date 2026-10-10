@@ -1,4 +1,6 @@
 ﻿using DiveDeep.Lib.Models;
+using DiveDeep.Models;
+using Mapster;
 
 namespace DiveDeep.Services.HttpServices
 {
@@ -14,14 +16,23 @@ namespace DiveDeep.Services.HttpServices
 
         public async Task<List<DateTime>> GetBookedDates(int productId, DateTime fromDate, DateTime toDate)
         {
-            throw new NotImplementedException();
+            using var httpClient = _httpClientFactory.CreateClient("DiveDeepAPI");
+
+            var response = await httpClient.GetAsync($"products/{productId}/booked-dates/{fromDate}/{toDate}");
+
+            if (!(response?.IsSuccessStatusCode) ?? false)
+            {
+                return null;
+            }
+
+            return await response.Content.ReadFromJsonAsync<List<DateTime>>();
         }
 
         public async Task<List<ProductDto>> GetByCategory(ProductCategory category)
         {
             using var httpClient = _httpClientFactory.CreateClient("DiveDeepAPI");
 
-            var response = await httpClient.GetAsync($"Categories/{category}");
+            var response = await httpClient.GetAsync($"products/categories/{category}");
 
             if (!(response?.IsSuccessStatusCode) ?? false)
             {
@@ -47,22 +58,53 @@ namespace DiveDeep.Services.HttpServices
 
         public async Task<ProductImageDto?> GetImage(int productId)
         {
-            throw new NotImplementedException();
+            using var httpClient = _httpClientFactory.CreateClient("DiveDeepAPI");
+
+            var response = await httpClient.GetAsync($"products/{productId}/image");
+
+            if (!(response?.IsSuccessStatusCode) ?? false)
+            {
+                return null;
+            }
+            ProductImageDto productImageDto = new();
+            productImageDto.Image = await response.Content.ReadAsByteArrayAsync();
+            if (response.Content.Headers.ContentType != null)
+            {
+                productImageDto.ContentType = response.Content.Headers.ContentType.MediaType;
+            }
+            else
+            {
+                return null;
+            }
+            return productImageDto;
         }
 
         public async Task<List<ProductCategory>> GetProductCategories()
         {
-            throw new NotImplementedException();
+            using var httpClient = _httpClientFactory.CreateClient("DiveDeepAPI");
+
+            var response = await httpClient.GetAsync($"products/categories");
+
+            if (!(response?.IsSuccessStatusCode) ?? false)
+            {
+                return null;
+            }
+
+            return await response.Content.ReadFromJsonAsync<List<ProductCategory>>();
         }
 
-        public async Task<List<ProductDto>> GetVariants(string brand, string model)
+        public async Task<List<ProductDto>> GetVariantsById(int id)
         {
-            throw new NotImplementedException();
-        }
+            using var httpClient = _httpClientFactory.CreateClient("DiveDeepAPI");
 
-        public async Task<List<ProductDto>> GetVariants(string brand)
-        {
-            throw new NotImplementedException();
+            var response = await httpClient.GetAsync($"products/{id}/variants");
+
+            if (!(response?.IsSuccessStatusCode) ?? false)
+            {
+                return null;
+            }
+
+            return await response.Content.ReadFromJsonAsync<List<ProductDto>>();
         }
     }
 }

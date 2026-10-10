@@ -1,4 +1,4 @@
-﻿@model List<DiveDeep.Models.Product>
+﻿@model List<DiveDeep.Lib.Models.ProductDto>
 
 <div class="row">
 
@@ -9,7 +9,7 @@
             <div class="card">
                 @if (product.ProductImageId != null)
                 {
-                    <img src="@Url.Action("Image", "Products", new { id = product.ProductImageId })"
+                    <img src="@Url.Action("Image", "Products", new { id = product.ProductId })"
                         alt="@product.Brand @product.Model"
                         class="card-img-top"
                         style="height: 200px; object-fit: contain;">
