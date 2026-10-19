@@ -84,7 +84,9 @@
     @if (Model.ProductImageId != null)
     {
         <div class="mb-2">
-            <img src="@Url.Action("Image", "Products", new { area = "", id = Model.ProductImageId })" alt="@Model.Brand @Model.Model" style="height: 120px; object-fit: contain;" />
+            <img src="@Url.Action("Image", "Products", new { area = "", id = Model.ProductImageId })"
+                alt="@Model.Brand @Model.Model"
+                style="height: 120px; object-fit: contain;" />
         </div>
     }
     <input asp-for="ImageFile" type="file" accept="image/*" class="form-control" />
