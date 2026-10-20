@@ -53,10 +53,9 @@ namespace DiveDeep
             builder.Services.AddScoped<ICurrentWeatherHttpService, CurrentWeatherHttpService>();
 
             // Web API ting
-            builder.Services.AddScoped<IProductHttpService, ProductHttpService>();
+            builder.Services.AddScoped<Services.HttpServices.IProductHttpService, ProductHttpService>();
 
             // Repositories
-            builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<IBookingRepository, BookingRepository>();
             builder.Services.AddScoped<BookingService, BookingService>();

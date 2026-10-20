@@ -382,6 +382,24 @@ namespace DiveDeep.API.Controllers
             return Ok(productHasBookings);
         }
 
+        // Tjek om produktet er ledigt i perioden
+        [HttpGet("{id}/is-available/{fromDate}/{toDate}")]
+        public async Task<IActionResult> IsAvailable(int id, DateTime fromDate, DateTime toDate)
+        {
+            // Tjek at produktet eksisterer
+            Product? product = await _productRepository.GetById(id);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            bool productIsAvailable = false;
+            productIsAvailable = await _productRepository.IsProductAvailable(id, fromDate, toDate);
+
+            return Ok(productIsAvailable);
+        }
+
         // Få bookede datoer i datospæn
         [HttpGet("{id}/booked-dates/{fromDate}/{toDate}")]
         public async Task<IActionResult> GetBookedDates(int id, DateTime fromDate, DateTime toDate)
@@ -422,6 +440,22 @@ namespace DiveDeep.API.Controllers
             }
             
             return NotFound();
+        }
+
+        // Få produkter i kategorien der er ledige i perioden
+        [HttpGet("categories/{category}/get-available/{fromDate}/{toDate}")]
+        public async Task<IActionResult> AvailableProductsInCategory(ProductCategory category, DateTime fromDate, DateTime toDate)
+        {
+            List<Product> products = await _productRepository.GetAvailableProducts(category, fromDate, toDate);
+
+            if (products.Count <= 0)
+            {
+                return NotFound();
+            }
+
+            List<ProductDto> productDtos = await ConvertMultipleToProductDto(products);
+
+            return Ok(productDtos);
         }
     }
 }

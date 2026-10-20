@@ -2,6 +2,7 @@
 using DiveDeep.Models;
 using DiveDeep.Persistence;
 using DiveDeep.Services;
+using DiveDeep.Services.HttpServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +16,6 @@ namespace DiveDeep.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
 
         private readonly BookingService _bookingService;
-        private readonly IProductRepository _productRepository;
 
         public BookingsController(UserManager<ApplicationUser> userManager, BookingService bookingService)
         {

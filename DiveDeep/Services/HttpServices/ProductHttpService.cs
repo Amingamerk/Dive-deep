@@ -168,5 +168,40 @@ namespace DiveDeep.Services.HttpServices
 
             var response = await httpClient.PutAsJsonAsync("products", product);
         }
+
+        public async Task<bool> IsProductAvailable(int productId, DateTime startDate, DateTime endDate, int requestedQuantity = 1)
+        {
+            using var httpClient = _httpClientFactory.CreateClient("DiveDeepAPI");
+
+            string fromDateString = startDate.ToString("yyyy-MM-dd");
+            string toDateString = endDate.ToString("yyyy-MM-dd");
+            var response = await httpClient.GetAsync($"products/{productId}/is-available/{fromDateString}/{toDateString}");
+
+            if ((response?.IsSuccessStatusCode) ?? false)
+            {
+                return await response.Content.ReadFromJsonAsync<bool>();
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public async Task<List<ProductDto>> GetAvailableProducts(ProductCategory category, DateTime startDate, DateTime endDate)
+        {
+            using var httpClient = _httpClientFactory.CreateClient("DiveDeepAPI");
+
+            string fromDateString = startDate.ToString("yyyy-MM-dd");
+            string toDateString = endDate.ToString("yyyy-MM-dd");
+            var response = await httpClient.GetAsync($"products/categories/{category}/get-available/{fromDateString}/{toDateString}");
+
+            List<ProductDto> productDtos = new();
+            if (!(response?.IsSuccessStatusCode) ?? false)
+            {
+                return productDtos;
+            }
+
+            return await response.Content.ReadFromJsonAsync<List<ProductDto>>();
+        }
     }
 }

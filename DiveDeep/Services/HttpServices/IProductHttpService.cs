@@ -20,8 +20,8 @@ namespace DiveDeep.Services.HttpServices
         Task<List<DateTime>> GetBookedDates(int productId, DateTime fromDate, DateTime toDate);
 
         // Availability helpers used by controller
-        //Task<bool> IsProductAvailable(int productId, DateTime startDate, DateTime endDate, int requestedQuantity = 1);
-        //Task<List<ProductDto>> GetAvailableProducts(ProductCategory category, DateTime startDate, DateTime endDate);
+        Task<bool> IsProductAvailable(int productId, DateTime startDate, DateTime endDate, int requestedQuantity = 1);
+        Task<List<ProductDto>> GetAvailableProducts(ProductCategory category, DateTime startDate, DateTime endDate);
         //List<string> GetBlockedDates(int productId, DateTime startDate, DateTime endDate);
 
     }

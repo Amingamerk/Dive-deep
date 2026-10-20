@@ -1,3 +1,4 @@
+using DiveDeep.Lib.Models;
 using DiveDeep.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
@@ -17,6 +18,6 @@ namespace DiveDeep.ViewModels
         // andre størrelser af samme model
         [BindNever]
         [ValidateNever]
-        public List<Product> Variants { get; set; } = new();
+        public List<ProductDto> Variants { get; set; } = new();
     }
 }

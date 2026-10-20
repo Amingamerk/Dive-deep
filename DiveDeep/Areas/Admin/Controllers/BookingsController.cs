@@ -2,6 +2,7 @@ using DiveDeep.Data;
 using DiveDeep.Models;
 using DiveDeep.Persistence;
 using DiveDeep.Services;
+using DiveDeep.Services.HttpServices;
 using DiveDeep.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,19 +15,20 @@ namespace DiveDeep.Areas.Admin.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
 
         private readonly BookingService _bookingService;
-        private readonly IProductRepository _productRepository;
+        private readonly IProductHttpService _productHttpService;
 
         private const string ConcurrencyErrorMessage = "Bookingen er blevet ændret af en anden, mens du redigerede den. Genindlæs siden og prøv igen.";
 
-        public BookingsController(UserManager<ApplicationUser> userManager, BookingService bookingService, IProductRepository productRepository)
+        public BookingsController(UserManager<ApplicationUser> userManager, BookingService bookingService, IProductHttpService productHttpService)
         {
             _userManager = userManager;
             _bookingService = bookingService;
-            _productRepository = productRepository;
+            _productHttpService = productHttpService;
+
 
         }
 
-        public IActionResult Index([FromQuery] BookingFilterViewModel filter)
+        public async Task<IActionResult> Index([FromQuery] BookingFilterViewModel filter)
         {
             filter.Users = _userManager.Users.OrderBy(u => u.Email).ToList();
 
@@ -40,7 +42,7 @@ namespace DiveDeep.Areas.Admin.Controllers
             return View(filter);
         }
 
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
             Booking? booking = _bookingService.GetById(id);
             if (booking == null)
@@ -56,17 +58,17 @@ namespace DiveDeep.Areas.Admin.Controllers
 
             BookingEditViewModel vm = new();
             vm.Booking = booking;
-            FillEditViewModel(vm);
+            await FillEditViewModel(vm);
 
             return View(vm);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(BookingEditViewModel vm)
+        public async Task<IActionResult> Edit(BookingEditViewModel vm)
         {
             // udfyldes før vi gemmer, så viewet kan vises igen hvis det fejler
-            FillEditViewModel(vm);
+            await FillEditViewModel(vm);
 
             if (ModelState.IsValid == false)
             {
@@ -75,7 +77,7 @@ namespace DiveDeep.Areas.Admin.Controllers
 
             try
             {
-                BookingValidationResult result = _bookingService.UpdateBooking(vm.Booking);
+                BookingValidationResult result = await _bookingService.UpdateBooking(vm.Booking);
                 if (result.IsSuccessful == false)
                 {
                     ModelState.AddModelError("", result.ErrorMessage ?? "Bookingen kunne ikke gemmes");
@@ -94,7 +96,7 @@ namespace DiveDeep.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             Booking? booking = _bookingService.GetById(id);
             if (booking == null)
@@ -114,7 +116,7 @@ namespace DiveDeep.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult EditBundle(int id)
+        public async Task<IActionResult> EditBundle(int id)
         {
             BundleBooking? bundleBooking = _bookingService.GetBundleBookingById(id);
             if (bundleBooking == null || bundleBooking.Bookings.Count == 0)
@@ -138,14 +140,14 @@ namespace DiveDeep.Areas.Admin.Controllers
                 vm.Items.Add(item);
             }
 
-            FillBundleViewModel(vm, bundleBooking);
+            await FillBundleViewModel(vm, bundleBooking);
 
             return View(vm);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult EditBundle(BundleBookingEditViewModel vm)
+        public async Task<IActionResult> EditBundle(BundleBookingEditViewModel vm)
         {
             BundleBooking? bundleBooking = _bookingService.GetBundleBookingById(vm.BundleBookingId);
             if (bundleBooking == null)
@@ -154,7 +156,7 @@ namespace DiveDeep.Areas.Admin.Controllers
             }
 
             // udfyldes før vi gemmer, så viewet kan vises igen hvis det fejler
-            FillBundleViewModel(vm, bundleBooking);
+            await FillBundleViewModel(vm, bundleBooking);
 
             if (ModelState.IsValid == false)
             {
@@ -174,7 +176,7 @@ namespace DiveDeep.Areas.Admin.Controllers
 
             try
             {
-                BookingValidationResult result = _bookingService.UpdateBundleBooking(bookings, vm.StartTime, vm.EndTime);
+                BookingValidationResult result = await _bookingService.UpdateBundleBooking(bookings, vm.StartTime, vm.EndTime);
                 if (result.IsSuccessful == false)
                 {
                     ModelState.AddModelError("", result.ErrorMessage ?? "Pakken kunne ikke gemmes");
@@ -193,7 +195,7 @@ namespace DiveDeep.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteBundle(int id)
+        public async Task<IActionResult> DeleteBundle(int id)
         {
             _bookingService.DeleteBundleBooking(id);
             TempData["Success"] = $"Pakke #{id} er slettet";
@@ -202,17 +204,18 @@ namespace DiveDeep.Areas.Admin.Controllers
         }
 
         // felter der kun vises, og derfor ikke kommer med tilbage fra formen
-        private void FillEditViewModel(BookingEditViewModel vm)
+        private async Task FillEditViewModel(BookingEditViewModel vm)
         {
             Booking? booking = _bookingService.GetById(vm.Booking.BookingId);
+            
             if (booking == null) return;
 
             vm.ProductName = $"{booking.Product.Brand} {booking.Product.Model}";
             vm.UserEmail = booking.User.Email ?? "";
-            vm.Variants = _productRepository.GetVariants(booking.Product.Brand, booking.Product.Model ?? "");
+            vm.Variants = await _productHttpService.GetVariantsById(booking.Product.ProductId);
         }
 
-        private void FillBundleViewModel(BundleBookingEditViewModel vm, BundleBooking bundleBooking)
+        private async Task FillBundleViewModel(BundleBookingEditViewModel vm, BundleBooking bundleBooking)
         {
             vm.BundleName = bundleBooking.BundleName;
             vm.UserEmail = bundleBooking.Bookings[0].User.Email ?? "";
@@ -224,7 +227,7 @@ namespace DiveDeep.Areas.Admin.Controllers
 
                 item.CategoryTitle = CategoryInfo.Categories[booking.Product.Category].Title;
                 item.ProductName = $"{booking.Product.Brand} {booking.Product.Model}";
-                item.Variants = _productRepository.GetVariants(booking.Product.Brand, booking.Product.Model ?? "");
+                item.Variants = await _productHttpService.GetVariantsById(booking.Product.ProductId);
             }
         }
     }

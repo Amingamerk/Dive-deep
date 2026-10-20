@@ -1,4 +1,5 @@
-﻿using DiveDeep.Models;
+﻿using DiveDeep.Lib.Models;
+using DiveDeep.Models;
 using DiveDeep.Persistence;
 using System.Text.Json;
 
@@ -39,7 +40,7 @@ namespace DiveDeep.Services
             session.SetString(CartSessionKey, JsonSerializer.Serialize(cart));
         }
 
-        public void AddItem(Product product, string? size, string? gender, DateTime startTime, DateTime endTime)
+        public void AddItem(ProductDto product, string? size, string? gender, DateTime startTime, DateTime endTime)
         {
             Cart cart = GetCart();
 
@@ -65,7 +66,7 @@ namespace DiveDeep.Services
             SaveCart(cart);
         }
 
-        public void AddBundle(Bundle bundle, List<Product> products, DateTime startTime, DateTime endTime)
+        public void AddBundle(Bundle bundle, List<ProductDto> products, DateTime startTime, DateTime endTime)
         {
             Cart cart = GetCart();
 
@@ -77,7 +78,7 @@ namespace DiveDeep.Services
             cartBundle.EndTime = endTime;
 
             // et CartItem per produkt i pakken
-            foreach (Product product in products)
+            foreach (ProductDto product in products)
             {
                 CartItem item = CreateCartItem(product, product.VariantLabel, product.VariantGroup, startTime, endTime);
                 cartBundle.Items.Add(item);
@@ -120,7 +121,7 @@ namespace DiveDeep.Services
         }
 
         // bruges til både enkelte produkter og pakker
-        private CartItem CreateCartItem(Product product, string? size, string? gender, DateTime startTime, DateTime endTime)
+        private CartItem CreateCartItem(ProductDto product, string? size, string? gender, DateTime startTime, DateTime endTime)
         {
             CartItem item = new()
             {

@@ -2,6 +2,7 @@ using DiveDeep.Lib.Models;
 using DiveDeep.Models;
 using DiveDeep.Persistence;
 using DiveDeep.Services;
+using DiveDeep.Services.HttpServices;
 using DiveDeep.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,25 +11,25 @@ namespace DiveDeep.Controllers
     public class BundlesController : Controller
     {
         private readonly IBundleRepository _bundleRepository;
-        private readonly IProductRepository _productRepository;
+        private readonly IProductHttpService _productHttpService;
         private readonly IBookingRepository _bookingRepository;
         private readonly BookingService _bookingService;
 
-        public BundlesController(IBundleRepository bundleRepository, IProductRepository productRepository, IBookingRepository bookingRepository, BookingService bookingService)
+        public BundlesController(IBundleRepository bundleRepository, IProductHttpService productHttpService, IBookingRepository bookingRepository, BookingService bookingService)
         {
             _bundleRepository = bundleRepository;
-            _productRepository = productRepository;
+            _productHttpService = productHttpService;
             _bookingRepository = bookingRepository;
             _bookingService = bookingService;
         }
 
         // Skal rykkes til web api
-        private float GetCheapestTotalPerDay(Bundle bundle)
+        private async Task<float> GetCheapestTotalPerDay(Bundle bundle)
         {
             float sum = 0;
             foreach (ProductCategory productCategory in bundle.Categories)
             {
-                List<Product> products = _productRepository.GetByCategory(productCategory);
+                List<ProductDto> products = await _productHttpService.GetByCategory(productCategory);
 
                 if (products.Count == 0)
                 {
@@ -36,7 +37,7 @@ namespace DiveDeep.Controllers
                 }
 
                 float cheapestPrice = products[0].PricePerDay;
-                foreach (Product product in products)
+                foreach (ProductDto product in products)
                 {
                     if (product.PricePerDay < cheapestPrice)
                     {
@@ -57,7 +58,7 @@ namespace DiveDeep.Controllers
             return RedirectToAction("Details", new { id = bundleId, dateRange = dateRange });
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             List<BundleCardViewModel> bundleCardViewModels = new();
 
@@ -69,7 +70,8 @@ namespace DiveDeep.Controllers
                 bundleCardViewModel.Name = bundle.Name;
                 bundleCardViewModel.Description = bundle.Description;
                 bundleCardViewModel.DiscountPercent = bundle.DiscountPercent;
-                bundleCardViewModel.FromPricePerDay = bundle.ApplyDiscount(GetCheapestTotalPerDay(bundle));
+                float cheapestTotalPerDay = await GetCheapestTotalPerDay(bundle);
+                bundleCardViewModel.FromPricePerDay = bundle.ApplyDiscount(cheapestTotalPerDay);
 
                 bundleCardViewModels.Add(bundleCardViewModel);
             }
@@ -77,7 +79,7 @@ namespace DiveDeep.Controllers
             return View(bundleCardViewModels);
         }
 
-        public IActionResult Details(int id, string? dateRange)
+        public async Task<IActionResult> Details(int id, string? dateRange)
         {
             BundleViewModel bundleViewModel = new();
 
@@ -105,7 +107,7 @@ namespace DiveDeep.Controllers
             }
 
             // Datoerne kunne læses, men følger ikke reglerne
-            BookingValidationResult dateResult = _bookingService.ValidateDates(startTime, endTime);
+            BookingValidationResult dateResult = await _bookingService.ValidateDates(startTime, endTime);
             if (!dateResult.IsSuccessful)
             {
                 ModelState.AddModelError("DateRange", dateResult.ErrorMessage ?? "Ugyldig periode");
@@ -120,8 +122,8 @@ namespace DiveDeep.Controllers
             {
                 BundleSlotViewModel bundleSlotViewModel = new();
                 bundleSlotViewModel.Title = CategoryInfo.Categories[productCategory].Title;
-                List<Product> availableProducts = _productRepository.GetAvailableProducts(productCategory, startTime, endTime);
-                foreach (Product p in availableProducts)
+                List<ProductDto> availableProducts = await _productHttpService.GetAvailableProducts(productCategory, startTime, endTime);
+                foreach (ProductDto p in availableProducts)
                 {
                     ProductVariantViewModel variant = new();
                     variant.ProductId = p.ProductId;
@@ -148,7 +150,7 @@ namespace DiveDeep.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Book(int bundleId, string? dateRange, List<int> productIds)
+        public async Task<IActionResult> Book(int bundleId, string? dateRange, List<int> productIds)
         {
             Bundle? bundle = _bundleRepository.GetById(bundleId);
             if (bundle == null)
@@ -162,7 +164,7 @@ namespace DiveDeep.Controllers
                 return RedirectToDetailsWithError(bundleId, dateRange, "Vælg en gyldig periode");
             }
 
-            BookingValidationResult dateResult = _bookingService.ValidateDates(startTime, endTime);
+            BookingValidationResult dateResult = await _bookingService.ValidateDates(startTime, endTime);
             if (!dateResult.IsSuccessful)
             {
                 return RedirectToDetailsWithError(bundleId, dateRange, dateResult.ErrorMessage ?? "Ugyldig periode");
@@ -177,7 +179,7 @@ namespace DiveDeep.Controllers
             // Tjek ALLE produkter, før vi gemmer noget, så pakken aldrig bliver halvt booket
             for (int i = 0; i < productIds.Count; i++)
             {
-                Product? product = _productRepository.GetById(productIds[i]);
+                ProductDto? product = await _productHttpService.GetById(productIds[i]);
 
                 // Dropdowns kommer i samme rækkefølge som pakkens kategorier,
                 // så produkt nummer i skal høre til kategori nummer i
@@ -187,7 +189,8 @@ namespace DiveDeep.Controllers
                 }
 
                 // Nogen kan have booket produktet, mens kunden valgte udstyr
-                if (!_productRepository.IsProductAvailable(product.ProductId, startTime, endTime))
+                bool productAvailable = await _productHttpService.IsProductAvailable(product.ProductId, startTime, endTime);
+                if (!productAvailable)
                 {
                     return RedirectToDetailsWithError(bundleId, dateRange, $"{product.Brand} {product.Model} ({product.VariantLabel}) er desværre lige blevet booket. Vælg venligst noget andet.");
                 }
@@ -215,7 +218,7 @@ namespace DiveDeep.Controllers
             return RedirectToAction("Confirmation", new { id = bundleBooking.BundleBookingId });
         }
 
-        public IActionResult Confirmation(int id)
+        public async Task<IActionResult> Confirmation(int id)
         {
             BundleBooking? bundleBooking = _bookingRepository.GetBundleBookingById(id);
             if (bundleBooking == null || bundleBooking.Bookings.Count == 0)

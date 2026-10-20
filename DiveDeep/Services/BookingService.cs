@@ -1,17 +1,19 @@
+using DiveDeep.Lib.Models;
 using DiveDeep.Models;
 using DiveDeep.Persistence;
+using DiveDeep.Services.HttpServices;
 using DiveDeep.ViewModels;
 
 namespace DiveDeep.Services
 {
     public class BookingService
     {
-        private readonly IProductRepository _productRepository;
+        private readonly IProductHttpService _productHttpService;
         private readonly IBookingRepository _bookingRepository;
 
-        public BookingService(IProductRepository productRepository, IBookingRepository bookingRepository)
+        public BookingService(IProductHttpService productHttpService, IBookingRepository bookingRepository)
         {
-            _productRepository = productRepository;
+            _productHttpService = productHttpService;
             _bookingRepository = bookingRepository;
 
         }
@@ -47,15 +49,15 @@ namespace DiveDeep.Services
             _bookingRepository.DeleteBundleBooking(id);
         }
 
-        public BookingValidationResult UpdateBooking(Booking booking)
+        public async Task<BookingValidationResult> UpdateBooking(Booking booking)
         {
-            BookingValidationResult result = ValidateDates(booking.StartTime, booking.EndTime);
+            BookingValidationResult result = await ValidateDates(booking.StartTime, booking.EndTime);
             if (result.IsSuccessful == false)
             {
                 return result;
             }
 
-            result = CheckAvailableForUpdate(booking);
+            result = await CheckAvailableForUpdate(booking);
             if (result.IsSuccessful == false)
             {
                 return result;
@@ -65,9 +67,9 @@ namespace DiveDeep.Services
             return result;
         }
 
-        public BookingValidationResult UpdateBundleBooking(List<Booking> bookings, DateTime startTime, DateTime endTime)
+        public async Task<BookingValidationResult> UpdateBundleBooking(List<Booking> bookings, DateTime startTime, DateTime endTime)
         {
-            BookingValidationResult result = ValidateDates(startTime, endTime);
+            BookingValidationResult result = await ValidateDates(startTime, endTime);
             if (result.IsSuccessful == false)
             {
                 return result;
@@ -79,7 +81,7 @@ namespace DiveDeep.Services
                 booking.StartTime = startTime;
                 booking.EndTime = endTime;
 
-                BookingValidationResult availableResult = CheckAvailableForUpdate(booking);
+                BookingValidationResult availableResult = await CheckAvailableForUpdate(booking);
                 if (availableResult.IsSuccessful == false)
                 {
                     return availableResult;
@@ -130,7 +132,7 @@ namespace DiveDeep.Services
         }
 
         // som ValidateBooking, men bookingen må gerne overlappe med sig selv
-        private BookingValidationResult CheckAvailableForUpdate(Booking booking)
+        private async Task<BookingValidationResult> CheckAvailableForUpdate(Booking booking)
         {
             BookingValidationResult result = new();
             result.IsSuccessful = false;
@@ -142,7 +144,7 @@ namespace DiveDeep.Services
                 result.ErrorMessage = "Produktet er desværre ikke tilgængeligt for de valgte datoer";
 
                 // sæt produktets navn foran fejlbeskeden
-                Product? product = _productRepository.GetById(booking.ProductId);
+                ProductDto? product = await _productHttpService.GetById(booking.ProductId);
                 if (product != null)
                 {
                     result.ErrorMessage = $"{product.Brand} {product.Model}: {result.ErrorMessage}";
@@ -154,7 +156,7 @@ namespace DiveDeep.Services
             return result;
         }
 
-        public BookingValidationResult ValidateDates(DateTime startTime, DateTime endTime)
+        public async Task<BookingValidationResult> ValidateDates(DateTime startTime, DateTime endTime)
         {
             BookingValidationResult result = new BookingValidationResult();
             result.IsSuccessful = false;
@@ -179,7 +181,7 @@ namespace DiveDeep.Services
             return result;
         }
 
-        public BookingValidationResult CheckOverlappingBooking(List<Booking> bookings)
+        public async Task<BookingValidationResult> CheckOverlappingBooking(List<Booking> bookings)
         {
             BookingValidationResult bookingValidationResult = new();
             bookingValidationResult.IsSuccessful = false;
@@ -221,7 +223,7 @@ namespace DiveDeep.Services
             return bookingValidationResult;
         }
 
-        public BookingValidationResult ValidateBooking(Booking booking)
+        public async Task<BookingValidationResult> ValidateBooking(Booking booking)
         {
             var result = new BookingValidationResult();
             result.IsSuccessful = false;
@@ -230,14 +232,14 @@ namespace DiveDeep.Services
             DateTime endTime = booking.EndTime;
 
             // tjek at datoerne er skrevet korrekt
-            BookingValidationResult dateResult = ValidateDates(booking.StartTime, booking.EndTime);
+            BookingValidationResult dateResult = await ValidateDates(booking.StartTime, booking.EndTime);
             if (!dateResult.IsSuccessful)
             {
                 return dateResult;
             }
 
             // tjek at produktet er tilgængeligt i hele perioden
-            bool isAvailable = _productRepository.IsProductAvailable(
+            bool isAvailable = await _productHttpService.IsProductAvailable(
                 booking.ProductId,
                 startTime,
                 endTime
@@ -255,7 +257,7 @@ namespace DiveDeep.Services
         }
 
         // Tjekker at hvert produkt passer til sin plads i pakken og er ledigt i perioden
-        public BookingValidationResult ValidateBundleProducts(Bundle bundle, List<Product> products, DateTime startTime, DateTime endTime)
+        public async Task<BookingValidationResult> ValidateBundleProducts(Bundle bundle, List<ProductDto> products, DateTime startTime, DateTime endTime)
         {
             BookingValidationResult result = new();
             result.IsSuccessful = false;
@@ -269,7 +271,7 @@ namespace DiveDeep.Services
 
             for (int i = 0; i < products.Count; i++)
             {
-                Product product = products[i];
+                ProductDto product = products[i];
 
                 // Dropdowns kommer i samme rækkefølge som pakkens kategorier
                 if (product.Category != bundle.Categories[i])
@@ -277,8 +279,8 @@ namespace DiveDeep.Services
                     result.ErrorMessage = "Det valgte udstyr passer ikke til pakken";
                     return result;
                 }
-
-                if (!_productRepository.IsProductAvailable(product.ProductId, startTime, endTime))
+                bool available = await _productHttpService.IsProductAvailable(product.ProductId, startTime, endTime);
+                if (!available)
                 {
                     result.ErrorMessage = $"{product.Brand} {product.Model} ({product.VariantLabel}) er desværre lige blevet booket. Vælg venligst noget andet.";
                     return result;
@@ -289,7 +291,7 @@ namespace DiveDeep.Services
             return result;
         }
 
-        public BookingValidationResult CreateBookings(List<Booking> bookings, List<BundleBooking> bundleBookings)
+        public async Task<BookingValidationResult> CreateBookings(List<Booking> bookings, List<BundleBooking> bundleBookings)
         {
             BookingValidationResult result = new();
 
@@ -309,7 +311,7 @@ namespace DiveDeep.Services
                 return result;
             }
 
-            result = CheckOverlappingBooking(allBookings);
+            result = await CheckOverlappingBooking(allBookings);
             if (result.IsSuccessful == false)
             {
                 return result;
@@ -317,11 +319,11 @@ namespace DiveDeep.Services
 
             foreach (Booking booking in allBookings)
             {
-                BookingValidationResult tempBookingValidationResult = ValidateBooking(booking);
+                BookingValidationResult tempBookingValidationResult = await ValidateBooking(booking);
                 // sæt produktets navn foran fejlbeskeden
                 if (tempBookingValidationResult.IsSuccessful == false)
                 {
-                    Product? product = _productRepository.GetById(booking.ProductId);
+                    ProductDto? product = await _productHttpService.GetById(booking.ProductId);
                     if (product != null)
                     {
                         tempBookingValidationResult.ErrorMessage = $"{product.Brand} {product.Model}: {tempBookingValidationResult.ErrorMessage}";
