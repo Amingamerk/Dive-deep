@@ -1,160 +1,25 @@
+using DiveDeep.API.Models;
+using DiveDeep.API.Persistence;
 using DiveDeep.Lib.Models;
-using DiveDeep.Models;
-using DiveDeep.Persistence;
-using DiveDeep.Services.HttpServices;
-using DiveDeep.ViewModels;
-
-namespace DiveDeep.Services
+using Microsoft.EntityFrameworkCore;
+namespace DiveDeep.API.Services
 {
-    public class BookingService
+    public class BookingService : IBookingService
     {
-        private readonly IProductHttpService _productHttpService;
+        private const string ConcurrencyErrorMessage = "Bookingen er blevet ændret af en anden, mens du redigerede den. Genindlæs siden og prøv igen.";
+
+        private readonly IProductRepository _productRepository;
         private readonly IBookingRepository _bookingRepository;
+        private readonly IBundleRepository _bundleRepository;
 
-        public BookingService(IProductHttpService productHttpService, IBookingRepository bookingRepository)
+        public BookingService(IProductRepository productRepository, IBookingRepository bookingRepository, IBundleRepository bundleRepository)
         {
-            _productHttpService = productHttpService;
+            _productRepository = productRepository;
             _bookingRepository = bookingRepository;
-
+            _bundleRepository = bundleRepository;
         }
 
-
-        public List<Booking> GetAll()
-        {
-            return _bookingRepository.GetAll();
-        }
-
-        public List<Booking> GetByUserId(string id)
-        {
-            return _bookingRepository.GetByUserId(id);
-        }
-
-        public Booking? GetById(int id)
-        {
-            return _bookingRepository.GetById(id);
-        }
-
-        public void Delete(int id)
-        {
-            _bookingRepository.Delete(id);
-        }
-
-        public BundleBooking? GetBundleBookingById(int id)
-        {
-            return _bookingRepository.GetBundleBookingById(id);
-        }
-
-        public void DeleteBundleBooking(int id)
-        {
-            _bookingRepository.DeleteBundleBooking(id);
-        }
-
-        public async Task<BookingValidationResult> UpdateBooking(Booking booking)
-        {
-            BookingValidationResult result = await ValidateDates(booking.StartTime, booking.EndTime);
-            if (result.IsSuccessful == false)
-            {
-                return result;
-            }
-
-            result = await CheckAvailableForUpdate(booking);
-            if (result.IsSuccessful == false)
-            {
-                return result;
-            }
-
-            _bookingRepository.Update(booking);
-            return result;
-        }
-
-        public async Task<BookingValidationResult> UpdateBundleBooking(List<Booking> bookings, DateTime startTime, DateTime endTime)
-        {
-            BookingValidationResult result = await ValidateDates(startTime, endTime);
-            if (result.IsSuccessful == false)
-            {
-                return result;
-            }
-
-            // alle produkter i pakken får den samme periode
-            foreach (Booking booking in bookings)
-            {
-                booking.StartTime = startTime;
-                booking.EndTime = endTime;
-
-                BookingValidationResult availableResult = await CheckAvailableForUpdate(booking);
-                if (availableResult.IsSuccessful == false)
-                {
-                    return availableResult;
-                }
-            }
-
-            _bookingRepository.UpdateBundleBooking(bookings);
-            return result;
-        }
-
-        public List<Booking> Filter(List<Booking> bookings, BookingFilterViewModel filter)
-        {
-            List<Booking> result = bookings;
-
-            if (filter.UserId != null)
-            {
-                result = result.Where(b => b.UserId == filter.UserId).ToList();
-            }
-
-            if (filter.Category != null)
-            {
-                result = result.Where(b => b.Product.Category == filter.Category).ToList();
-            }
-
-            if (filter.Period == "Kommende")
-            {
-                result = result.Where(b => b.StartTime > DateTime.Today).ToList();
-            }
-            else if (filter.Period == "Igangværende")
-            {
-                result = result.Where(b => b.StartTime <= DateTime.Today && b.EndTime >= DateTime.Today).ToList();
-            }
-            else if (filter.Period == "Afsluttede")
-            {
-                result = result.Where(b => b.EndTime < DateTime.Today).ToList();
-            }
-
-            if (filter.Type == "Enkelt")
-            {
-                result = result.Where(b => b.BundleBookingId == null).ToList();
-            }
-            else if (filter.Type == "Pakke")
-            {
-                result = result.Where(b => b.BundleBookingId != null).ToList();
-            }
-
-            return result;
-        }
-
-        // som ValidateBooking, men bookingen må gerne overlappe med sig selv
-        private async Task<BookingValidationResult> CheckAvailableForUpdate(Booking booking)
-        {
-            BookingValidationResult result = new();
-            result.IsSuccessful = false;
-
-            Booking? overlappingBooking = _bookingRepository.FindOverlappingBooking(booking.ProductId, booking.StartTime, booking.EndTime, booking.BookingId);
-            if (overlappingBooking != null)
-            {
-                result.Key = "ProductId";
-                result.ErrorMessage = "Produktet er desværre ikke tilgængeligt for de valgte datoer";
-
-                // sæt produktets navn foran fejlbeskeden
-                ProductDto? product = await _productHttpService.GetById(booking.ProductId);
-                if (product != null)
-                {
-                    result.ErrorMessage = $"{product.Brand} {product.Model}: {result.ErrorMessage}";
-                }
-                return result;
-            }
-
-            result.IsSuccessful = true;
-            return result;
-        }
+        // Generelle "værktøjsmetoder" herunder
 
         public async Task<BookingValidationResult> ValidateDates(DateTime startTime, DateTime endTime)
         {
@@ -181,7 +46,7 @@ namespace DiveDeep.Services
             return result;
         }
 
-        public async Task<BookingValidationResult> CheckOverlappingBooking(List<Booking> bookings)
+        private async Task<BookingValidationResult> CheckOverlappingBooking(List<Booking> bookings)
         {
             BookingValidationResult bookingValidationResult = new();
             bookingValidationResult.IsSuccessful = false;
@@ -223,7 +88,7 @@ namespace DiveDeep.Services
             return bookingValidationResult;
         }
 
-        public async Task<BookingValidationResult> ValidateBooking(Booking booking)
+        private async Task<BookingValidationResult> ValidateBooking(Booking booking)
         {
             var result = new BookingValidationResult();
             result.IsSuccessful = false;
@@ -239,7 +104,7 @@ namespace DiveDeep.Services
             }
 
             // tjek at produktet er tilgængeligt i hele perioden
-            bool isAvailable = await _productHttpService.IsProductAvailable(
+            bool isAvailable = await _productRepository.IsProductAvailable(
                 booking.ProductId,
                 startTime,
                 endTime
@@ -257,12 +122,35 @@ namespace DiveDeep.Services
         }
 
         // Tjekker at hvert produkt passer til sin plads i pakken og er ledigt i perioden
-        public async Task<BookingValidationResult> ValidateBundleProducts(Bundle bundle, List<ProductDto> products, DateTime startTime, DateTime endTime)
+        public async Task<BookingValidationResult> ValidateBundleProducts(int bundleId, List<int> productIds, DateTime startTime, DateTime endTime)
         {
-            BookingValidationResult result = new();
+            BookingValidationResult result = await ValidateDates(startTime, endTime);
+            if (result.IsSuccessful == false)
+            {
+                return result;
+            }
             result.IsSuccessful = false;
 
+            // Få fat i produkterne fra listen
+            List<Product> products = new();
+            foreach (int id in productIds)
+            {
+                Product? product = await _productRepository.GetById(id);
+                if (product != null)
+                {
+                    products.Add(product);
+                }
+            }
+
+            var bundle = _bundleRepository.GetById(bundleId);
+            if (bundle == null)
+            {
+                result.ErrorMessage = "Valgte pakke findes ikke";
+                return result;
+            }
+
             // Der skal være valgt præcis ét produkt til hver del af pakken
+            // Vi sammenligner bare antal på hver, de burde være ens
             if (products.Count != bundle.Categories.Count)
             {
                 result.ErrorMessage = "Vælg udstyr til alle dele af pakken";
@@ -271,7 +159,7 @@ namespace DiveDeep.Services
 
             for (int i = 0; i < products.Count; i++)
             {
-                ProductDto product = products[i];
+                Product product = products[i];
 
                 // Dropdowns kommer i samme rækkefølge som pakkens kategorier
                 if (product.Category != bundle.Categories[i])
@@ -279,7 +167,7 @@ namespace DiveDeep.Services
                     result.ErrorMessage = "Det valgte udstyr passer ikke til pakken";
                     return result;
                 }
-                bool available = await _productHttpService.IsProductAvailable(product.ProductId, startTime, endTime);
+                bool available = await _productRepository.IsProductAvailable(product.ProductId, startTime, endTime);
                 if (!available)
                 {
                     result.ErrorMessage = $"{product.Brand} {product.Model} ({product.VariantLabel}) er desværre lige blevet booket. Vælg venligst noget andet.";
@@ -290,6 +178,126 @@ namespace DiveDeep.Services
             result.IsSuccessful = true;
             return result;
         }
+
+
+        // API metoder herunder
+
+        public async Task<List<Booking>> GetAll()
+        {
+            return await _bookingRepository.GetAll();
+        }
+
+        public async Task<List<Booking>> GetByUserId(string id)
+        {
+            return await _bookingRepository.GetByUserId(id);
+        }
+
+        public async Task<Booking?> GetById(int id)
+        {
+            return await _bookingRepository.GetById(id);
+        }
+
+        public async Task Delete(int id)
+        {
+            await _bookingRepository.Delete(id);
+        }
+
+        public async Task<BundleBooking?> GetBundleBookingById(int id)
+        {
+            return await _bookingRepository.GetBundleBookingById(id);
+        }
+
+        public async Task DeleteBundleBooking(int id)
+        {
+            await _bookingRepository.DeleteBundleBooking(id);
+        }
+
+        public async Task<BookingValidationResult> UpdateBooking(Booking booking)
+        {
+            BookingValidationResult result = await ValidateDates(booking.StartTime, booking.EndTime);
+            if (result.IsSuccessful == false)
+            {
+                return result;
+            }
+
+            result = await CheckAvailableForUpdate(booking);
+            if (result.IsSuccessful == false)
+            {
+                return result;
+            }
+
+            try
+            {
+                await _bookingRepository.Update(booking);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                result.IsSuccessful = false;
+                result.ErrorMessage = ConcurrencyErrorMessage;
+            }
+
+            return result;
+        }
+
+        public async Task<BookingValidationResult> UpdateBundleBooking(List<Booking> bookings, DateTime startTime, DateTime endTime)
+        {
+            BookingValidationResult result = await ValidateDates(startTime, endTime);
+            if (result.IsSuccessful == false)
+            {
+                return result;
+            }
+
+            // alle produkter i pakken får den samme periode
+            foreach (Booking booking in bookings)
+            {
+                booking.StartTime = startTime;
+                booking.EndTime = endTime;
+
+                BookingValidationResult availableResult = await CheckAvailableForUpdate(booking);
+                if (availableResult.IsSuccessful == false)
+                {
+                    return availableResult;
+                }
+            }
+
+            try
+            {
+                await _bookingRepository.UpdateBundleBooking(bookings);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                result.IsSuccessful = false;
+                result.ErrorMessage = ConcurrencyErrorMessage;
+            }
+
+            return result;
+        }
+
+        // som ValidateBooking, men bookingen må gerne overlappe med sig selv
+        private async Task<BookingValidationResult> CheckAvailableForUpdate(Booking booking)
+        {
+            BookingValidationResult result = new();
+            result.IsSuccessful = false;
+
+            Booking? overlappingBooking = await _bookingRepository.FindOverlappingBooking(booking.ProductId, booking.StartTime, booking.EndTime, booking.BookingId);
+            if (overlappingBooking != null)
+            {
+                result.Key = "ProductId";
+                result.ErrorMessage = "Produktet er desværre ikke tilgængeligt for de valgte datoer";
+
+                // sæt produktets navn foran fejlbeskeden
+                Product? product = await _productRepository.GetById(booking.ProductId);
+                if (product != null)
+                {
+                    result.ErrorMessage = $"{product.Brand} {product.Model}: {result.ErrorMessage}";
+                }
+                return result;
+            }
+
+            result.IsSuccessful = true;
+            return result;
+        }
+
 
         public async Task<BookingValidationResult> CreateBookings(List<Booking> bookings, List<BundleBooking> bundleBookings)
         {
@@ -323,7 +331,7 @@ namespace DiveDeep.Services
                 // sæt produktets navn foran fejlbeskeden
                 if (tempBookingValidationResult.IsSuccessful == false)
                 {
-                    ProductDto? product = await _productHttpService.GetById(booking.ProductId);
+                    Product? product = await _productRepository.GetById(booking.ProductId);
                     if (product != null)
                     {
                         tempBookingValidationResult.ErrorMessage = $"{product.Brand} {product.Model}: {tempBookingValidationResult.ErrorMessage}";
@@ -335,11 +343,17 @@ namespace DiveDeep.Services
             // Alt er i orden: så vi gemmer enkelte bookinger og pakkebookinger
             foreach (Booking booking in bookings)
             {
-                _bookingRepository.Add(booking);
+                await _bookingRepository.Add(booking);
             }
             foreach (BundleBooking bundleBooking in bundleBookings)
             {
-                _bookingRepository.AddBundleBooking(bundleBooking);
+                await _bookingRepository.AddBundleBooking(bundleBooking);
+            }
+
+            // en pakke bookes alene fra pakkesiden, og så skal web appen bruge id'et til bekræftelsen
+            if (bookings.Count == 0 && bundleBookings.Count == 1)
+            {
+                result.CreatedBundleBookingId = bundleBookings[0].BundleBookingId;
             }
 
             return result;

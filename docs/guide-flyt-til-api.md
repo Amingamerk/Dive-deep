@@ -100,6 +100,8 @@ Bookinger og kurv skal vide hvem brugeren er, men API'et har ikke login endnu. I
 - Send id'et i body eller query string, ikke i route'en. Så skal der ændres mindre når Krav 8 kommer.
 - Al kommunikation med API'et går gennem `"DiveDeepAPI"` clienten, så login senere kan sættes på ét sted.
 
+De valg vi har taget undervejs ligger i `valg-under-tidspres.md`.
+
 ## Spørgsmål vi skal blive enige om
 
 - Kurven ligger i session i web appen. Skal den blive der, eller skal den over i API'et? Hvad ville en mobil app have brug for?

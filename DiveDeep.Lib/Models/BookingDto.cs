@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
-
-namespace DiveDeep.Lib.Models
+﻿namespace DiveDeep.Lib.Models
 {
     public class BookingDto
     {
@@ -13,14 +8,17 @@ namespace DiveDeep.Lib.Models
         
         public DateTime EndTime { get; set; }
         
-        public ProductDto productDto { get; set; }
+        public int ProductId { get; set; }
+
+        // Produktet og RowVersion er tomme når vi opretter en ny booking, så de må ikke være krav
+        public ProductDto? Product { get; set; }
 
         public int? BundleBookingId { get; set; }
-        
+
         public string? BundleName { get; set; }
 
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
 
-        public byte[] RowVersion { get; set; } = null!;
+        public byte[]? RowVersion { get; set; }
     }
 }

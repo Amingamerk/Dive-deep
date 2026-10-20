@@ -54,11 +54,10 @@ namespace DiveDeep
 
             // Web API ting
             builder.Services.AddScoped<IProductHttpService, ProductHttpService>();
+            builder.Services.AddScoped<IBookingHttpService, BookingHttpService>();
 
             // Repositories
             builder.Services.AddScoped<ICartService, CartService>();
-            builder.Services.AddScoped<IBookingRepository, BookingRepository>();
-            builder.Services.AddScoped<BookingService, BookingService>();
             builder.Services.AddScoped<IBundleRepository, InMemoryBundleRepository>();
             builder.Services.AddScoped<ImageService>();
 

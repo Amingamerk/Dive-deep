@@ -15,19 +15,15 @@ namespace DiveDeep.Controllers
     public class CartController : Controller
     {
         private readonly ICartService _cartService;
-        private readonly BookingService _bookingService;
+        private readonly IBookingHttpService _bookingHttpService;
         private readonly IProductHttpService _productHttpService;
         private readonly IBundleRepository _bundleRepository;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public CartController(ICartService cartService,
-            BookingService bookingService,
-            IProductHttpService productHttpService,
-            IBundleRepository bundleRepository,
-            UserManager<ApplicationUser> userManager)
+        public CartController(ICartService cartService, IBookingHttpService bookingHttpService, IProductHttpService productHttpService, IBundleRepository bundleRepository, UserManager<ApplicationUser> userManager)
         {
             _cartService = cartService;
-            _bookingService = bookingService;
+            _bookingHttpService = bookingHttpService;
             _productHttpService = productHttpService;
             _bundleRepository = bundleRepository;
             _userManager = userManager;
@@ -78,13 +74,20 @@ namespace DiveDeep.Controllers
                 return await RedirectToDetailsWithError(bundleId, dateRange, "Vælg en gyldig periode");
             }
 
-            BookingValidationResult dateResult = await _bookingService.ValidateDates(startTime, endTime);
+            BookingValidationResult dateResult = BookingRules.ValidateDates(startTime, endTime);
             if (!dateResult.IsSuccessful)
             {
                 return await RedirectToDetailsWithError(bundleId, dateRange, dateResult.ErrorMessage ?? "Ugyldig periode");
             }
 
-            // find produkterne ud fra id'erne
+            // tjek at produkterne passer til pakken og er ledige
+            BookingValidationResult bundleResult = await _bookingHttpService.ValidateBundleProducts(bundleId, productIds, startTime, endTime);
+            if (!bundleResult.IsSuccessful)
+            {
+                return await RedirectToDetailsWithError(bundleId, dateRange, bundleResult.ErrorMessage ?? "Pakken kunne ikke lægges i kurven");
+            }
+
+            // kurven viser navn og pris, så den skal have produkterne og ikke kun id'erne
             List<ProductDto> products = new();
             foreach (int productId in productIds)
             {
@@ -94,13 +97,6 @@ namespace DiveDeep.Controllers
                     return await RedirectToDetailsWithError(bundleId, dateRange, "Det valgte udstyr passer ikke til pakken");
                 }
                 products.Add(product);
-            }
-
-            // tjek at produkterne passer til pakken og er ledige
-            BookingValidationResult bundleResult = await _bookingService.ValidateBundleProducts(bundle, products, startTime, endTime);
-            if (!bundleResult.IsSuccessful)
-            {
-                return await RedirectToDetailsWithError(bundleId, dateRange, bundleResult.ErrorMessage ?? "Pakken kunne ikke lægges i kurven");
             }
 
             _cartService.AddBundle(bundle, products, startTime, endTime);
@@ -120,17 +116,17 @@ namespace DiveDeep.Controllers
             string? userId = _userManager.GetUserId(User);
 
             // konverter CartItem til booking
-            List<Booking> bookings = new();
+            List<BookingDto> bookings = new();
             foreach (CartItem item in cart.Items)
             {
                 bookings.Add(await CreateBooking(item, userId));
             }
 
             // hver pakke bliver til en BundleBooking
-            List<BundleBooking> bundleBookings = new();
+            List<BundleBookingDto> bundleBookings = new();
             foreach (CartBundle cartBundle in cart.Bundles)
             {
-                BundleBooking bundleBooking = new();
+                BundleBookingDto bundleBooking = new();
                 bundleBooking.BundleId = cartBundle.BundleId;
                 bundleBooking.BundleName = cartBundle.BundleName;
                 bundleBooking.DiscountPercent = cartBundle.DiscountPercent;
@@ -144,7 +140,7 @@ namespace DiveDeep.Controllers
                 bundleBookings.Add(bundleBooking);
             }
 
-            BookingValidationResult bookingValidationResult = await _bookingService.CreateBookings(bookings, bundleBookings);
+            BookingValidationResult bookingValidationResult = await _bookingHttpService.CreateBookings(bookings, bundleBookings);
             if (!bookingValidationResult.IsSuccessful)
             {
                 TempData["Error"] = bookingValidationResult.ErrorMessage;
@@ -206,9 +202,9 @@ namespace DiveDeep.Controllers
             return RedirectToAction("Details", "Bundles", new { id = bundleId, dateRange = dateRange });
         }
 
-        private async Task<Booking> CreateBooking(CartItem item, string? userId)
+        private async Task<BookingDto> CreateBooking(CartItem item, string? userId)
         {
-            Booking booking = new();
+            BookingDto booking = new();
             booking.ProductId = item.ProductId;
             booking.StartTime = item.StartTime;
             booking.EndTime = item.EndTime;

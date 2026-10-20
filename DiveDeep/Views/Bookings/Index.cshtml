@@ -1,4 +1,4 @@
-@model List<Booking>
+@model List<BookingDto>
 @{
     ViewData["Title"] = "Mine bookinger";
 }
@@ -44,9 +44,9 @@
                             <td>@booking.StartTime.ToString("dd/MM/yyyy")</td>
                             <td>@booking.EndTime.ToString("dd/MM/yyyy")</td>
                             <td>
-                                @if (booking.BundleBooking != null)
+                                @if (booking.BundleName != null)
                                 {
-                                    <span class="badge text-bg-warning">@booking.BundleBooking.BundleName</span>
+                                    <span class="badge text-bg-warning">@booking.BundleName</span>
                                 }
                             </td>
                         </tr>

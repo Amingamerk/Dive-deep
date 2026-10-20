@@ -1,7 +1,6 @@
 using DiveDeep.Data;
+using DiveDeep.Lib.Models;
 using DiveDeep.Models;
-using DiveDeep.Persistence;
-using DiveDeep.Services;
 using DiveDeep.Services.HttpServices;
 using DiveDeep.ViewModels;
 using Microsoft.AspNetCore.Identity;
@@ -14,18 +13,17 @@ namespace DiveDeep.Areas.Admin.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
 
-        private readonly BookingService _bookingService;
+        private readonly IBookingHttpService _bookingHttpService;
+
         private readonly IProductHttpService _productHttpService;
 
         private const string ConcurrencyErrorMessage = "Bookingen er blevet ændret af en anden, mens du redigerede den. Genindlæs siden og prøv igen.";
 
-        public BookingsController(UserManager<ApplicationUser> userManager, BookingService bookingService, IProductHttpService productHttpService)
+        public BookingsController(UserManager<ApplicationUser> userManager, IBookingHttpService bookingHttpService, IProductHttpService productHttpService)
         {
             _userManager = userManager;
-            _bookingService = bookingService;
+            _bookingHttpService = bookingHttpService;
             _productHttpService = productHttpService;
-
-
         }
 
         public async Task<IActionResult> Index([FromQuery] BookingFilterViewModel filter)
@@ -33,18 +31,20 @@ namespace DiveDeep.Areas.Admin.Controllers
             filter.Users = _userManager.Users.OrderBy(u => u.Email).ToList();
 
             // alle bookinger, nyeste først
-            List<Booking> bookings = _bookingService.GetAll()
+            List<BookingDto> bookings = await _bookingHttpService.GetAll();
+
+            filter.Bookings = bookings
                 .OrderByDescending(b => b.BookingId)
                 .ToList();
 
-            filter.Bookings = _bookingService.Filter(bookings, filter);
+            filter.Bookings = filter.Apply();
 
             return View(filter);
         }
 
         public async Task<IActionResult> Edit(int id)
         {
-            Booking? booking = _bookingService.GetById(id);
+            BookingDto? booking = await _bookingHttpService.GetById(id);
             if (booking == null)
             {
                 return NotFound();
@@ -77,7 +77,7 @@ namespace DiveDeep.Areas.Admin.Controllers
 
             try
             {
-                BookingValidationResult result = await _bookingService.UpdateBooking(vm.Booking);
+                BookingValidationResult result = await _bookingHttpService.UpdateBooking(vm.Booking);
                 if (result.IsSuccessful == false)
                 {
                     ModelState.AddModelError("", result.ErrorMessage ?? "Bookingen kunne ikke gemmes");
@@ -98,7 +98,7 @@ namespace DiveDeep.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            Booking? booking = _bookingService.GetById(id);
+            BookingDto? booking = await _bookingHttpService.GetById(id);
             if (booking == null)
             {
                 return NotFound();
@@ -110,7 +110,7 @@ namespace DiveDeep.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            _bookingService.Delete(id);
+            await _bookingHttpService.Delete(id);
             TempData["Success"] = $"Booking #{id} er slettet";
 
             return RedirectToAction(nameof(Index));
@@ -118,7 +118,7 @@ namespace DiveDeep.Areas.Admin.Controllers
 
         public async Task<IActionResult> EditBundle(int id)
         {
-            BundleBooking? bundleBooking = _bookingService.GetBundleBookingById(id);
+            BundleBookingDto? bundleBooking = await _bookingHttpService.GetBundleBookingById(id);
             if (bundleBooking == null || bundleBooking.Bookings.Count == 0)
             {
                 return NotFound();
@@ -131,7 +131,7 @@ namespace DiveDeep.Areas.Admin.Controllers
             vm.StartTime = bundleBooking.Bookings[0].StartTime;
             vm.EndTime = bundleBooking.Bookings[0].EndTime;
 
-            foreach (Booking booking in bundleBooking.Bookings)
+            foreach (BookingDto booking in bundleBooking.Bookings)
             {
                 BundleBookingItemViewModel item = new();
                 item.BookingId = booking.BookingId;
@@ -149,7 +149,7 @@ namespace DiveDeep.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditBundle(BundleBookingEditViewModel vm)
         {
-            BundleBooking? bundleBooking = _bookingService.GetBundleBookingById(vm.BundleBookingId);
+            BundleBookingDto? bundleBooking = await _bookingHttpService.GetBundleBookingById(vm.BundleBookingId);
             if (bundleBooking == null)
             {
                 return NotFound();
@@ -164,10 +164,10 @@ namespace DiveDeep.Areas.Admin.Controllers
             }
 
             // lav formens felter om til bookinger
-            List<Booking> bookings = new();
+            List<BookingDto> bookings = new();
             foreach (BundleBookingItemViewModel item in vm.Items)
             {
-                Booking booking = new();
+                BookingDto booking = new();
                 booking.BookingId = item.BookingId;
                 booking.ProductId = item.ProductId;
                 booking.RowVersion = item.RowVersion;
@@ -176,7 +176,7 @@ namespace DiveDeep.Areas.Admin.Controllers
 
             try
             {
-                BookingValidationResult result = await _bookingService.UpdateBundleBooking(bookings, vm.StartTime, vm.EndTime);
+                BookingValidationResult result = await _bookingHttpService.UpdateBundleBooking(bookings, vm.StartTime, vm.EndTime);
                 if (result.IsSuccessful == false)
                 {
                     ModelState.AddModelError("", result.ErrorMessage ?? "Pakken kunne ikke gemmes");
@@ -197,7 +197,7 @@ namespace DiveDeep.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteBundle(int id)
         {
-            _bookingService.DeleteBundleBooking(id);
+            await _bookingHttpService.DeleteBundleBooking(id);
             TempData["Success"] = $"Pakke #{id} er slettet";
 
             return RedirectToAction(nameof(Index));
@@ -206,29 +206,41 @@ namespace DiveDeep.Areas.Admin.Controllers
         // felter der kun vises, og derfor ikke kommer med tilbage fra formen
         private async Task FillEditViewModel(BookingEditViewModel vm)
         {
-            Booking? booking = _bookingService.GetById(vm.Booking.BookingId);
+            BookingDto? booking = await _bookingHttpService.GetById(vm.Booking.BookingId);
             
             if (booking == null) return;
 
             vm.ProductName = $"{booking.Product.Brand} {booking.Product.Model}";
-            vm.UserEmail = booking.User.Email ?? "";
+            vm.UserEmail = await GetUserEmail(booking.UserId);
             vm.Variants = await _productHttpService.GetVariantsById(booking.Product.ProductId);
         }
 
-        private async Task FillBundleViewModel(BundleBookingEditViewModel vm, BundleBooking bundleBooking)
+        private async Task FillBundleViewModel(BundleBookingEditViewModel vm, BundleBookingDto bundleBooking)
         {
             vm.BundleName = bundleBooking.BundleName;
-            vm.UserEmail = bundleBooking.Bookings[0].User.Email ?? "";
+            vm.UserEmail = await GetUserEmail(bundleBooking.Bookings[0].UserId);
 
             foreach (BundleBookingItemViewModel item in vm.Items)
             {
-                Booking? booking = bundleBooking.Bookings.FirstOrDefault(b => b.BookingId == item.BookingId);
+                BookingDto? booking = bundleBooking.Bookings.FirstOrDefault(b => b.BookingId == item.BookingId);
                 if (booking == null) continue;
 
                 item.CategoryTitle = CategoryInfo.Categories[booking.Product.Category].Title;
                 item.ProductName = $"{booking.Product.Brand} {booking.Product.Model}";
                 item.Variants = await _productHttpService.GetVariantsById(booking.Product.ProductId);
             }
+        }
+
+        // bookingen kender kun brugerens id, og login ligger stadig i web appen
+        private async Task<string> GetUserEmail(string userId)
+        {
+            ApplicationUser? user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return "";
+            }
+
+            return user.Email ?? "";
         }
     }
 }

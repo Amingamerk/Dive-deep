@@ -1,7 +1,5 @@
 ﻿using DiveDeep.Data;
-using DiveDeep.Models;
-using DiveDeep.Persistence;
-using DiveDeep.Services;
+using DiveDeep.Lib.Models;
 using DiveDeep.Services.HttpServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -15,18 +13,19 @@ namespace DiveDeep.Controllers
 
         private readonly UserManager<ApplicationUser> _userManager;
 
-        private readonly BookingService _bookingService;
+        private readonly IBookingHttpService _bookingHttpService;
 
-        public BookingsController(UserManager<ApplicationUser> userManager, BookingService bookingService)
+        public BookingsController(UserManager<ApplicationUser> userManager, IBookingHttpService bookingHttpService)
         {
             _userManager = userManager;
-            _bookingService = bookingService;
+            _bookingHttpService = bookingHttpService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             var userId = _userManager.GetUserId(User);
-            List<Booking> userBookings = _bookingService.GetByUserId(userId!).OrderBy(b => b.StartTime).ToList();
+            List<BookingDto> bookings = await _bookingHttpService.GetByUserId(userId!);
+            List<BookingDto> userBookings = bookings.OrderBy(b => b.StartTime).ToList();
             return View(userBookings);
         }
     }

@@ -1,9 +1,12 @@
+using DiveDeep.Data;
 using DiveDeep.Lib.Models;
 using DiveDeep.Models;
 using DiveDeep.Persistence;
 using DiveDeep.Services;
 using DiveDeep.Services.HttpServices;
 using DiveDeep.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DiveDeep.Controllers
@@ -12,15 +15,15 @@ namespace DiveDeep.Controllers
     {
         private readonly IBundleRepository _bundleRepository;
         private readonly IProductHttpService _productHttpService;
-        private readonly IBookingRepository _bookingRepository;
-        private readonly BookingService _bookingService;
+        private readonly IBookingHttpService _bookingHttpService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public BundlesController(IBundleRepository bundleRepository, IProductHttpService productHttpService, IBookingRepository bookingRepository, BookingService bookingService)
+        public BundlesController(IBundleRepository bundleRepository, IProductHttpService productHttpService, IBookingHttpService bookingHttpService, UserManager<ApplicationUser> userManager)
         {
             _bundleRepository = bundleRepository;
             _productHttpService = productHttpService;
-            _bookingRepository = bookingRepository;
-            _bookingService = bookingService;
+            _bookingHttpService = bookingHttpService;
+            _userManager = userManager;
         }
 
         // Skal rykkes til web api
@@ -107,7 +110,7 @@ namespace DiveDeep.Controllers
             }
 
             // Datoerne kunne læses, men følger ikke reglerne
-            BookingValidationResult dateResult = await _bookingService.ValidateDates(startTime, endTime);
+            BookingValidationResult dateResult = BookingRules.ValidateDates(startTime, endTime);
             if (!dateResult.IsSuccessful)
             {
                 ModelState.AddModelError("DateRange", dateResult.ErrorMessage ?? "Ugyldig periode");
@@ -150,6 +153,7 @@ namespace DiveDeep.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Book(int bundleId, string? dateRange, List<int> productIds)
         {
             Bundle? bundle = _bundleRepository.GetById(bundleId);
@@ -164,63 +168,51 @@ namespace DiveDeep.Controllers
                 return RedirectToDetailsWithError(bundleId, dateRange, "Vælg en gyldig periode");
             }
 
-            BookingValidationResult dateResult = await _bookingService.ValidateDates(startTime, endTime);
+            BookingValidationResult dateResult = BookingRules.ValidateDates(startTime, endTime);
             if (!dateResult.IsSuccessful)
             {
                 return RedirectToDetailsWithError(bundleId, dateRange, dateResult.ErrorMessage ?? "Ugyldig periode");
             }
 
-            // Der skal være valgt præcis ét produkt til hver del af pakken
-            if (productIds.Count != bundle.Categories.Count)
-            {
-                return RedirectToDetailsWithError(bundleId, dateRange, "Vælg udstyr til alle dele af pakken");
-            }
-
             // Tjek ALLE produkter, før vi gemmer noget, så pakken aldrig bliver halvt booket
-            for (int i = 0; i < productIds.Count; i++)
+            BookingValidationResult bundleResult = await _bookingHttpService.ValidateBundleProducts(bundleId, productIds, startTime, endTime);
+            if (!bundleResult.IsSuccessful)
             {
-                ProductDto? product = await _productHttpService.GetById(productIds[i]);
-
-                // Dropdowns kommer i samme rækkefølge som pakkens kategorier,
-                // så produkt nummer i skal høre til kategori nummer i
-                if (product == null || product.Category != bundle.Categories[i])
-                {
-                    return RedirectToDetailsWithError(bundleId, dateRange, "Det valgte udstyr passer ikke til pakken");
-                }
-
-                // Nogen kan have booket produktet, mens kunden valgte udstyr
-                bool productAvailable = await _productHttpService.IsProductAvailable(product.ProductId, startTime, endTime);
-                if (!productAvailable)
-                {
-                    return RedirectToDetailsWithError(bundleId, dateRange, $"{product.Brand} {product.Model} ({product.VariantLabel}) er desværre lige blevet booket. Vælg venligst noget andet.");
-                }
+                return RedirectToDetailsWithError(bundleId, dateRange, bundleResult.ErrorMessage ?? "Pakken kunne ikke bookes");
             }
 
             // Alt er i orden: opret pakkebookingen med én booking per produkt
-            BundleBooking bundleBooking = new();
+            BundleBookingDto bundleBooking = new();
             bundleBooking.BundleId = bundle.BundleId;
             bundleBooking.BundleName = bundle.Name;
             bundleBooking.DiscountPercent = bundle.DiscountPercent;
             bundleBooking.CreatedAt = DateTime.Now;
 
+            string? userId = _userManager.GetUserId(User);
+
             foreach (int productId in productIds)
             {
-                Booking booking = new();
+                BookingDto booking = new();
                 booking.ProductId = productId;
                 booking.StartTime = startTime;
                 booking.EndTime = endTime;
+                booking.UserId = userId;
                 bundleBooking.Bookings.Add(booking);
             }
 
             // Gemmer pakkebookingen og alle dens bookinger på en gang
-            _bookingRepository.AddBundleBooking(bundleBooking);
+            BookingValidationResult result = await _bookingHttpService.CreateBookings(new List<BookingDto>(), new List<BundleBookingDto> { bundleBooking });
+            if (!result.IsSuccessful)
+            {
+                return RedirectToDetailsWithError(bundleId, dateRange, result.ErrorMessage ?? "Pakken kunne ikke bookes");
+            }
 
-            return RedirectToAction("Confirmation", new { id = bundleBooking.BundleBookingId });
+            return RedirectToAction("Confirmation", new { id = result.CreatedBundleBookingId });
         }
 
         public async Task<IActionResult> Confirmation(int id)
         {
-            BundleBooking? bundleBooking = _bookingRepository.GetBundleBookingById(id);
+            BundleBookingDto? bundleBooking = await _bookingHttpService.GetBundleBookingById(id);
             if (bundleBooking == null || bundleBooking.Bookings.Count == 0)
             {
                 return NotFound();
@@ -231,15 +223,15 @@ namespace DiveDeep.Controllers
             confirmationViewModel.DiscountPercent = bundleBooking.DiscountPercent;
 
             // Alle bookinger i en pakke har samme periode, så vi tager datoerne fra den første
-            Booking firstBooking = bundleBooking.Bookings[0];
+            BookingDto firstBooking = bundleBooking.Bookings[0];
             confirmationViewModel.StartDate = firstBooking.StartTime;
             confirmationViewModel.EndDate = firstBooking.EndTime;
             confirmationViewModel.Days = (firstBooking.EndTime - firstBooking.StartTime).Days;
 
             float fullPrice = 0;
-            foreach (Booking booking in bundleBooking.Bookings)
+            foreach (BookingDto booking in bundleBooking.Bookings)
             {
-                Product product = booking.Product;
+                ProductDto product = booking.Product;
 
                 // Dragter har også køn og tykkelse, fx "Herre – 5 mm"
                 string variantText = product.VariantLabel;

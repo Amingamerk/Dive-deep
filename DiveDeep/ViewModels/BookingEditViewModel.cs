@@ -7,7 +7,7 @@ namespace DiveDeep.ViewModels
 {
     public class BookingEditViewModel
     {
-        public Booking Booking { get; set; } = new();
+        public BookingDto Booking { get; set; } = new();
 
         [ValidateNever]
         public string ProductName { get; set; } = "";

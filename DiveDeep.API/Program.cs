@@ -1,5 +1,6 @@
 using DiveDeep.API.Data;
 using DiveDeep.API.Persistence;
+using DiveDeep.API.Services;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using System.Text.Json.Serialization;
@@ -25,7 +26,10 @@ namespace DiveDeep.API
                 options.UseSqlServer(builder.Configuration.GetConnectionString("default"));
             });
 
+            builder.Services.AddScoped<IBookingService, BookingService>();
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+            builder.Services.AddScoped<IBundleRepository, InMemoryBundleRepository>();
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

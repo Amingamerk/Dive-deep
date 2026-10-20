@@ -75,23 +75,23 @@ else
                 </tr>
             </thead>
             <tbody>
-                @foreach (Booking booking in Model.Bookings)
+                @foreach (BookingDto booking in Model.Bookings)
                 {
                     <tr>
                         <td>@booking.BookingId</td>
                         <td>@booking.Product.Brand @booking.Product.Model (@booking.Product.VariantLabel)</td>
-                        <td>@booking.User.Email</td>
+                        <td>@Model.EmailFor(booking.UserId)</td>
                         <td>@booking.StartTime.ToString("dd/MM/yyyy")</td>
                         <td>@booking.EndTime.ToString("dd/MM/yyyy")</td>
                         <td>
                             @* Tom, hvis produktet er booket alene *@
-                            @if (booking.BundleBooking != null)
+                            @if (booking.BundleBookingId != null)
                             {
-                                <span class="badge text-bg-warning">@booking.BundleBooking.BundleName #@booking.BundleBooking.BundleBookingId</span>
+                                <span class="badge text-bg-warning">@booking.BundleName #@booking.BundleBookingId</span>
                             }
                         </td>
                         <td class="text-end text-nowrap">
-                            @if (booking.BundleBooking != null)
+                            @if (booking.BundleBookingId != null)
                             {
                                 <a asp-action="EditBundle" asp-route-id="@booking.BundleBookingId" class="btn btn-sm btn-outline-warning">Rediger pakke</a>
                                 <form method="post" asp-action="DeleteBundle" asp-route-id="@booking.BundleBookingId" class="d-inline"
